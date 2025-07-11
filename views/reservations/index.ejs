@@ -322,6 +322,91 @@
         </div>
         <!-- END: Content-->
 
+        <!-- Table Details Modal -->
+        <div class="modal fade" id="tableDetailsModal" tabindex="-1" role="dialog" aria-labelledby="tableDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tableDetailsModalLabel">Table Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="tableInfo">
+                            <!-- Table information will be loaded here -->
+                        </div>
+                        
+                        <!-- Tabs for different actions -->
+                        <ul class="nav nav-tabs mt-3" id="tableActionTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="reservation-tab" data-toggle="tab" href="#reservation" role="tab">Make Reservation</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="server-tab" data-toggle="tab" href="#server" role="tab">Assign Server</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="current-reservation-tab" data-toggle="tab" href="#current-reservation" role="tab">Current Reservation</a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content mt-3" id="tableActionTabsContent">
+                            <!-- Make Reservation Tab -->
+                            <div class="tab-pane fade show active" id="reservation" role="tabpanel">
+                                <form id="makeReservationForm">
+                                    <div class="form-group">
+                                        <label for="customerName">Customer Name</label>
+                                        <input type="text" class="form-control" id="customerName" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="customerEmail">Customer Email</label>
+                                        <input type="email" class="form-control" id="customerEmail" name="email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="customerPhone">Customer Phone</label>
+                                        <input type="tel" class="form-control" id="customerPhone" name="phone">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="partySize">Party Size</label>
+                                        <input type="number" class="form-control" id="partySize" name="partySize" min="1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reservationDate">Date</label>
+                                        <input type="date" class="form-control" id="reservationDate" name="date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="timeSlot">Time Slot</label>
+                                        <select class="form-control" id="timeSlot" name="slotId" required>
+                                            <option value="">Select time slot</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="specialRequests">Special Requests</label>
+                                        <textarea class="form-control" id="specialRequests" name="specialRequests" rows="2"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Make Reservation</button>
+                                </form>
+                            </div>
+                            
+                            <!-- Assign Server Tab -->
+                            <div class="tab-pane fade" id="server" role="tabpanel">
+                                <div id="serversList">
+                                    <!-- Servers will be loaded here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Current Reservation Tab -->
+                            <div class="tab-pane fade" id="current-reservation" role="tabpanel">
+                                <div id="currentReservationInfo">
+                                    <!-- Current reservation info will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="sidenav-overlay"></div>
         <div class="drag-target"></div>
 
