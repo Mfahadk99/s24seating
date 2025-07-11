@@ -1008,7 +1008,7 @@ function setupTableClickHandlers() {
             showTableDetailsModal(tableId, serverId);
         }
     });
-    
+
     // Also setup click handlers for canvas tables
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('canvas-table')) {
@@ -1035,7 +1035,7 @@ async function showTableDetailsModal(tableId, serverId) {
 
         if (!tableData.success) {
             console.error('Error fetching table details:', tableData.message);
-            
+
             // Create mock table data from DOM element if API fails
             const tableElement = document.querySelector(`[data-table-id="${tableId}"], [data-server-id="${serverId}"]`);
             if (tableElement) {
@@ -1120,12 +1120,12 @@ async function loadTimeSlots() {
     const restaurantId = urlParams.get('restaurantId');
     const reservationDateInput = document.getElementById('reservationDate');
     const partySizeInput = document.getElementById('partySize');
-    
+
     // Set default values
     if (reservationDateInput && !reservationDateInput.value) {
         reservationDateInput.value = new Date().toISOString().split('T')[0];
     }
-    
+
     const date = reservationDateInput ? reservationDateInput.value : new Date().toISOString().split('T')[0];
     const partySize = partySizeInput ? partySizeInput.value || 2 : 2;
 
@@ -1164,7 +1164,7 @@ async function loadServersForAssignment() {
         const data = await response.json();
 
         const serversContainer = document.getElementById('serversList');
-        
+
         if (!serversContainer) {
             console.warn('Servers container not found');
             return;
@@ -1326,29 +1326,27 @@ function renderTableOnCanvas(table) {
     if (!canvasContent) return;
 
     const droppedTable = document.createElement('div');
-    droppedTable.className = `ap-dropped-table ${table.isReserved ? 'reserved' : ''} canvas-table`;
-    droppedTable.textContent = table.name || table.tableId || `Table ${table._id}`;
-    droppedTable.dataset.seats = table.seats || 4;
-    droppedTable.dataset.type = table.tableType || 'round';
+    droppedTable.className = `ap-dropped-table canvas-table ${table.isReserved ? 'reserved' : ''}`;
+    droppedTable.textContent = table.name || table.tableId;
+    droppedTable.dataset.seats = table.seats;
+    droppedTable.dataset.type = table.tableType;
     droppedTable.dataset.id = table.tableId || table._id;
     droppedTable.dataset.tableId = table._id;
     droppedTable.dataset.serverId = table._id;
+
+    // Make it clear this is clickable
     droppedTable.style.cursor = 'pointer';
+    droppedTable.title = `Click to manage ${table.name || table.tableId}`;
 
     // Set position
-    droppedTable.style.left = `${table.position?.x || Math.random() * 300 + 50}px`;
-    droppedTable.style.top = `${table.position?.y || Math.random() * 200 + 50}px`;
+    droppedTable.style.left = `${table.position?.x || 0}px`;
+    droppedTable.style.top = `${table.position?.y || 0}px`;
 
     // Set size and shape based on table type and seats
-    setTableStyle(droppedTable, table.tableType || 'round', table.seats || 4);
+    setTableStyle(droppedTable, table.tableType, table.seats);
 
-    // Add click handler for table popup
-    droppedTable.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('Table clicked:', table.tableId || table._id, table._id);
-        showTableDetailsModal(table.tableId || table._id, table._id);
-    });
+    // Tables should be unmovable in reservations view
+    droppedTable.style.position = 'absolute';
 
     canvasContent.appendChild(droppedTable);
 }
