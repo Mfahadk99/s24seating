@@ -798,30 +798,42 @@ async function loadRemovedReservations(restaurantId, date) {
 // Load waitlist
 async function loadWaitlist(restaurantId) {
     try {
-        const response = await fetch(`/waitlist/${restaurantId}?isJSON=true`);
+        const response = await fetch(`/waitlists/${restaurantId}?isJSON=true`);
         const data = await response.json();
 
         if (data.success) {
-            waitlistData = data.data;
+            waitlistData = data.data || [];
+            updateWaitlistSection(waitlistData);
+        } else {
+            console.warn('Waitlist API returned:', data.message);
+            waitlistData = [];
             updateWaitlistSection(waitlistData);
         }
     } catch (error) {
         console.error('Error loading waitlist:', error);
+        waitlistData = [];
+        updateWaitlistSection(waitlistData);
     }
 }
 
 // Load servers
 async function loadServers(restaurantId) {
     try {
-        const response = await fetch(`/servers/${restaurantId}?isJSON=true`);
+        const response = await fetch(`/server/${restaurantId}?isJSON=true`);
         const data = await response.json();
 
         if (data.success) {
-            serversData = data.data;
+            serversData = data.data || [];
+            updateServersSection(serversData);
+        } else {
+            console.warn('Servers API returned:', data.message);
+            serversData = [];
             updateServersSection(serversData);
         }
     } catch (error) {
         console.error('Error loading servers:', error);
+        serversData = [];
+        updateServersSection(serversData);
     }
 }
 
@@ -996,55 +1008,107 @@ function setupTableClickHandlers() {
             showTableDetailsModal(tableId, serverId);
         }
     });
+    
+    // Also setup click handlers for canvas tables
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('canvas-table')) {
+            const tableId = e.target.dataset.tableId;
+            const serverId = e.target.dataset.serverId || tableId;
+            showTableDetailsModal(tableId, serverId);
+        }
+    });
 }
 
 async function showTableDetailsModal(tableId, serverId) {
     selectedTable = { tableId, serverId };
 
     try {
-        // Get table details
+        // Get table details using the correct API endpoint
         const tableResponse = await fetch(`/tables/${serverId}?isJSON=true`);
-        const tableData = await tableResponse.json();
+        let tableData = await tableResponse.json();
+
+        // If first request fails, try alternative endpoint
+        if (!tableData.success) {
+            const altResponse = await fetch(`/tables/table/${serverId}?isJSON=true`);
+            tableData = await altResponse.json();
+        }
 
         if (!tableData.success) {
-            console.error('Error fetching table details');
+            console.error('Error fetching table details:', tableData.message);
+            
+            // Create mock table data from DOM element if API fails
+            const tableElement = document.querySelector(`[data-table-id="${tableId}"], [data-server-id="${serverId}"]`);
+            if (tableElement) {
+                const table = {
+                    _id: serverId || tableId,
+                    tableId: tableElement.dataset.id || tableId,
+                    name: tableElement.textContent || `Table ${tableId}`,
+                    tableType: tableElement.dataset.type || 'round',
+                    seats: parseInt(tableElement.dataset.seats) || 4,
+                    capacity: {
+                        minParty: parseInt(tableElement.dataset.minParty) || 1,
+                        maxParty: parseInt(tableElement.dataset.maxParty) || parseInt(tableElement.dataset.seats) || 4
+                    },
+                    isReserved: tableElement.classList.contains('reserved')
+                };
+                displayTableInfo(table);
+            }
             return;
         }
 
         const table = tableData.data;
 
-        // Update table info
-        document.getElementById('tableInfo').innerHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Table Information</h6>
-                    <p><strong>Table ID:</strong> ${table.tableId}</p>
-                    <p><strong>Name:</strong> ${table.name}</p>
-                    <p><strong>Type:</strong> ${table.tableType}</p>
-                    <p><strong>Seats:</strong> ${table.seats}</p>
-                </div>
-                <div class="col-md-6">
-                    <h6>Capacity</h6>
-                    <p><strong>Min Party:</strong> ${table.capacity.minParty}</p>
-                    <p><strong>Max Party:</strong> ${table.capacity.maxParty}</p>
-                    <p><strong>Status:</strong> ${table.isReserved ? 'Reserved' : 'Available'}</p>
-                </div>
+        displayTableInfo(table);
+
+    } catch (error) {
+        console.error('Error showing table details:', error);
+        alert('Error loading table details. Please try again.');
+    }
+}
+
+function displayTableInfo(table) {
+    // Update table info
+    document.getElementById('tableInfo').innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Table Information</h6>
+                <p><strong>Table ID:</strong> ${table.tableId || table._id}</p>
+                <p><strong>Name:</strong> ${table.name || `Table ${table.tableId || table._id}`}</p>
+                <p><strong>Type:</strong> ${table.tableType || 'round'}</p>
+                <p><strong>Seats:</strong> ${table.seats || 4}</p>
             </div>
-        `;
+            <div class="col-md-6">
+                <h6>Capacity</h6>
+                <p><strong>Min Party:</strong> ${table.capacity?.minParty || 1}</p>
+                <p><strong>Max Party:</strong> ${table.capacity?.maxParty || table.seats || 4}</p>
+                <p><strong>Status:</strong> ${table.isReserved ? 'Reserved' : 'Available'}</p>
+            </div>
+        </div>
+    `;
 
-        // Load available time slots
-        await loadTimeSlots();
+    // Load available time slots
+    loadTimeSlots();
 
-        // Load servers for assignment
-        await loadServersForAssignment();
+    // Load servers for assignment
+    loadServersForAssignment();
 
-        // Load current reservation if table is reserved
-        if (table.isReserved) {
-            await loadCurrentReservation(table._id);
+    // Load current reservation if table is reserved
+    if (table.isReserved) {
+        loadCurrentReservation(table._id);
+    }
+
+    // Show modal using both jQuery and vanilla JS for compatibility
+    const modal = document.getElementById('tableDetailsModal');
+    if (modal) {
+        if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#tableDetailsModal').modal('show');
+        } else {
+            // Fallback for when jQuery/Bootstrap modal is not available
+            modal.style.display = 'block';
+            modal.classList.add('show');
+            document.body.classList.add('modal-open');
         }
-
-        // Show modal
-        $('#tableDetailsModal').modal('show');
+    }
 
     } catch (error) {
         console.error('Error showing table details:', error);
@@ -1054,26 +1118,40 @@ async function showTableDetailsModal(tableId, serverId) {
 async function loadTimeSlots() {
     const urlParams = new URLSearchParams(window.location.search);
     const restaurantId = urlParams.get('restaurantId');
-    const date = document.getElementById('reservationDate').value || new Date().toISOString().split('T')[0];
-    const partySize = document.getElementById('partySize').value || 2;
+    const reservationDateInput = document.getElementById('reservationDate');
+    const partySizeInput = document.getElementById('partySize');
+    
+    // Set default values
+    if (reservationDateInput && !reservationDateInput.value) {
+        reservationDateInput.value = new Date().toISOString().split('T')[0];
+    }
+    
+    const date = reservationDateInput ? reservationDateInput.value : new Date().toISOString().split('T')[0];
+    const partySize = partySizeInput ? partySizeInput.value || 2 : 2;
 
     try {
-        const response = await fetch(`/reservation/available-time-slots?restaurantId=${restaurantId}&date=${date}&partySize=${partySize}&isJSON=true`);
+        const response = await fetch(`/timeslots/${restaurantId}?isJSON=true`);
         const data = await response.json();
 
         const timeSlotSelect = document.getElementById('timeSlot');
-        timeSlotSelect.innerHTML = '<option value="">Select time slot</option>';
+        if (timeSlotSelect) {
+            timeSlotSelect.innerHTML = '<option value="">Select time slot</option>';
 
-        if (data.success && data.data.availableSlots) {
-            data.data.availableSlots.forEach(slotData => {
-                const option = document.createElement('option');
-                option.value = slotData.slot.id;
-                option.textContent = `${slotData.slot.label} (${slotData.availableTables.length} tables available)`;
-                timeSlotSelect.appendChild(option);
-            });
+            if (data.success && data.data) {
+                data.data.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot._id;
+                    option.textContent = `${slot.startTime} - ${slot.endTime}`;
+                    timeSlotSelect.appendChild(option);
+                });
+            }
         }
     } catch (error) {
         console.error('Error loading time slots:', error);
+        const timeSlotSelect = document.getElementById('timeSlot');
+        if (timeSlotSelect) {
+            timeSlotSelect.innerHTML = '<option value="">Error loading time slots</option>';
+        }
     }
 }
 
@@ -1082,12 +1160,17 @@ async function loadServersForAssignment() {
     const restaurantId = urlParams.get('restaurantId');
 
     try {
-        const response = await fetch(`/servers/${restaurantId}?isJSON=true`);
+        const response = await fetch(`/server/${restaurantId}?isJSON=true`);
         const data = await response.json();
 
         const serversContainer = document.getElementById('serversList');
+        
+        if (!serversContainer) {
+            console.warn('Servers container not found');
+            return;
+        }
 
-        if (data.success && data.data.length > 0) {
+        if (data.success && data.data && data.data.length > 0) {
             const html = data.data.map(server => `
                 <div class="server-item mb-2">
                     <div class="d-flex justify-content-between align-items-center">
@@ -1100,10 +1183,14 @@ async function loadServersForAssignment() {
             `).join('');
             serversContainer.innerHTML = html;
         } else {
-            serversContainer.innerHTML = '<p>No servers available</p>';
+            serversContainer.innerHTML = '<p class="text-muted">No servers available</p>';
         }
     } catch (error) {
         console.error('Error loading servers:', error);
+        const serversContainer = document.getElementById('serversList');
+        if (serversContainer) {
+            serversContainer.innerHTML = '<p class="text-danger">Error loading servers</p>';
+        }
     }
 }
 
@@ -1239,24 +1326,28 @@ function renderTableOnCanvas(table) {
     if (!canvasContent) return;
 
     const droppedTable = document.createElement('div');
-    droppedTable.className = `ap-dropped-table ${table.isReserved ? 'reserved' : ''}`;
-    droppedTable.textContent = table.name || table.tableId;
-    droppedTable.dataset.seats = table.seats;
-    droppedTable.dataset.type = table.tableType;
-    droppedTable.dataset.id = table.tableId;
+    droppedTable.className = `ap-dropped-table ${table.isReserved ? 'reserved' : ''} canvas-table`;
+    droppedTable.textContent = table.name || table.tableId || `Table ${table._id}`;
+    droppedTable.dataset.seats = table.seats || 4;
+    droppedTable.dataset.type = table.tableType || 'round';
+    droppedTable.dataset.id = table.tableId || table._id;
+    droppedTable.dataset.tableId = table._id;
     droppedTable.dataset.serverId = table._id;
     droppedTable.style.cursor = 'pointer';
 
     // Set position
-    droppedTable.style.left = `${table.position?.x || 0}px`;
-    droppedTable.style.top = `${table.position?.y || 0}px`;
+    droppedTable.style.left = `${table.position?.x || Math.random() * 300 + 50}px`;
+    droppedTable.style.top = `${table.position?.y || Math.random() * 200 + 50}px`;
 
     // Set size and shape based on table type and seats
-    setTableStyle(droppedTable, table.tableType, table.seats);
+    setTableStyle(droppedTable, table.tableType || 'round', table.seats || 4);
 
     // Add click handler for table popup
-    droppedTable.addEventListener('click', function() {
-        showTableDetailsModal(table.tableId, table._id);
+    droppedTable.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Table clicked:', table.tableId || table._id, table._id);
+        showTableDetailsModal(table.tableId || table._id, table._id);
     });
 
     canvasContent.appendChild(droppedTable);
