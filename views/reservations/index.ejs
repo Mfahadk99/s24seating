@@ -460,6 +460,8 @@
         </script>
         <!-- Integration Script -->
         <script>
+            let selectedTable = null;
+
             document.addEventListener('DOMContentLoaded', function() {
                 // Keep track of currently expanded section
                 let currentlyExpandedSection = 'reservations'; // Default expanded section
@@ -529,6 +531,13 @@
                     return;
                 }
 
+                // Load data for different sections
+                loadSeatedReservations(restaurantId);
+                loadWaitlist(restaurantId);
+                loadServers(restaurantId);
+                loadFinishedReservations(restaurantId);
+                loadRemovedReservations(restaurantId);
+
                 // Initialize floor plan selector
                 const floorSelector = document.getElementById('floorPlanSelector');
                 if (!floorSelector) return;
@@ -573,7 +582,164 @@
                         console.error('Error fetching floor plans:', error);
                         floorSelector.innerHTML = '<option value="" disabled selected>Error loading floor plans</option>';
                     });
+
+                // Setup table click handlers using event delegation
+                document.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('ap-dropped-table')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const tableId = e.target.dataset.id;
+                        const serverId = e.target.dataset.serverId;
+                        console.log('Table clicked:', tableId, serverId);
+                        showTableDetailsModal(tableId, serverId);
+                    }
+                });
             });
+
+            async function loadSeatedReservations(restaurantId) {
+                try {
+                    const response = await fetch(`/reservations/${restaurantId}?status=seated&isJSON=true`);
+                    const data = await response.json();
+                    const seatedList = document.getElementById('seated-list');
+                    
+                    if (data.success && data.reservations && data.reservations.length > 0) {
+                        seatedList.innerHTML = data.reservations.map(reservation => `
+                            <div class="reservation-row" data-reservation-id="${reservation._id}">
+                                <div class="col table-name">${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}</div>
+                                <div class="col seats">${reservation.tableId ? reservation.tableId.seats : 'N/A'}</div>
+                                <div class="col time">${new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                                <div class="col customer">${reservation.metadata && reservation.metadata.name ? reservation.metadata.name : 'Guest'}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        seatedList.innerHTML = `
+                            <div class="no-data">
+                                <i class="la la-chair"></i>
+                                <h4>No Seated Guests</h4>
+                                <p>No guests are currently seated.</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading seated reservations:', error);
+                }
+            }
+
+            async function loadWaitlist(restaurantId) {
+                try {
+                    const response = await fetch(`/waitlist/${restaurantId}?isJSON=true`);
+                    const data = await response.json();
+                    const waitlistList = document.getElementById('waitlist-list');
+                    
+                    if (data.success && data.waitlist && data.waitlist.length > 0) {
+                        waitlistList.innerHTML = data.waitlist.map(waitlistItem => `
+                            <div class="reservation-row" data-waitlist-id="${waitlistItem._id}">
+                                <div class="col table-name">Waiting</div>
+                                <div class="col seats">${waitlistItem.partySize || 'N/A'}</div>
+                                <div class="col time">${new Date(waitlistItem.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                                <div class="col customer">${waitlistItem.name || 'Guest'}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        waitlistList.innerHTML = `
+                            <div class="no-data">
+                                <i class="la la-clock"></i>
+                                <h4>No Waitlisted Guests</h4>
+                                <p>No guests are currently on the waitlist.</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading waitlist:', error);
+                }
+            }
+
+            async function loadServers(restaurantId) {
+                try {
+                    const response = await fetch(`/servers/${restaurantId}?isJSON=true`);
+                    const data = await response.json();
+                    const serversList = document.getElementById('servers-list');
+                    
+                    if (data.success && data.servers && data.servers.length > 0) {
+                        serversList.innerHTML = data.servers.map(server => `
+                            <div class="reservation-row" data-server-id="${server._id}">
+                                <div class="col table-name">Server</div>
+                                <div class="col seats">-</div>
+                                <div class="col time">${server.shift ? 'On Shift' : 'Off Shift'}</div>
+                                <div class="col customer">${server.name || 'Server'}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        serversList.innerHTML = `
+                            <div class="no-data">
+                                <i class="la la-user"></i>
+                                <h4>No Active Servers</h4>
+                                <p>No servers are currently assigned.</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading servers:', error);
+                }
+            }
+
+            async function loadFinishedReservations(restaurantId) {
+                try {
+                    const response = await fetch(`/reservations/${restaurantId}?status=finished&isJSON=true`);
+                    const data = await response.json();
+                    const finishedList = document.getElementById('finished-list');
+                    
+                    if (data.success && data.reservations && data.reservations.length > 0) {
+                        finishedList.innerHTML = data.reservations.map(reservation => `
+                            <div class="reservation-row" data-reservation-id="${reservation._id}">
+                                <div class="col table-name">${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}</div>
+                                <div class="col seats">${reservation.tableId ? reservation.tableId.seats : 'N/A'}</div>
+                                <div class="col time">${new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                                <div class="col customer">${reservation.metadata && reservation.metadata.name ? reservation.metadata.name : 'Guest'}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        finishedList.innerHTML = `
+                            <div class="no-data">
+                                <i class="la la-check-circle"></i>
+                                <h4>No Finished Reservations</h4>
+                                <p>No reservations have been completed today.</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading finished reservations:', error);
+                }
+            }
+
+            async function loadRemovedReservations(restaurantId) {
+                try {
+                    const response = await fetch(`/reservations/${restaurantId}?status=removed&isJSON=true`);
+                    const data = await response.json();
+                    const removedList = document.getElementById('removed-list');
+                    
+                    if (data.success && data.reservations && data.reservations.length > 0) {
+                        removedList.innerHTML = data.reservations.map(reservation => `
+                            <div class="reservation-row" data-reservation-id="${reservation._id}">
+                                <div class="col table-name">${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}</div>
+                                <div class="col seats">${reservation.tableId ? reservation.tableId.seats : 'N/A'}</div>
+                                <div class="col time">${new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                                <div class="col customer">${reservation.metadata && reservation.metadata.name ? reservation.metadata.name : 'Guest'}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        removedList.innerHTML = `
+                            <div class="no-data">
+                                <i class="la la-times-circle"></i>
+                                <h4>No Removed Reservations</h4>
+                                <p>No reservations have been cancelled today.</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading removed reservations:', error);
+                }
+            }
 
             async function loadFloorPlan(floorPlanId) {
                 if (!floorPlanId) return;
@@ -606,6 +772,7 @@
                 droppedTable.dataset.type = table.tableType;
                 droppedTable.dataset.id = table.tableId;
                 droppedTable.dataset.serverId = table._id;
+                droppedTable.style.cursor = 'pointer';
 
                 // Set position
                 droppedTable.style.left = `${table.position?.x || 0}px`;
@@ -613,11 +780,6 @@
 
                 // Set size and shape based on table type and seats
                 setTableStyle(droppedTable, table.tableType, table.seats);
-
-                // Remove draggable functionality - tables should be unmovable
-                // if (window.makeTableDraggable) {
-                //     window.makeTableDraggable(droppedTable);
-                // }
 
                 canvasContent.appendChild(droppedTable);
             }
@@ -651,6 +813,230 @@
                         break;
                 }
             }
+
+            async function showTableDetailsModal(tableId, serverId) {
+                selectedTable = { tableId, serverId };
+                console.log('Opening modal for table:', selectedTable);
+
+                try {
+                    // Get table details
+                    const tableResponse = await fetch(`/tables/${serverId}?isJSON=true`);
+                    let tableData = await tableResponse.json();
+
+                    // If first request fails, try alternative endpoint
+                    if (!tableData.success) {
+                        const altResponse = await fetch(`/tables/table/${serverId}?isJSON=true`);
+                        tableData = await altResponse.json();
+                    }
+
+                    if (!tableData.success) {
+                        console.error('Error fetching table details:', tableData.message);
+                        alert('Error loading table details');
+                        return;
+                    }
+
+                    const table = tableData.table;
+
+                    // Populate table info
+                    const tableInfo = document.getElementById('tableInfo');
+                    if (tableInfo) {
+                        tableInfo.innerHTML = `
+                            <div class="table-details">
+                                <h6>Table: ${table.name || table.tableId}</h6>
+                                <p><strong>Seats:</strong> ${table.seats}</p>
+                                <p><strong>Type:</strong> ${table.tableType}</p>
+                                <p><strong>Status:</strong> ${table.isReserved ? 'Reserved' : 'Available'}</p>
+                            </div>
+                        `;
+                    }
+
+                    // Load time slots for reservation
+                    await loadTimeSlots();
+
+                    // Load servers for assignment
+                    await loadServersForAssignment();
+
+                    // Load current reservation if table is reserved
+                    if (table.isReserved) {
+                        await loadCurrentReservation(tableId);
+                    }
+
+                    // Show modal
+                    const modal = document.getElementById('tableDetailsModal');
+                    if (modal) {
+                        modal.style.display = 'block';
+                        modal.classList.add('show');
+                        document.body.classList.add('modal-open');
+                        
+                        // Create backdrop if it doesn't exist
+                        if (!document.querySelector('.modal-backdrop')) {
+                            const backdrop = document.createElement('div');
+                            backdrop.className = 'modal-backdrop fade show';
+                            document.body.appendChild(backdrop);
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('Error showing table details:', error);
+                    alert('Error loading table details');
+                }
+            }
+
+            async function loadTimeSlots() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const restaurantId = urlParams.get('restaurantId');
+                const reservationDateInput = document.getElementById('reservationDate');
+                const partySizeInput = document.getElementById('partySize');
+
+                // Set default values
+                if (reservationDateInput && !reservationDateInput.value) {
+                    reservationDateInput.value = new Date().toISOString().split('T')[0];
+                }
+
+                const date = reservationDateInput ? reservationDateInput.value : new Date().toISOString().split('T')[0];
+                const partySize = partySizeInput ? partySizeInput.value || 2 : 2;
+
+                try {
+                    const response = await fetch(`/timeslots/${restaurantId}?isJSON=true`);
+                    const data = await response.json();
+
+                    const timeSlotSelect = document.getElementById('timeSlot');
+                    if (timeSlotSelect && data.success && data.timeSlots) {
+                        timeSlotSelect.innerHTML = '<option value="">Select time slot</option>';
+                        
+                        data.timeSlots.forEach(slot => {
+                            const option = document.createElement('option');
+                            option.value = slot._id;
+                            option.textContent = `${slot.startTime} - ${slot.endTime}`;
+                            timeSlotSelect.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading time slots:', error);
+                }
+            }
+
+            async function loadServersForAssignment() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const restaurantId = urlParams.get('restaurantId');
+
+                try {
+                    const response = await fetch(`/servers/${restaurantId}?isJSON=true`);
+                    const data = await response.json();
+
+                    const serversList = document.getElementById('serversList');
+                    if (serversList && data.success && data.servers) {
+                        serversList.innerHTML = data.servers.map(server => `
+                            <div class="server-item">
+                                <label>
+                                    <input type="radio" name="assignedServer" value="${server._id}">
+                                    ${server.name || 'Server'} - ${server.shift ? 'On Shift' : 'Off Shift'}
+                                </label>
+                            </div>
+                        `).join('');
+                    }
+                } catch (error) {
+                    console.error('Error loading servers:', error);
+                }
+            }
+
+            async function loadCurrentReservation(tableId) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const restaurantId = urlParams.get('restaurantId');
+
+                try {
+                    const response = await fetch(`/reservations/${restaurantId}?tableId=${tableId}&isJSON=true`);
+                    const data = await response.json();
+
+                    const currentReservationInfo = document.getElementById('currentReservationInfo');
+                    if (currentReservationInfo) {
+                        if (data.success && data.reservations && data.reservations.length > 0) {
+                            const reservation = data.reservations[0];
+                            currentReservationInfo.innerHTML = `
+                                <div class="current-reservation">
+                                    <h6>Current Reservation</h6>
+                                    <p><strong>Customer:</strong> ${reservation.metadata?.name || 'Guest'}</p>
+                                    <p><strong>Email:</strong> ${reservation.metadata?.email || 'N/A'}</p>
+                                    <p><strong>Phone:</strong> ${reservation.metadata?.phone || 'N/A'}</p>
+                                    <p><strong>Party Size:</strong> ${reservation.partySize}</p>
+                                    <p><strong>Time:</strong> ${new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - ${new Date(reservation.endTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+                                    <p><strong>Status:</strong> ${reservation.status}</p>
+                                </div>
+                            `;
+                        } else {
+                            currentReservationInfo.innerHTML = '<p>No current reservation found.</p>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading current reservation:', error);
+                }
+            }
+
+            function closeTableModal() {
+                const modal = document.getElementById('tableDetailsModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                    modal.classList.remove('show');
+                    document.body.classList.remove('modal-open');
+                    
+                    // Remove backdrop
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                }
+                selectedTable = null;
+            }
+
+            // Setup form submission for making reservations
+            document.getElementById('makeReservationForm')?.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (!selectedTable) {
+                    alert('No table selected');
+                    return;
+                }
+
+                const formData = new FormData(this);
+                const urlParams = new URLSearchParams(window.location.search);
+                const restaurantId = urlParams.get('restaurantId');
+
+                const reservationData = {
+                    tableId: selectedTable.serverId,
+                    restaurantId: restaurantId,
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    partySize: parseInt(formData.get('partySize')),
+                    date: formData.get('date'),
+                    slotId: formData.get('slotId'),
+                    specialRequests: formData.get('specialRequests')
+                };
+
+                try {
+                    const response = await fetch(`/reservations`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(reservationData)
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('Reservation created successfully!');
+                        closeTableModal();
+                        // Reload the page to refresh data
+                        window.location.reload();
+                    } else {
+                        alert('Error creating reservation: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error creating reservation:', error);
+                    alert('Error creating reservation');
+                }
+            });
         </script>
 </body>
 <!-- END: Body-->
