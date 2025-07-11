@@ -1,0 +1,881 @@
+/* Layout Styles */
+.reservations-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* App container structure */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+/* Date Header - Reduced height */
+.date-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 20px; /* Reduced from 15px to 10px */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    width: 100%;
+}
+
+/* Date Navigation - Reduced gap */
+.date-navigation {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Reduced from 20px to 12px */
+}
+
+/* Reduced button size */
+.date-nav-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 36px; /* Reduced from 40px */
+    height: 36px; /* Reduced from 40px */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.date-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.date-nav-btn:active {
+    transform: scale(0.95);
+}
+
+.date-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 200px;
+}
+
+/* Adjusted date text size */
+.current-date {
+    font-size: 1.3rem; /* Reduced from 1.4rem */
+    font-weight: 600;
+    margin-bottom: 2px; /* Reduced from 4px */
+    cursor: pointer;
+    padding: 6px 14px; /* Reduced from 8px 16px */
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.current-date:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.date-subtitle {
+    font-size: 0.85rem; /* Reduced from 0.9rem */
+    opacity: 0.9;
+}
+
+.date-picker-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Main Content Layout */
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    width: 100%;
+}
+
+.left-panel {
+    width: 30%;
+    min-width: 300px;
+    background: #f8f9fa;
+    border-right: 2px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.right-panel {
+    width: 70%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Left Panel Header */
+.panel-header {
+    background: linear-gradient(135deg, #5A8DEE 0%, #4c7cdf 100%);
+    color: white;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.panel-header-content {
+    flex: 1;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.panel-header .subtitle {
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.filter-toggle-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    position: relative;
+}
+
+.filter-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.filter-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.filter-toggle-btn.active {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.filter-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #FF5252;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    display: none;
+}
+
+.filter-badge.show {
+    display: flex;
+}
+
+/* Filter Section */
+.filter-section {
+    padding: 20px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    display: none;
+    animation: slideDown 0.3s ease-out;
+}
+
+.filter-section.show {
+    display: block;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    border-color: #5A8DEE;
+    box-shadow: 0 0 0 2px rgba(90, 141, 238, 0.2);
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.filter-action-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-reset {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #6c757d;
+}
+
+.filter-reset:hover {
+    background: #e9ecef;
+}
+
+.filter-apply {
+    background: #5A8DEE;
+    border: 1px solid #5A8DEE;
+    color: white;
+}
+
+.filter-apply:hover {
+    background: #4c7cdf;
+}
+
+/* Search Box */
+.search-box {
+    padding: 15px 20px;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    background-size: 16px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #5A8DEE;
+    box-shadow: 0 0 0 2px rgba(90, 141, 238, 0.2);
+}
+
+/* Table List */
+.table-list {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.reservation-list-header {
+    background: #f8f8f8;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.reservation-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.reservation-row:last-child {
+    border-bottom: none;
+}
+
+.reservation-row:hover {
+    background-color: #f5f5f5;
+}
+
+.reservation-row.header {
+    font-weight: 600;
+    color: #333;
+    background-color: #f8f8f8;
+}
+
+.reservation-row .col {
+    padding: 0 8px;
+}
+
+.reservation-row .table-name {
+    width: 25%;
+    font-weight: 500;
+}
+
+.reservation-row .seats {
+    width: 15%;
+    text-align: center;
+}
+
+.reservation-row .time {
+    width: 35%;
+    text-align: center;
+}
+
+.reservation-row .customer {
+    width: 25%;
+}
+
+/* Right Panel - Canvas */
+.canvas-header {
+    background: #343a40;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.canvas-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.canvas-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.canvas-btn {
+    padding: 6px 12px;
+    background: #5A8DEE;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.canvas-btn:hover {
+    background: #4c7cdf;
+}
+
+.canvas-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.canvas-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+    background-size: 20px 20px;
+    overflow: auto;
+}
+
+/* Table Elements on Canvas */
+.canvas-table {
+    position: absolute;
+    border: 2px solid #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #333;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.canvas-table:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.canvas-table.reserved {
+    background: #ffebee;
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.canvas-table.available {
+    background: #e8f5e8;
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.canvas-table.selected {
+    border-color: #5A8DEE;
+    background: #e3f2fd;
+    color: #5A8DEE;
+    box-shadow: 0 0 0 3px rgba(90, 141, 238, 0.3);
+}
+
+/* Table shapes */
+.canvas-table.round {
+    border-radius: 50%;
+}
+
+.canvas-table.square {
+    border-radius: 4px;
+}
+
+.canvas-table.rectangular {
+    border-radius: 8px;
+}
+
+.canvas-table.hexagon {
+    border-radius: 12px;
+    transform: rotate(30deg);
+}
+
+.canvas-table.bar {
+    border-radius: 20px;
+}
+
+/* No data states */
+.no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6c757d;
+    text-align: center;
+}
+
+.no-data i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.no-data h4 {
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.no-data p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .left-panel {
+        width: 100%;
+        min-width: auto;
+        height: 40vh;
+    }
+
+    .right-panel {
+        width: 100%;
+        height: 60vh;
+    }
+
+    .date-navigation {
+        gap: 10px; /* Reduced from 15px */
+    }
+    
+    .date-nav-btn {
+        width: 32px; /* Reduced from 35px */
+        height: 32px; /* Reduced from 35px */
+    }
+    
+    .current-date {
+        font-size: 1.1rem; /* Reduced from 1.2rem */
+    }
+
+    .reservation-row {
+        padding: 8px 12px;
+    }
+
+    .reservation-row .time {
+        font-size: 0.9em;
+    }
+}
+
+/* Scrollbar Styling */
+.table-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.table-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.table-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Optional: Alternating row colors */
+.reservation-list-body .reservation-row:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Optional: Active/selected row state */
+.reservation-row.selected {
+    background-color: #e8f0fe !important;
+    border-left: 3px solid #1a73e8;
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background: #fff;
+    border-top: 1px solid #e9ecef;
+}
+.pagination-btn {
+    padding: 6px 12px;
+    background: #5A8DEE;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.pagination-btn:hover:not([disabled]) {
+    background: #4c7cdf;
+}
+.pagination-btn[disabled] {
+    background: #ccc;
+    cursor: not-allowed;
+}
+.pagination-info {
+    margin: 0 15px;
+    color: #6c757d;
+}
+/* Loading State */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6c757d;
+}
+.loading-indicator i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+/* Error State */
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #dc3545;
+    text-align: center;
+}
+.error-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+.error-state button {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: #5A8DEE;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.error-state button:hover {
+    background: #4c7cdf;
+}
+/* Improve table list performance */
+.reservation-list-body {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* Fullscreen styles */
+.app-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-container.fullscreen .date-header {
+    width: 100%;
+}
+
+.app-container.fullscreen .main-content {
+    flex: 1;
+    display: flex;
+    width: 100%;
+}
+
+.app-container.fullscreen .left-panel,
+.app-container.fullscreen .right-panel {
+    height: 100%;
+}
+
+/* Ensure proper stacking in fullscreen */
+.app-container.fullscreen {
+    overflow: hidden;
+}
+
+.fullscreen-icon {
+    font-size: 16px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.app-container.fullscreen .fullscreen-icon {
+    transform: rotate(180deg);
+}
+
+/* Adjust canvas container in fullscreen */
+.app-container.fullscreen .ap-canvas-container {
+    height: calc(100vh - 60px); /* Subtract toolbar height */
+}
+
+/* Hide scrollbars in fullscreen */
+.app-container.fullscreen {
+    overflow: hidden;
+}
+
+.app-container.fullscreen .ap-canvas {
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.app-container.fullscreen .ap-canvas::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.app-container.fullscreen .ap-canvas::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.app-container.fullscreen .ap-canvas::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* Dropped tables in canvas */
+.ap-dropped-table {
+    position: absolute;
+    cursor: pointer;
+    background: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+    user-select: none;
+    transition: all 0.15s ease;
+    z-index: 10;
+}
+
+.ap-dropped-table:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ap-dropped-table.selected {
+    box-shadow: 0 0 0 2px #2563eb;
+}
+
+/* Remove dragging styles */
+.ap-dropped-table.dragging {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Panel Section Styles */
+.panel-section {
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.section-toggle-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 5px;
+    margin-right: 5px;
+    border-radius: 4px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Update the section-content styles */
+.section-content {
+    padding: 0;
+    height: 0; /* Default collapsed state */
+    max-height: 0; /* Default collapsed state */
+    overflow: hidden; /* Hide when collapsed */
+    transition: all 0.3s ease;
+}
+
+/* Add styles for expanded state */
+.section-content.expanded {
+    height: 300px; /* Fixed height when expanded */
+    max-height: 300px;
+    overflow-y: auto; /* Show scrollbar when content overflows */
+}
+
+/* Style the scrollbar for section content */
+.section-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.section-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.section-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.section-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Adjust the first section (Reservations) to be taller */
+#reservations-section.expanded {
+    height: 400px;
+    max-height: 400px;
+}
+
+/* Add smooth transition for height changes */
+.section-content {
+    transition: height 0.3s ease, max-height 0.3s ease;
+}
+
+/* No data styles for sections */
+.section-content .no-data {
+    text-align: center;
+    padding: 20px 0;
+    color: #999;
+}
+
+.section-content .no-data i {
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.section-content .no-data h4 {
+    margin: 0 0 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.section-content .no-data p {
+    margin: 0;
+    font-size: 12px;
+}
+
+/* Adjust left panel to accommodate multiple sections */
+.left-panel {
+    padding: 10px;
+    overflow-y: auto;
+}
+
+/* Adjust the original panel header to work within the new section structure */
+.panel-section .panel-header {
+    border-radius: 8px 8px 0 0;
+}

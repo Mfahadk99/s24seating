@@ -1,0 +1,18 @@
+<% const alert = error.length ? error : success; %>
+<% const alertClass =  error.length ? 'alert-primary' : 'alert-success'; %>
+<% if(typeof alert != "undefined" && alert.length) { %>
+<div class="content-body card card-body p-0">
+    <div class="row">
+        <div class="col-12">
+            <!-- alert: start -->
+            <div class="alert <%=alertClass%> m-1 alert-dismissible fade show" role="alert">
+                <%= alert[0] %>
+                <button type="button" class="close pt-1" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- alert: end -->
+        </div>
+    </div>
+</div>
+<% } %>

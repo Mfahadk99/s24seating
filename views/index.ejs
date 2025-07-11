@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+  <!-- head partial -->
+  <%- include('partials/head.ejs') %>
+
+    <!-- styles partial -->
+    <%- include('partials/styles.ejs') %>
+
+      <style>
+        .clickable:hover {
+          border-right: 2px solid #ff9149;
+        }
+      </style>
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body body class="vertical-layout vertical-content-menu 2-columns   fixed-navbar" data-open="click"
+  data-menu="vertical-content-menu" data-col="2-columns">
+  <!-- top-menu partial -->
+  <%- include('partials/top-menu.ejs') %>
+
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <!-- main-menu partial -->
+        <%- include('partials/main-menu.ejs') %>
+          <div class="content-body card card-body border-left-success border-right-success ">
+            <div class="page-header-container col-12 p-0">
+              <h1 class="sec-title text-bold-500 primary" id="greeting">Welcome Back! </h1>
+            </div>
+          </div>
+
+
+
+          <div class="content-body">
+            <% if(currentUser.user_type=='super_admin' ) { %>
+              <h2 class="text-center font-500"> General View</h2>
+              <hr>
+              <div class="row">
+                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                  <div class="card">
+                    <div class="card-content clickable" onclick="location.href = '/clients'">
+                      <div class="card-body">
+                        <div class="media d-flex">
+                          <div class="align-self-center">
+                            <i class="ficon ft-briefcase primary font-large-2 float-left" aria-hidden="true"></i>
+                          </div>
+                          <div class="media-body text-right">
+                            <h3 id="clientsCount">-</h3>
+                            <span>Clients</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                  <div class="card">
+                    <div class="card-content clickable" onclick="location.href = '/clients'">
+                      <div class="card-body">
+                        <div class="media d-flex">
+                          <div class="align-self-center">
+                            <i class="ficon la la-phone dark font-large-2 float-left" aria-hidden="true"></i>
+                          </div>
+                          <!-- <div class="media-body text-right">
+                            <h3 id="callAgentsCount">-</h3>
+                            <span>Call Agents</span>
+                          </div> -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                  <div class="card">
+                    <div class="card-content clickable" onclick="location.href = '/clients'">
+                      <div class="card-body">
+                        <div class="media d-flex">
+                          <div class="align-self-center">
+                            <i class="ficon fa fa-headset dark font-large-2 float-left" aria-hidden="true"></i>
+                          </div>
+                          <div class="media-body text-right">
+                            <h3 id="chatbotsCount">-</h3>
+                            <span>Chatbots</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- TODO: fix the counts and show -->
+                <div class="col-xl-3 col-lg-6 col-md-6 col-12 d-none">
+                  <div class="card">
+                    <div class="card-content clickable" onclick="location.href = '/clients'">
+                      <div class="card-body">
+                        <div class="media d-flex">
+                          <div class="align-self-center">
+                            <i class="ficon ft-user primary font-large-2 float-left" aria-hidden="true"></i>
+                          </div>
+                          <div class="media-body text-right">
+                            <h3 id="chatUsersCount">-</h3>
+                            <span>Users</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+                  <div class="card">
+                    <div class="card-content clickable" onclick="location.href = ''">
+                      <div class="card-body">
+                        <div class="media d-flex">
+                          <div class="align-self-center">
+                            <i class="ficon la la-comments dark font-large-2 float-left" aria-hidden="true"></i>
+                          </div>
+                          <div class="media-body text-right">
+                            <h3 id="chatSessionsCount">-</h3>
+                            <span>Sessions</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% } %>
+
+          </div>
+
+          <div id="userType"></div>
+          <%- include('partials/alert.ejs') %>
+      </div>
+    </div>
+    <!-- END: Content-->
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+
+  
+
+
+    <!-- footer partial -->
+    <%- include('partials/footer.ejs') %>
+
+      <!-- scripts partial -->
+      <%- include('partials/scripts-without-pace.ejs') %>
+
+        <!-- Variables used in index.js -->
+        <script>
+          const currentUser = '<%= currentUser.user_type %>';
+        </script>
+        <script src="/public/js/pages/index.js"></script>
+
+  
+  
+</body>
+<!-- END: Body-->
+
+</html>

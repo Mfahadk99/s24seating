@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+
+    <!-- head partial -->
+    <%- include('../partials/head.ejs') %>
+
+    <!-- styles partial -->
+    <%- include('../partials/styles.ejs') %>
+    <link rel="stylesheet" href="/public/css/pages/index.clients.css">
+    <style>
+        .btn.btn-sm {
+            color: #464855 !important;
+        }
+
+        .btn.btn-sm:hover .fa-user-secret {
+            color: #fff;
+        }
+
+        .fa-user-secret {
+            color: #ff4961;
+        }
+
+        .btn.btn-sm:hover {
+            color: #fff !important;
+        }
+
+        .dropdown-item {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body class="vertical-layout vertical-content-menu 2-columns fixed-navbar" data-open="click"
+    data-menu="vertical-content-menu" data-col="2-columns">
+
+    <!-- top-menu partial -->
+    <%- include('../partials/top-menu.ejs') %>
+
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+        <div class="content-wrapper">
+
+            <!-- main-menu partial -->
+            <%- include('../partials/main-menu.ejs') %>
+
+            <div id="loader">
+                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                <span class="sr-only">Loading...</span>
+            </div>
+
+            <!-- BEGIN: Page title -->
+            <div class="content-body card card-body border-left-success border-right-success">
+                <div class="row page-header-container">
+                    <div class="col-md-6">
+                        <h1 class="text-bold-500 primary">Account Manager</h1>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="btn-container">
+                            <a href="/clients/new">
+                                <button class="btn btn-outline-primary px-2" type="button">
+                                    <i class="fa fa-plus icon-left"></i> Add Client
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Page title -->
+
+            <!-- alert: start -->
+            <% const alert = error.length ? error : success; %>
+            <% const alertClass =  error.length ? 'alert-primary' : 'alert-success'; %>
+            <% if(typeof alert != "undefined" && alert.length) { %>
+            <div class="content-body p-0">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert <%=alertClass%> m-1 alert-dismissible fade show" role="alert">
+                            <%= alert[0] %>
+                            <button type="button" class="close pt-1" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+            <!-- alert: end -->
+
+            <div class="content-body card-body" id="wrapper">
+                <!-- BEGIN: Filter -->
+                <!-- NOT USED NOW -->
+                <div id="accordionWrap" class="d-none" role="tablist" aria-multiselectable="true">
+                    <div class="collapse-icon accordion-icon-rotate left">
+                        <div id="filterHeader" class="card-header" style="background-color: transparent;">
+                            <a data-toggle="collapse" href="#filterDiv" aria-expanded="false" aria-controls="accordion1"
+                                class="">Filter</a>
+                        </div>
+
+                        <div id="filterDiv" role="tabpanel" aria-labelledby="filterHeader" class="collapse hide"
+                            data-parent="#accordionWrap">
+                            <form id="filterForm" class="my-4" action="/clients/filter" method="post">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="startDate">Reg. Date (Start)</label>
+                                                    <input type="text" class="form-control input-sm" id="startDateInput"
+                                                        autocomplete="off" name="startDate"
+                                                        placeholder="Reg. Date (Start)">
+                                                </fieldset>
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="endDate">Reg. Date (End)</label>
+                                                    <input type="text" class="form-control input-sm" id="endDateInput"
+                                                        autocomplete="off" name="endDate" placeholder="Reg. Date (End)">
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="userName">User Name</label>
+                                                    <input type="text" class="form-control input-sm" id="userNameInput"
+                                                        name="userName" placeholder="User Name">
+                                                </fieldset>
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="keyword">Chatbot</label>
+                                                    <input type="text" class="form-control input-sm" id="chatbotInput"
+                                                        name="chatbot" placeholder="Keyword">
+                                                </fieldset>
+                                                <fieldset class="form-group position-relative mb-1">
+                                                  <label for="keyword">Call Agent</label>
+                                                  <input type="text" class="form-control input-sm" id="callAgentInput"
+                                                      name="callAgent" placeholder="Keyword">
+                                              </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="twilioNumber">Twilio Number</label>
+                                                    <input type="text" class="form-control input-sm"
+                                                        id="twilioNumberInput" name="twilioNumber"
+                                                        placeholder="Twilio Number">
+                                                </fieldset>
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="packageID">Pkg Name</label>
+                                                    <select name="packageID" id="packageNameInput"
+                                                        class="form-control input-sm">
+                                                        <option value="">All Users</option>
+                                                    </select>
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="sortBy">Sort By</label>
+                                                    <select name="sortBy" id="sortByInput"
+                                                        class="form-control input-sm p-0 pl-1">
+                                                        <option value="createdAt">Reg. Date</option>
+                                                        <option value="firstname">User Name</option>
+                                                    </select>
+                                                </fieldset>
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="hasKeyword">Has Keyword</label>
+
+                                                    <select name="hasKeyword" id="hasKeywordInput"
+                                                        class="form-control input-sm">
+                                                        <option value="">All Users</option>
+                                                        <option value="no">No</option>
+                                                        <option value="yes">Yes</option>
+                                                    </select>
+
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="sortOrder">Sort Order</label>
+
+                                                    <select name="sortOrder" id="sortOrderInput"
+                                                        class="form-control input-sm">
+                                                        <option value="desc">Desc</option>
+                                                        <option value="asc">Asc</option>
+                                                    </select>
+
+                                                </fieldset>
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="clearInput" style="visibility: hidden;">Button</label>
+                                                    <button type="button"
+                                                        class="btn btn-outline-success btn-sm btn-block"
+                                                        onclick="resetForm('filterForm')"><i class="fa fa-refresh"
+                                                            aria-hidden="true"></i> Clear</button>
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="itemsPerPage">Items/Page</label>
+                                                    <select name="itemsPerPage" id="itemsInput"
+                                                        class="form-control input-sm">
+                                                        <!-- <option value="100">100</option>
+                                                        <option value="200">200</option> -->
+                                                        <option value="300">300</option>
+                                                        <option value="400">400</option>
+                                                        <option value="500">500</option>
+                                                    </select>
+                                                </fieldset>
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="submitButton" style="visibility: hidden;">Button</label>
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm btn-block"
+                                                        id="submitButton"><i class="fa fa-filter"
+                                                            aria-hidden="true"></i>Filter</button>
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <fieldset class="form-group position-relative mb-1">
+                                                    <label for="keyword">Show Accounts</label>
+                                                    <select type="text" class="form-control input-sm"
+                                                        id="accountStatusInputFilter" name="accountStatus">
+                                                        <option value="" selected disabled>Select Accounts</option>
+                                                        <option value="">All Accounts</option>
+                                                        <option value="active">Active Accounts</option>
+                                                        <option value="inactive">Inactive Accounts</option>
+                                                    </select>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- END: Filter -->
+
+                <!-- BEGIN: FAST SEARCH -->
+                <form id="searchForm" class="my-4" action="" method="post">
+                    <div class="">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <fieldset class="form-group position-relative mb-1">
+                                    <label for="userName">Search for client</label>
+                                    <input type="text" class="searchForm-inp form-control input-sm" id="clientNameInput"
+                                        name="userName" placeholder="Enter client name">
+                                </fieldset>
+                            </div>
+                            <div class="col-lg-3">
+                                <fieldset class="form-group position-relative mb-1">
+                                    <label for="chatbotNameInput">Search for Chatbot</label>
+                                    <input type="text" class="searchForm-inp form-control input-sm"
+                                        id="chatbotNameInput" name="chatbotName" placeholder="Enter chatbot name">
+                                </fieldset>
+                            </div>
+                            <div class="col-lg-3">
+                              <fieldset class="form-group position-relative mb-1">
+                                  <label for="callAgentNameInput">Search for Call Agent</label>
+                                  <input type="text" class="searchForm-inp form-control input-sm"
+                                      id="callAgentNameInput" name="callAgentName" placeholder="Enter call agent name">
+                              </fieldset>
+                          </div>
+                            <div class="col-lg-3">
+                                <fieldset class="form-group position-relative mb-1">
+                                    <label for="accountStatusInput">Show Accounts</label>
+                                    <select type="text" class="searchForm-inp form-control input-sm"
+                                        id="accountStatusInput">
+                                        <option value="" selected disabled>Select Accounts</option>
+                                        <option value="">All Accounts</option>
+                                        <option value="active">Active Accounts</option>
+                                        <option value="inactive">Inactive Accounts</option>
+                                    </select>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- END: FAST SEARCH -->
+
+                <div class="row" id="userDiv"></div>
+
+                <div class="row my-4">
+                    <div id="paginationDiv" class="offset-md-2 col-md-8" data-page="1">
+                        <div class="alert my-2" role="alert" id="alertDiv" style="display: none"></div>
+                    </div>
+                    <div class="col-md-2 mt-2" id="totalResult"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- END: Content-->
+
+    <%- include('./modals/delete-modal.ejs') %>
+
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+
+    <!-- footer partial -->
+    <%- include('../partials/footer.ejs') %>
+
+
+    <!-- scripts partial -->
+    <%- include('../partials/scripts.ejs') %>
+
+    <!-- client filter  -->
+    <script>
+        const currentUser = '<%= currentUser.user_type %>';
+    </script>
+    <script src="/public/js/pages/filter.clients.js"></script>
+
+</body>
+<!-- END: Body-->
+
+</html>

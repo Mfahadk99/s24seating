@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Restaurant Information</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/pages/restaurant-detail.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Update Restaurant Information</span>
+      </div>
+      <div class="card-content">
+        <div class="card-body">
+          <form action="#" method="POST" class="restaurant-settings-form" id="updateRestaurantForm">
+            <input type="hidden" name="_method" value="PUT">
+            
+            <!-- Restaurant Name -->
+            <div class="form-group">
+              <label for="name">Restaurant Name</label>
+              <input type="text" id="name" name="name" class="form-control" value="<%= restaurant ? restaurant.name : '' %>" required>
+            </div>
+            
+            <!-- Description -->
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" class="form-control" rows="3" required><%= restaurant ? restaurant.description : '' %></textarea>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input type="tel" id="phone" name="phone" class="form-control" value="<%= restaurant ? restaurant.phone : '' %>" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-control" value="<%= restaurant ? restaurant.email : '' %>" required>
+            </div>
+            
+            <!-- Address -->
+            <fieldset>
+              <legend>Address</legend>
+              <div class="address-grid">
+                <div class="form-group">
+                  <label for="street">Street</label>
+                  <input type="text" id="street" name="address[street]" class="form-control" 
+                    value="<%= restaurant && restaurant.address ? restaurant.address.street : '' %>" required>
+                </div>
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" id="city" name="address[city]" class="form-control" 
+                    value="<%= restaurant && restaurant.address ? restaurant.address.city : '' %>" required>
+                </div>
+                <div class="form-group">
+                  <label for="state">State</label>
+                  <input type="text" id="state" name="address[state]" class="form-control" 
+                    value="<%= restaurant && restaurant.address ? restaurant.address.state : '' %>" required>
+                </div>
+                <div class="form-group">
+                  <label for="zipCode">Zip Code</label>
+                  <input type="text" id="zipCode" name="address[zipCode]" class="form-control" 
+                    value="<%= restaurant && restaurant.address ? restaurant.address.zipCode : '' %>" required>
+                </div>
+              </div>
+            </fieldset>
+            
+            <!-- Business Type -->
+            <div class="form-group">
+              <label for="businessType">Business Type</label>
+              <select id="businessType" name="businessType" class="form-control" required>
+                <option value="restaurant" <%= restaurant && restaurant.businessType === 'restaurant' ? 'selected' : '' %>>Restaurant</option>
+                <option value="cafe" <%= restaurant && restaurant.businessType === 'cafe' ? 'selected' : '' %>>Cafe</option>
+                <option value="bar" <%= restaurant && restaurant.businessType === 'bar' ? 'selected' : '' %>>Bar</option>
+                <option value="pub" <%= restaurant && restaurant.businessType === 'pub' ? 'selected' : '' %>>Pub</option>
+                <option value="bistro" <%= restaurant && restaurant.businessType === 'bistro' ? 'selected' : '' %>>Bistro</option>
+              </select>
+            </div>
+            
+            <!-- Operating Hours -->
+            <fieldset>
+              <legend>Operating Hours</legend>
+              <div class="form-group">
+                <label for="openTime">Open Time</label>
+                <input type="time" id="openTime" name="operatingHours[openTime]" class="form-control" 
+                  value="<%= restaurant && restaurant.operatingHours ? restaurant.operatingHours.openTime : '' %>" required>
+              </div>
+              <div class="form-group">
+                <label for="closeTime">Close Time</label>
+                <input type="time" id="closeTime" name="operatingHours[closeTime]" class="form-control" 
+                  value="<%= restaurant && restaurant.operatingHours ? restaurant.operatingHours.closeTime : '' %>" required>
+              </div>
+              <div class="form-group">
+                <label for="isOpen">Currently Open?</label>
+                <select id="isOpen" name="operatingHours[isOpen]" class="form-control" required>
+                  <option value="true" <%= restaurant && restaurant.operatingHours && restaurant.operatingHours.isOpen ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= restaurant && restaurant.operatingHours && !restaurant.operatingHours.isOpen ? 'selected' : '' %>>No</option>
+                </select>
+              </div>
+            </fieldset>
+            
+            <!-- Status -->
+            <div class="form-group">
+              <label for="status">Status</label>
+              <select id="status" name="status" class="form-control" required>
+                <option value="active" <%= restaurant && restaurant.status === 'active' ? 'selected' : '' %>>Active</option>
+                <option value="inactive" <%= restaurant && restaurant.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                <option value="closed" <%= restaurant && restaurant.status === 'closed' ? 'selected' : '' %>>Closed</option>
+              </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Update Restaurant</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.getElementById('updateRestaurantForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Get the restaurant ID from the URL or data attribute
+      const restaurantId = '<%= restaurantId %>';
+      
+      // Create the request body object
+      const formData = {
+          name: document.getElementById('name').value,
+          description: document.getElementById('description').value,
+          phone: document.getElementById('phone').value,
+          email: document.getElementById('email').value,
+          address: {
+              street: document.getElementById('street').value,
+              city: document.getElementById('city').value,
+              state: document.getElementById('state').value,
+              zipCode: document.getElementById('zipCode').value
+          },
+          businessType: document.getElementById('businessType').value,
+          operatingHours: {
+              openTime: document.getElementById('openTime').value,
+              closeTime: document.getElementById('closeTime').value,
+              isOpen: document.getElementById('isOpen').value === 'true'
+          },
+          status: document.getElementById('status').value
+      };
+
+      try {
+          const response = await fetch(`/restaurants/update/${restaurantId}`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json',
+                  // Add any authentication headers if required
+                  // 'Authorization': 'Bearer ' + yourAuthToken
+              },
+              body: JSON.stringify(formData)
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+              // Show success message
+              showNotification('Restaurant updated successfully!', 'success');
+              // Optionally redirect after success
+              // window.location.href = `/restaurants/${restaurantId}`;
+          } else {
+              // Show error message
+              showNotification(data.message || 'Failed to update restaurant', 'error');
+          }
+      } catch (error) {
+          console.error('Error:', error);
+          showNotification('An error occurred while updating the restaurant', 'error');
+      }
+  });
+
+  // Add notification function
+  function showNotification(message, type) {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+
+      // Add notification to page
+      document.body.appendChild(notification);
+
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+          notification.remove();
+      }, 3000);
+  }
+  </script>
+
+  <style>
+  .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 4px;
+      color: white;
+      font-weight: 500;
+      z-index: 1000;
+      animation: slideIn 0.3s ease-out;
+  }
+
+  .notification.success {
+      background-color: #28a745;
+  }
+
+  .notification.error {
+      background-color: #dc3545;
+  }
+
+  @keyframes slideIn {
+      from {
+          transform: translateX(100%);
+          opacity: 0;
+      }
+      to {
+          transform: translateX(0);
+          opacity: 1;
+      }
+  }
+
+  /* Loading state styles */
+  .form-submit-loading {
+      opacity: 0.7;
+      pointer-events: none;
+  }
+
+  .form-submit-loading button[type="submit"] {
+      position: relative;
+      color: transparent;
+  }
+
+  .form-submit-loading button[type="submit"]::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+      transform: translate(-50%, -50%);
+  }
+
+  @keyframes spin {
+      to {
+          transform: translate(-50%, -50%) rotate(360deg);
+      }
+  }
+  </style>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Professional Floor Plan Designer</title>
+  <link rel="stylesheet" href="public/css/availability/availability.css">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Mobile Overlay -->
+    <div class="ap-mobile-overlay" id="ap-mobileOverlay"></div>
+
+    <!-- Sidebar -->
+    <div class="ap-sidebar" id="ap-sidebarAvailability">
+      <div class="ap-sidebar-header">
+        <div class="ap-sidebar-header-content">
+          <button class="ap-burger-menu" id="ap-burgerMenuAvailability" aria-label="Toggle sidebar">
+            <span class="ap-burger-line"></span>
+            <span class="ap-burger-line"></span>
+            <span class="ap-burger-line"></span>
+          </button>
+          <!-- <h1 class="ap-sidebar-title">Availability Planning</h1> -->
+        </div>
+      </div>
+
+      <!-- <ul class="ap-nav-menu">
+        <li class="ap-nav-item">
+          <a href="#" class="ap-nav-link active" title="Floor plan" role="button">
+            <span class="ap-nav-icon">📋</span>
+            <span class="ap-nav-text">Floor plan</span>
+          </a>
+        </li>
+      </ul> -->
+
+      <div class="ap-elements-section">
+        <!-- <h3 class="ap-section-title">
+          <span class="ap-section-icon">🔧</span>
+          <span class="ap-section-text">Tables</span>
+        </h3> -->
+
+        <div class="ap-form-group">
+          <span style="font-weight: 600; font-size: 14px;">Select floor plan</span>
+          <select class="floor-selector ap-form-select" id="floorPlanSelector">
+            <option value="" disabled selected>Loading floor plans...</option>
+          </select>
+        </div>
+
+        <div class="ap-form-group">
+          <span style="font-weight: 600; font-size: 14px;">Add floor plan</span>
+          <button class="ap-toolbar-btn" id="createFloorPlanBtn" title="Create Floor Plan"
+            aria-label="Create new floor plan">
+            <span>+ Floor Plan</span>
+          </button>
+        </div>
+        
+        <div class="ap-elements-grid">
+          <!-- Round Tables -->
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span style="font-weight: 600; font-size: 14px;">Tables</span>
+            <span style="font-size: 12px; color: #6b7280;">Drag and drop tables to the floor plan</span>
+          </div>          
+          <div class="ap-table-element" draggable="true" data-type="round" data-seats="8" title="Round Table (8 seats)"
+            role="button" tabindex="0">
+            <div class="ap-table-shape round-8"></div>
+          </div>
+
+          <!-- Square Tables -->
+          <div class="ap-table-element" draggable="true" data-type="square" data-seats="2"
+            title="Square Table (2 seats)" role="button" tabindex="0">
+            <div class="ap-table-shape square-2"></div>
+          </div>
+
+          <!-- Rectangular Tables -->
+          <div class="ap-table-element" draggable="true" data-type="rectangular" data-seats="4"
+            title="Rectangular Table (4 seats)" role="button" tabindex="0">
+            <div class="ap-table-shape rect-4"></div>
+          </div>
+          <div class="ap-table-element" draggable="true" data-type="hexagon" data-seats="6"
+            title="Hexagon Table (6 seats)" role="button" tabindex="0">
+            <div class="ap-table-shape hex-6"></div>
+          </div>
+        </div>
+
+        <!-- <div style="text-align: center; margin-top: 20px;">
+          <button class="publish-btn" onclick="publishUpdates()">
+            Publish updates ►
+          </button>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">
+            Published: May 21, 2025
+          </div>
+        </div> -->
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ap-main-content">
+      <!-- Unpublished Changes Notice -->
+      <div class="ap-unpublished-notice">
+        <span>You have unpublished changes, <a href="#" style="color: #1e40af; text-decoration: underline;">view and
+            publish</a></span>
+        <button class="ap-close-btn" onclick="this.parentElement.style.display='none'"
+          aria-label="Close notification">×</button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="ap-toolbar">
+        <div class="ap-toolbar-left">
+          <!-- Mobile Burger Menu - Always visible on mobile -->
+          <button class="ap-mobile-burger-menu" id="ap-mobileBurgerMenu" aria-label="Open sidebar" title="Open sidebar">
+            <span class="ap-mobile-burger-line"></span>
+            <span class="ap-mobile-burger-line"></span>
+            <span class="ap-mobile-burger-line"></span>
+          </button>
+          <!-- <span style="font-weight: 600; font-size: 16px;">Floor plan</span>
+          <select class="floor-selector" id="floorPlanSelector">
+            <option value="" disabled selected>Loading floor plans...</option>
+          </select> -->
+        </div>
+        <div class="ap-toolbar-right">
+          <!-- <button class="ap-toolbar-btn" id="createFloorPlanBtn" title="Create Floor Plan"
+            aria-label="Create new floor plan">
+            <span>+ Floor Plan</span>
+          </button> -->
+          <button class="ap-toolbar-btn" title="Zoom in" aria-label="Zoom in">🔍+</button>
+          <button class="ap-toolbar-btn" title="Zoom out" aria-label="Zoom out">🔍-</button>
+          <button class="ap-toolbar-btn" id="fullscreenBtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
+            <span class="fullscreen-icon">⛶</span>
+          </button>
+          <!-- Mobile Settings Button -->
+          <button class="ap-mobile-settings-btn" id="ap-mobileSettingsBtn" title="Table Settings"
+            aria-label="Open table settings">⚙️</button>
+        </div>
+      </div>
+
+      <!-- Canvas -->
+      <div class="ap-canvas-container">
+        <div class="ap-canvas" id="ap-canvas" tabindex="0" role="application" aria-label="Floor plan canvas">
+          <div class="ap-canvas-content" id="ap-canvasContent">
+            <div class="ap-drop-zone" id="ap-dropZone">
+              <div class="ap-drop-message">Drop table here to add to floor plan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Floor Plan Modal -->
+  <div class="ap-modal-overlay" id="createFloorPlanModal">
+    <div class="ap-modal">
+      <div class="ap-modal-header">
+        <h2 class="ap-modal-title">Create New Floor Plan</h2>
+        <button class="ap-modal-close" id="closeCreateFloorPlanModal" aria-label="Close modal">×</button>
+      </div>
+
+      <div class="ap-modal-body">
+        <form id="createFloorPlanForm">
+          <div class="ap-form-group">
+            <label class="ap-form-label" for="floorPlanName">Floor Plan Name <span class="ap-required">*</span></label>
+            <input type="text" class="ap-form-input" id="floorPlanName" name="floorPlanName"
+              placeholder="Enter floor plan name" required autocomplete="off" maxlength="50">
+            <div class="ap-error-message" id="nameError"></div>
+          </div>
+
+          <div class="ap-form-group">
+            <label class="ap-form-label" for="floorPlanDescription">Description</label>
+            <textarea class="ap-form-textarea" id="floorPlanDescription" name="floorPlanDescription"
+              placeholder="Enter floor plan description (optional)" rows="4" maxlength="200"></textarea>
+            <div class="ap-char-count">
+              <span id="descriptionCharCount">0</span>/200 characters
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="ap-modal-footer">
+        <button type="button" class="ap-btn ap-btn-secondary" id="cancelCreateFloorPlan">Cancel</button>
+        <button type="submit" class="ap-btn ap-btn-primary" id="createFloorPlanSubmit" form="createFloorPlanForm">
+          <span class="ap-btn-text">Create Floor Plan</span>
+          <span class="ap-btn-loading" style="display: none;">Creating...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Settings Modal -->
+  <div class="ap-modal-overlay" id="tableSettingsModal">
+    <div class="ap-modal">
+      <div class="ap-modal-header">
+        <h2 class="ap-modal-title">Table Settings</h2>
+        <button class="ap-modal-close" id="closeTableSettingsModal" aria-label="Close modal">×</button>
+      </div>
+
+      <div class="ap-modal-body">
+        <div class="ap-form-group">
+          <label class="ap-form-label" for="modalTableName">Table name</label>
+          <input type="text" class="ap-form-input" id="modalTableName" placeholder="Enter table name" autocomplete="off">
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <div class="ap-form-group" style="flex: 1;">
+            <label class="ap-form-label" for="modalMinParty">Min party</label>
+            <input type="number" class="ap-form-input" id="modalMinParty" value="1" min="1" max="20">
+          </div>
+          <div class="ap-form-group" style="flex: 1;">
+            <label class="ap-form-label" for="modalMaxParty">Max party</label>
+            <input type="number" class="ap-form-input" id="modalMaxParty" value="2" min="1" max="20">
+          </div>
+        </div>
+
+        <!-- <div class="ap-form-group">
+          <label class="ap-form-label">Reserve Status</label>
+          <div class="ap-toggle-container">
+            <label class="ap-toggle-switch">
+              <input type="checkbox" id="modalTableReserved">
+              <span class="ap-toggle-slider"></span>
+            </label>
+            <span class="ap-toggle-label" id="modalReserveStatusLabel">Available</span>
+          </div>
+        </div> -->
+
+        <div class="ap-button-group">
+          <button class="ap-btn ap-btn-primary" id="modalSaveTableChanges" type="button">Save</button>
+          <button class="ap-btn ap-btn-danger" id="modalDeleteTable" type="button">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="public/js/pages/availability/floorPlanApi.js"></script>
+  <script src="public/js/pages/availability/tableApi.js"></script>
+  <script src="public/js/pages/availability/ui.js"></script>
+  <script src="public/js/pages/availability/canvas.js"></script>
+  <script src="public/js/pages/availability/availability.js"></script>
+</body>
+
+</html>

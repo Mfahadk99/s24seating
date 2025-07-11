@@ -1,0 +1,92 @@
+.profile-card {
+  position: relative;
+  border: none;
+  -webkit-box-shadow: 0px 1px 15px 1px rgba(62, 57, 107, 0.07);
+  box-shadow: 0px 1px 15px 1px rgba(62, 57, 107, 0.07);
+
+  word-wrap: break-word;
+  background-color: #fff;
+  /* border: 1px solid rgba(0, 0, 0, 0.06); */
+  border-radius: 0.35rem;
+  transition: all 0.4s;
+}
+
+.profile-card:hover {
+  border: none;
+  -webkit-box-shadow: 0px 1px 15px 1px rgba(62, 57, 107, 0.1);
+  box-shadow: 0px 1px 15px 1px rgba(62, 57, 107, 0.3);
+}
+
+.column-center {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+
+.imgCenter {
+  max-width: 100%;
+  height: auto;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.keyword {
+  font-weight: 700;
+}
+
+.option-div {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.option-dots {
+  padding: 2px 10px;
+  border-radius: 50%;
+  transition: all 0.3s;
+  /* min-height: 15px; */
+}
+
+.option-dots:hover {
+  background: #f4f5fa;
+}
+
+select.form-control:not([size]):not([multiple]).input-sm,
+input.form-control.input-sm {
+  padding: 0rem 1rem;
+}
+
+form label {
+  color: #6b6f82;
+}
+
+#totalResult {
+  color: #1e9ff2;
+  font-size: 1rem;
+}
+
+#ui-datepicker-div {
+  font-family:
+    "Open Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
+
+#loader {
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  transform: perspective(1px) translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.keyword-badge {
+  color: #666ee8 !important;
+  cursor: pointer;
+  line-height: 1.7;
+}

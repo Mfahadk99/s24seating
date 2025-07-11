@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="247 Seating" />
+  <title>Login Page - 247 Seating</title>
+  <link rel="apple-touch-icon" href="/public/images/ico/favicon.ico" />
+  <link rel="shortcut icon" type="image/x-icon" href="/public/images/ico/favicon.ico" />
+
+  <!-- BEGIN: Vendor CSS-->
+  <link rel="stylesheet" type="text/css" href="/public/vendors/css/vendors.min.css" />
+  <link rel="stylesheet" type="text/css" href="/public/vendors/css/forms/icheck/icheck.css" />
+  <link rel="stylesheet" type="text/css" href="/public/vendors/css/forms/icheck/custom.css" />
+  <!-- END: Vendor CSS-->
+
+  <!-- BEGIN: Theme CSS-->
+  <link rel="stylesheet" type="text/css" href="/public/css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="/public/css/bootstrap-extended.css" />
+  <link rel="stylesheet" type="text/css" href="/public/css/colors.css" />
+  <link rel="stylesheet" type="text/css" href="/public/css/components.css" />
+  <!-- END: Theme CSS-->
+
+  <!-- BEGIN: Page CSS-->
+  <link rel="stylesheet" type="text/css" href="/public/css/core/menu/menu-types/vertical-content-menu.css" />
+  <link rel="stylesheet" type="text/css" href="/public/css/core/colors/palette-gradient.css" />
+  <link rel="stylesheet" type="text/css" href="/public/css/pages/login-register.css" />
+  <!-- END: Page CSS-->
+
+  <!-- BEGIN: Custom CSS-->
+  <link rel="stylesheet" type="text/css" href="/public/css/custom.css" />
+  <!-- END: Custom CSS-->
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body class="vertical-layout vertical-content-menu 1-column   blank-page" data-open="click"
+  data-menu="vertical-content-menu" data-col="1-column">
+  <!-- BEGIN: Content-->
+  <div class="app-content content">
+    <div class="content-wrapper">
+      <div class="content-header row mb-1"></div>
+      <div class="content-body">
+        <section class="flexbox-container">
+          <div class="col-12 d-flex align-items-center justify-content-center">
+            <div class="col-lg-3 col-md-8 col-10 box-shadow-2 p-0">
+              <div class="card border-grey border-lighten-3 m-0">
+                <div class="card-header border-0">
+                  <div class="card-title text-center">
+                    <div class="p-1">
+                      <img style="height: 208px;" src="/public/images/logo/logo-vertical.png" alt="branding logo" />
+                    </div>
+                  </div>
+                  <h6 class="card-subtitle line-on-side text-center font-small-3 pt-2">
+                    <span>Secure Login</span>
+                  </h6>
+                </div>
+                <div class="card-content">
+                  <div class="card-body">
+                    <form id="loginForm" class="form-horizontal form-simple" action="/login" method="POST">
+                      <div class="step1">
+                        <p>Enter your email:</p>
+                        <fieldset class="form-group position-relative has-icon-left mb-1">
+                          <input id="emailInp" type="email" class="form-control" name="email" placeholder="Your Email"
+                            value="" required />
+                          <div class="form-control-position">
+                            <i class="ft-user"></i>
+                          </div>
+                        </fieldset>
+                        <button id="continueBtn" class="btn btn-primary btn-block"
+                          onclick="verifyEmail(event)">Continue</button>
+                      </div>
+                      <div class="step2" style="display:none">
+                        <p>Enter your password:</p>
+                        <fieldset class="form-group position-relative has-icon-left">
+                          <input id="pwdInp" type="password" class="form-control" name="password"
+                            placeholder="Enter Password" value="" required />
+                          <div class="form-control-position">
+                            <i class="la la-key"></i>
+                          </div>
+                        </fieldset>
+                        <div class="form-group row form-group row justify-content-between">
+                          <fieldset>
+                            <label class="checkbox-label pointer pl-1" for="remember-me"><input type="checkbox"
+                                name="rememberMe" class="chk-remember" checked> &nbsp; Remember
+                              Me</label>
+                          </fieldset>
+                          <!-- <a href="/forgot-password" class="card-link pr-1">Forgot Password?</a> -->
+                        </div>
+                        <button id="loginBtn" type="submit" class="btn btn-primary btn-block"><i class="ft-unlock"></i>
+                          Login</button>
+                      </div>
+                      <!-- alert: start -->
+                      <% const alert=error.length ? error : success; %>
+                        <% const alertClass=error.length ? 'alert-warning' : 'alert-success' ; %>
+                          <% if(typeof alert !="undefined" && alert.length) { %>
+                            <div class="alert <%=alertClass%> my-2" role="alert">
+                              <%- alert %>
+                            </div>
+                            <% } %>
+                              <!-- alert: end -->
+                    </form>
+                    <div id="loginAlertDiv"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <!-- END: Content-->
+
+  <!-- BEGIN: Vendor JS-->
+  <script src="/public/vendors/js/vendors.min.js"></script>
+  <!-- BEGIN Vendor JS-->
+
+  <!-- BEGIN: Page Vendor JS-->
+  <script src="/public/vendors/js/ui/headroom.min.js"></script>
+  <script src="/public/vendors/js/forms/icheck/icheck.min.js"></script>
+  <script src="/public/vendors/js/forms/validation/jqBootstrapValidation.js"></script>
+  <!-- END: Page Vendor JS-->
+
+  <!-- BEGIN: Theme JS-->
+  <script src="/public/js/core/app-menu.js"></script>
+  <script src="/public/js/core/app.js"></script>
+  <!-- END: Theme JS-->
+
+  <!-- BEGIN: Page JS-->
+  <script src="/public/js/scripts/forms/form-login-register.js"></script>
+  <!-- END: Page JS-->
+
+  <script>
+    let isFormReady = false;
+    const verifyEmail = (event) => {
+      event.preventDefault()
+      const email = $("input[name='email']").val()
+
+      // verify email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (emailRegex.test(email)) {
+        $.ajax({
+          type: 'post',
+          url: 'login/email-exist',
+          data: {
+            email: email
+          },
+          success: function (response) {
+            console.log(response);
+            if (response) {
+              // Success
+              $('#continueBtn').hide();
+              $('#loginAlertDiv').hide();
+              $('.step2').show();
+              $("input[name='email']").val(email.toLowerCase())
+              isFormReady = true;
+              // $('#pwdInp').val('123');
+              // $('#loginBtn').click();
+            } else {
+              $('#loginAlertDiv').show();
+              $('#loginAlertDiv').html('<div class="alert alert-primary my-1">Invalid email. Please check and try again.</div>');
+            }
+          },
+          error: function (error) {
+            $('#loginAlertDiv').show();
+            $('#loginAlertDiv').html('<div class="alert alert-primary my-1">An error occurred. Please try again later.</div>');
+          }
+        });
+      } else {  // error
+        $('#loginAlertDiv').show()
+        $('#loginAlertDiv').html('<div class="alert alert-primary my-1">Invalid email. Please check and try again.</div>')
+      }
+    }
+
+    // Form submission handler
+    $("#loginForm").submit(function (event) {
+      // Prevent form submission if it's not ready
+      if (!isFormReady) {
+        event.preventDefault();
+        alert("Please complete all steps before submitting.");
+      }
+    });
+
+    // $('#emailInp').val('demo@email.com');
+    // $('#continueBtn').click();
+  </script>
+</body>
+<!-- END: Body-->
+
+</html>

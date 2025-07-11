@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbot Widget Test</title>
+    <style>
+      .row {
+        padding: 10px;
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    
+    <% for (let chatbot of chatbots) { %>
+      <div class="row">
+        <h3><%= chatbot.name %> ---||--- <%= chatbot._id %></h3> 
+        <a href="/preview/<%= chatbot._id %>" > ======> <%= chatbot.name %></a>
+      </div>
+    <% } %>
+    <!-- <script src="widget/66faa1c8ee5682ac61a5ed08"></script> -->
+
+
+
+    <script src="https://e3bc-88-228-31-183.ngrok-free.app/widget/6799fa069b88896902383dd0"></script>
+  </body>
+</html>

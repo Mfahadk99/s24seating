@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Professional Restaurant Management</title>
+  <link rel="stylesheet" href="public/css/availability/availability.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+
+
+    .form-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      width: 100%;
+      margin: 0;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .form-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .form-header h2 {
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+      opacity: 0.9;
+      font-size: 1rem;
+    }
+
+    .form-content {
+      padding: 2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .form-group.full-width {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-group label i {
+      margin-right: 0.5rem;
+      color: #667eea;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f9fafb;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-control:hover {
+      border-color: #d1d5db;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+      overflow-y: auto;
+    }
+
+    textarea.form-control::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    textarea.form-control::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 8px;
+    }
+
+    textarea.form-control::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 8px;
+    }
+
+    textarea.form-control::-webkit-scrollbar-thumb:hover {
+      background: #5a6fd8;
+    }
+
+    .fieldset-container {
+      border: 2px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 1.5rem;
+      background: #f8fafc;
+      grid-column: 1 / -1;
+    }
+
+    .fieldset-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .fieldset-header h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #374151;
+      margin: 0;
+    }
+
+    .fieldset-header i {
+      margin-right: 0.5rem;
+      color: #667eea;
+      font-size: 1.25rem;
+    }
+
+    .fieldset-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .fieldset-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      grid-column: 1 / -1;
+      margin-top: 1rem;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #667eea;
+    }
+
+    .checkbox-container label {
+      margin: 0;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: '\f107';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #667eea;
+      pointer-events: none;
+    }
+
+    select.form-control {
+      appearance: none;
+      background-image: none;
+      padding-right: 3rem;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 767px) {
+      body {
+        padding: 10px 0;
+      }
+
+      .app-container {
+        padding: 0 10px;
+      }
+
+      .form-container {
+        border-radius: 15px;
+        margin: 0 5px;
+      }
+
+      .form-content {
+        padding: 1.5rem;
+      }
+
+      .fieldset-container {
+        padding: 1rem;
+      }
+
+      .form-control {
+        padding: 0.75rem;
+      }
+    }
+
+    /* Animation */
+    .form-container {
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-group {
+      animation: fadeIn 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      border: 2px solid #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: #f1f1f1;
+    }
+
+    /* Firefox scrollbar */
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: #667eea #f1f1f1;
+    }
+
+    /* Mobile Overlay */
+    .ap-mobile-overlay {
+      display: none;
+    }
+
+    @media (max-width: 767px) {
+      .ap-mobile-overlay.active {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Mobile Overlay -->
+    <div class="ap-mobile-overlay" id="ap-mobileOverlay"></div>
+    
+    <!-- Create Restaurant Form -->
+    <div class="form-container">
+      <div class="form-header">
+        <h2><i class="fas fa-plus-circle"></i> Create New Restaurant</h2>
+        <p>Fill in the information below to add a new restaurant to your system</p>
+      </div>
+      
+      <div class="form-content">
+        <form action="/restaurants" method="POST">
+          <!-- Server will populate: createdBy, updatedBy, owner fields based on authenticated user -->
+          <div class="form-grid">
+            <!-- Basic Information -->
+            <div class="form-group">
+              <label for="name"><i class="fas fa-store"></i> Restaurant Name</label>
+              <input type="text" id="name" name="name" class="form-control" placeholder="Alex Restaurant" required>
+            </div>
+
+            <div class="form-group">
+              <label for="businessType"><i class="fas fa-tag"></i> Business Type</label>
+              <input type="text" id="businessType" name="businessType" class="form-control" placeholder="restaurant" value="restaurant" required>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="description"><i class="fas fa-align-left"></i> Description</label>
+              <textarea id="description" name="description" class="form-control" placeholder="A fine dining restaurant serving international cuisine" required></textarea>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="form-group">
+              <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+              <input type="text" id="phone" name="phone" class="form-control" placeholder="+1-555-123-4567" required>
+            </div>
+
+            <div class="form-group">
+              <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="contact@samplerestaurant.com" required>
+            </div>
+
+            <!-- Address Information -->
+            <div class="fieldset-container">
+              <div class="fieldset-header">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Restaurant Address</h3>
+              </div>
+              <div class="fieldset-grid">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label for="street">Street Address</label>
+                  <input type="text" id="street" name="address[street]" class="form-control" placeholder="123 Main Street" required>
+                </div>
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" id="city" name="address[city]" class="form-control" placeholder="New York" required>
+                </div>
+                <div class="form-group">
+                  <label for="state">State</label>
+                  <input type="text" id="state" name="address[state]" class="form-control" placeholder="NY" required>
+                </div>
+                <div class="form-group">
+                  <label for="zipCode">Zip Code</label>
+                  <input type="text" id="zipCode" name="address[zipCode]" class="form-control" placeholder="10001" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Operating Hours -->
+            <div class="fieldset-container">
+              <div class="fieldset-header">
+                <i class="fas fa-clock"></i>
+                <h3>Operating Hours</h3>
+              </div>
+              <div class="fieldset-grid">
+                <div class="form-group">
+                  <label for="openTime">Opening Time</label>
+                  <input type="time" id="openTime" name="operatingHours[openTime]" class="form-control" value="09:00" required>
+                </div>
+                <div class="form-group">
+                  <label for="closeTime">Closing Time</label>
+                  <input type="time" id="closeTime" name="operatingHours[closeTime]" class="form-control" value="22:00" required>
+                </div>
+                                 <div class="checkbox-container">
+                   <input type="checkbox" id="isOpen" name="operatingHours[isOpen]" value="true" checked>
+                   <label for="isOpen">Currently Open for Business</label>
+                 </div>
+              </div>
+            </div>
+
+            <!-- Status -->
+            <div class="form-group full-width">
+              <label for="status"><i class="fas fa-toggle-on"></i> Restaurant Status</label>
+              <div class="select-wrapper">
+                <select id="status" name="status" class="form-control" required>
+                  <option value="">Select status...</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group full-width">
+              <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> Create Restaurant
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script src="public/js/pages/admin-restaurant.js"></script>
+  
+  <script>
+    // Add some interactive enhancements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Focus enhancement
+      const inputs = document.querySelectorAll('.form-control');
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+          this.parentElement.classList.remove('focused');
+        });
+      });
+
+      // Form submission with authentication
+      const form = document.querySelector('form');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+        
+        const submitBtn = document.querySelector('.btn-submit');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Restaurant...';
+        submitBtn.disabled = true;
+        
+        // Get form data
+        const formData = new FormData(form);
+        
+        // Convert form data to JSON
+        const restaurantData = {
+          name: formData.get('name'),
+          description: formData.get('description'),
+          phone: formData.get('phone'),
+          email: formData.get('email'),
+          address: {
+            street: formData.get('address[street]'),
+            city: formData.get('address[city]'),
+            state: formData.get('address[state]'),
+            zipCode: formData.get('address[zipCode]')
+          },
+          businessType: formData.get('businessType'),
+          operatingHours: {
+            openTime: formData.get('operatingHours[openTime]'),
+            closeTime: formData.get('operatingHours[closeTime]'),
+            isOpen: formData.get('operatingHours[isOpen]') === 'true'
+          },
+          status: formData.get('status')
+        };
+
+        // Get access token from cookies
+        const token = document.cookie.split('; ')
+            .find(row => row.startsWith('authToken='))
+            ?.split('=')[1] || '';
+        
+        console.log('Token found:', token ? 'Yes' : 'No');
+        
+        if (!token) {
+          alert('Authentication token is required to create a restaurant.');
+          submitBtn.innerHTML = '<i class="fas fa-save"></i> Create Restaurant';
+          submitBtn.disabled = false;
+          return;
+        }
+
+        // Submit via AJAX with authentication
+        console.log('Sending request with token:', token.substring(0, 20) + '...');
+        console.log('Restaurant data:', restaurantData);
+        
+        fetch('/restaurants', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(restaurantData)
+        })
+        .then(response => {
+          console.log('Response status:', response.status);
+          console.log('Response headers:', response.headers);
+          
+          if (!response.ok) {
+            return response.json().then(err => {
+              console.error('Server error:', err);
+              throw new Error(err.message || `Server error: ${response.status}`);
+            }).catch(parseErr => {
+              // If response is not JSON
+              throw new Error(`Server error: ${response.status} - ${response.statusText}`);
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Success
+          alert('Restaurant created successfully!');
+          form.reset();
+          submitBtn.innerHTML = '<i class="fas fa-save"></i> Create Restaurant';
+          submitBtn.disabled = false;
+          
+          // Optionally redirect or refresh
+          // window.location.href = '/restaurants';
+        })
+        .catch(error => {
+          // Error handling
+          console.error('Error:', error);
+          alert('Error creating restaurant: ' + error.message);
+          submitBtn.innerHTML = '<i class="fas fa-save"></i> Create Restaurant';
+          submitBtn.disabled = false;
+        });
+      });
+
+      // Mobile responsive enhancements
+      function handleResize() {
+        if (window.innerWidth < 768) {
+          document.body.classList.add('mobile');
+        } else {
+          document.body.classList.remove('mobile');
+        }
+      }
+      
+      window.addEventListener('resize', handleResize);
+      handleResize();
+    });
+  </script>
+</body>
+</html>

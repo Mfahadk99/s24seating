@@ -1,0 +1,109 @@
+<!-- BEGIN: Main Menu-->
+<div class="main-menu menu-static menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
+  <div class="main-menu-content">
+    <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+
+      <% if(menu.includes('/')) { %>
+        <li class="nav-item"><a href="/dashboard"><i class="la la-desktop"></i><span class="menu-title"
+              data-i18n="">Dashboard</span></a>
+        </li>
+        <% } %>
+
+          <% if(menu.includes('/profile')) { %>
+            <li class=" nav-item"><a href="#"><i class="fa-regular la la-user"></i>
+                <span class="menu-title" data-i18n="nav.gallery_pages.main">Profile</span></a>
+              <ul class="menu-content">
+                <li><a class="menu-item" href="/profile/general"><i></i>
+                    <span data-i18n="nav.gallery_pages.gallery_grid">Edit Profile</span></a>
+                </li>
+                <li><a class="menu-item" href="/profile/change-password"><i></i><span
+                      data-i18n="nav.gallery_pages.gallery_hover_effects">Change Password</span></a>
+                </li>
+              </ul>
+            </li>
+            <% } %>
+
+
+              <% if(menu.includes('/restaurants/my-restaurants')) { %>
+                <li class=" nav-item">
+                  <a href="#"><i class="fa-regular la la-user"></i>
+                    <span class="menu-title" data-i18n="nav.gallery_pages.main">Restaurants</span></a>
+                  <ul class="menu-content">
+                    <li><a class="menu-item" href="/restaurants/my-restaurants"><i></i><span
+                          data-i18n="nav.gallery_pages.gallery_grid">My Restaurants</span></a>
+                    </li>
+                    <!-- <li><a class="menu-item" href="/all-restaurants"><i></i><span
+                          data-i18n="nav.gallery_pages.gallery_grid">Availability Planning</span></a>
+                    </li>
+                    <li><a class="menu-item" href="/restaurants/admin-restaurant"><i></i><span
+                          data-i18n="nav.gallery_pages.gallery_hover_effects">Admin Restaurant</span></a>
+                    </li> -->
+                  </ul>
+                </li>
+                <% } %>
+
+                  <!--<% if(menu.includes('/flow-controller')) { %>
+                <li class="nav-item"><a href="/flow-controller"><i class="la la-play"></i><span class="menu-title" data-i18n="">Flow Controller</span></a>
+                </li>
+            <% } %>
+              -->
+                  <!-- <% if(menu.includes('/offers')) { %>
+                <li class="nav-item"><a href="/offers"><i class="la la-gift"></i><span class="menu-title" data-i18n="">Offers</span></a>
+                </li>
+            <% } %> -->
+                  <!-- <% if(typeof takeover != 'undefined' && takeover && menu.includes('/demo-manager')) { %>
+                <li class="nav-item"><a href="/demo-manager"><i class="la la-play-circle"></i><span class="menu-title" data-i18n="">Demo Manager</span></a>
+                </li>
+            <% } %> -->
+
+                  <!-- <% if(menu.includes('/user')) { %>
+            <li class="nav-item"><a href="/user"><i class="la la-users"></i><span class="menu-title"
+                        data-i18n="">Users</span></a>
+            </li>
+            <% } %> -->
+
+                  <!-- <% if(menu.includes('/availability')) { %>
+                <li class="nav-item"><a href="/availability"><i class="la la-briefcase"></i><span class="menu-title"
+                      data-i18n="">Availability</span></a>
+                </li>
+                <% } %>
+
+                  <% if(menu.includes('/restaurants/admin-restaurant')) { %> 
+                    <li class="nav-item"><a href="/restaurants/admin-restaurant"><i class="la la-briefcase"></i><span class="menu-title"
+                          data-i18n="">Restaurant</span></a>
+                    </li>
+                    <% } %> 
+
+                    <% if(menu.includes('/time-slots/restaurant')) { %>  
+                      <li class="nav-item"><a href="/time-slots/restaurant/686299436821dba9a857d778"><i class="la la-briefcase"></i><span class="menu-title"
+                            data-i18n="">Time Slots</span></a>
+                      </li>
+                      <% } %>
+
+                      <% if(menu.includes('/reservation')) { %>  
+                      <li class="nav-item"><a href="/reservation?restaurantId=686299436821dba9a857d778"><i class="la la-calendar-check-o"></i><span class="menu-title"
+                            data-i18n="">Reservations</span></a>
+                      </li>
+                      <% } %> -->
+
+                  <% if(menu.includes('/clients')) { %>
+                    <li class="nav-item"><a href="/clients"><i class="la la-briefcase"></i><span class="menu-title"
+                          data-i18n="">Clients</span></a>
+                    </li>
+                    <% } %>
+
+                      <% if(menu.includes('/settings')) { %>
+                        <li class="nav-item"><a href=""><i class="la la-gear"></i><span class="menu-title"
+                              data-i18n="">System Settings</span></a>
+                        </li>
+                        <% } %>
+
+                          <% if(menu.includes('/account-settings')) { %>
+                            <li class="nav-item"><a href="/account-settings"><i class="la la-gear"></i><span
+                                  class="menu-title" data-i18n="">Account Settings</span></a>
+                            </li>
+                            <% } %>
+    </ul>
+  </div>
+</div>
+<!-- END: Main Menu-->

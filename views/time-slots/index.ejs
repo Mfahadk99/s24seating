@@ -1,0 +1,51 @@
+<!doctype html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+  <!-- head partial -->
+  <%- include('../partials/head.ejs') %>
+
+    <!-- styles partial -->
+    <%- include('../partials/styles.ejs') %>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body body class="vertical-layout vertical-content-menu 2-columns fixed-navbar" data-open="click"
+  data-menu="vertical-content-menu" data-col="2-columns">
+  <!-- top-menu partial -->
+  <%- include('../partials/top-menu.ejs') %>
+
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <!-- main-menu partial -->
+        <%- include('../partials/main-menu.ejs') %>
+
+          <div class="content-body">
+            <%- include('../partials/time-slot.ejs') %>
+            
+          </div>
+      </div>
+    </div>
+
+    <!-- END: Content-->
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+
+    <!-- scripts partial -->
+    <%- include('../partials/scripts.ejs') %>
+
+      <!-- footer partial -->
+      <%- include('../partials/footer.ejs') %>
+      
+    <script src="public/js/pages/time-slot.js"></script>
+</body>
+<!-- END: Body-->
+
+</html>

@@ -1,0 +1,393 @@
+<!doctype html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+<head>
+    <!-- head partial -->
+    <%- include('../partials/head.ejs') %>
+    <!-- styles partial -->
+    <%- include('../partials/styles.ejs') %>
+    <style>
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/public/images/placeholder-plot.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 40px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-description {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Search and Filter */
+        .search-container {
+            margin-bottom: 40px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Restaurant Cards */
+        .restaurant-card {
+            transition: all 0.4s ease;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .restaurant-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .restaurant-image {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+            transition: transform 0.5s;
+        }
+        
+        .restaurant-card:hover .restaurant-image {
+            transform: scale(1.05);
+        }
+        
+        .card-content {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .restaurant-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 8px 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 30px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .card-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-text {
+            color: #6c757d;
+            margin-bottom: 15px;
+            height: 48px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .restaurant-info {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .restaurant-info i {
+            margin-right: 10px;
+            color: #5A8DEE;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            border-radius: 30px;
+            padding: 10px 25px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(90, 141, 238, 0.4);
+        }
+        
+        /* Rating Stars */
+        .rating {
+            color: #FFD700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        /* No Results */
+        .no-results {
+            padding: 50px 0;
+            text-align: center;
+        }
+        
+        .no-results p {
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .hero-section {
+                padding: 50px 0;
+            }
+        }
+    </style>
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+<body class="vertical-layout vertical-content-menu 2-columns fixed-navbar" data-open="click"
+    data-menu="vertical-content-menu" data-col="2-columns">
+    <!-- top-menu partial -->
+    <%- include('../partials/top-menu.ejs') %>
+
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Discover Amazing Restaurants</h1>
+                    <p class="hero-description">Find the perfect place for your next dining experience</p>
+                </div>
+            </div>
+            
+            <div class="content-body container">
+                <!-- Search and filters -->
+                <div class="row search-container fade-in" style="animation-delay: 0.2s;">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="la la-search"></i></span>
+                            </div>
+                            <input type="text" id="search-input" class="form-control form-control-lg" placeholder="Search restaurants...">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" id="search-btn">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="filter-cuisine" class="form-control form-control-lg">
+                            <option value="">All Types</option>
+                            <% 
+                            // Extract unique business types
+                            const businessTypes = new Set();
+                            restaurants.forEach(restaurant => {
+                                if (restaurant.businessType) {
+                                    businessTypes.add(restaurant.businessType);
+                                }
+                            });
+                            
+                            // Output business type options
+                            businessTypes.forEach(type => { %>
+                                <option value="<%= type %>"><%= type %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Restaurant cards -->
+                <div class="row" id="restaurant-container">
+                    <% if (!restaurants || restaurants.length === 0) { %>
+                        <div class="col-12 text-center no-results fade-in">
+                            <img src="/public/images/placeholder-plot.png" alt="No restaurants" style="max-width: 200px; opacity: 0.5; margin-bottom: 20px;">
+                            <p>No restaurants found</p>
+                        </div>
+                    <% } else { %>
+                        <% try { %>
+                            <% restaurants.forEach((restaurant, index) => { %>
+                                <div class="col-md-4 restaurant-card fade-in" data-business-type="<%= restaurant.businessType || '' %>">
+                                    <div class="card">
+                                        <div class="card-content">
+                                            <img class="restaurant-image card-img-top" 
+                                                 src="<%= restaurant.image || '/public/images/placeholder-plot.png' %>" 
+                                                 alt="<%= restaurant.name %>">
+                                            <% if (restaurant.operatingHours && restaurant.operatingHours.isOpen) { %>
+                                                <span class="badge badge-success restaurant-badge">Open</span>
+                                            <% } else { %>
+                                                <span class="badge badge-danger restaurant-badge">Closed</span>
+                                            <% } %>
+                                            <div class="card-body">
+                                                <h4 class="card-title" style="color: #000;"><%= restaurant.name %></h4>
+                                                
+                                                <!-- Random rating for demo purposes -->
+                                                <div class="rating">
+                                                    <% const rating = Math.floor(Math.random() * 2) + 3; %>
+                                                    <% for(let i = 0; i < 5; i++) { %>
+                                                        <% if(i < rating) { %>
+                                                            <i class="la la-star"></i>
+                                                        <% } else { %>
+                                                            <i class="la la-star-o"></i>
+                                                        <% } %>
+                                                    <% } %>
+                                                    <span class="text-muted ml-1">(<%= Math.floor(Math.random() * 50) + 10 %> reviews)</span>
+                                                </div>
+                                                
+                                                <p class="card-text"><%= restaurant.description || 'No description available' %></p>
+                                                
+                                                <div class="restaurant-info">
+                                                    <i class="la la-map-marker"></i>
+                                                    <span><%= restaurant.fullAddress || (restaurant.address ? `${restaurant.address.street}, ${restaurant.address.city}` : 'Address not available') %></span>
+                                                </div>
+                                                
+                                                <div class="restaurant-info">
+                                                    <i class="la la-utensils"></i>
+                                                    <span><%= restaurant.businessType || 'Restaurant' %></span>
+                                                </div>
+                                                
+                                                <div class="restaurant-info">
+                                                    <i class="la la-phone"></i>
+                                                    <span><%= restaurant.phone || 'Phone not available' %></span>
+                                                </div>
+                                                
+                                                <a href="/restaurants/detail/<%= restaurant._id %>" class="btn btn-primary btn-block">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } catch (e) { %>
+                            <div class="col-12 text-center">
+                                <div class="alert alert-danger">Error rendering restaurants: <%= e.message %></div>
+                            </div>
+                        <% } %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Content-->
+
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+
+    <!-- footer partial -->
+    <%- include('../partials/footer.ejs') %>
+
+    <!-- scripts partial -->
+    <%- include('../partials/scripts-without-pace.ejs') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            document.getElementById('search-btn').addEventListener('click', function() {
+                filterRestaurants();
+            });
+
+            // Search on enter key
+            document.getElementById('search-input').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    filterRestaurants();
+                }
+            });
+
+            // Filter change event
+            document.getElementById('filter-cuisine').addEventListener('change', function() {
+                filterRestaurants();
+            });
+        });
+
+        function filterRestaurants() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const businessType = document.getElementById('filter-cuisine').value;
+            const cards = document.querySelectorAll('.restaurant-card');
+            
+            cards.forEach(card => {
+                const cardText = card.textContent.toLowerCase();
+                const cardBusinessType = card.getAttribute('data-business-type');
+                
+                const matchesSearch = searchTerm === '' || cardText.includes(searchTerm);
+                const matchesType = businessType === '' || cardBusinessType === businessType;
+                
+                if (matchesSearch && matchesType) {
+                    card.style.display = '';
+                    // Re-apply animation
+                    card.classList.remove('fade-in');
+                    void card.offsetWidth; // Trigger reflow
+                    card.classList.add('fade-in');
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Check if any restaurants are visible
+            const visibleCards = document.querySelectorAll('.restaurant-card:not([style*="display: none"])').length;
+            const container = document.getElementById('restaurant-container');
+            
+            if (visibleCards === 0) {
+                // If no visible cards, show a message
+                const existingNoResults = container.querySelector('.no-results');
+                
+                if (!existingNoResults) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'col-12 text-center no-results fade-in';
+                    noResults.innerHTML = `
+                        <img src="/public/images/placeholder-plot.png" alt="No results" style="max-width: 200px; opacity: 0.5; margin-bottom: 20px;">
+                        <p>No restaurants match your search criteria</p>
+                    `;
+                    
+                    container.appendChild(noResults);
+                }
+            } else {
+                // Remove any existing no-results message
+                const existingMessage = container.querySelector('.no-results');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+            }
+        }
+    </script>
+</body>
+<!-- END: Body-->
+</html>

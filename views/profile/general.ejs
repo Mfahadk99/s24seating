@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+  <!-- head partial -->
+  <%- include('../partials/head.ejs') %>
+
+  <!-- styles partial -->
+  <%- include('../partials/styles.ejs') %>
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body class="vertical-layout vertical-content-menu 2-columns fixed-navbar" data-open="click"
+  data-menu="vertical-content-menu" data-col="2-columns">
+
+  <!-- top-menu partial -->
+  <%- include('../partials/top-menu.ejs') %>
+
+  <!-- BEGIN: Content-->
+  <div class="app-content content">
+    <div class="content-wrapper">
+
+      <!-- main-menu partial -->
+      <%- include('../partials/main-menu.ejs') %>
+
+
+      <div class="content-body ">
+
+        <% if(user) { %>
+        <% const profileImage = user.image_url ? user.image_url : '/public/images/default-profile.png' ; %>
+
+        <% if(!user.address) { %>
+        <% user.address = {} %>
+        <% } %>
+
+        <!-- BEGIN: Title -->
+        <div class="card card-body border-left-success border-right-success">
+          <div class="page-header-container">
+            <h1 class="text-bold-500 primary">Edit Profile</h1>
+          </div>
+        </div>
+        <!-- END: Title -->
+
+        <!-- BEGIN: Alert Div -->
+        <div class="alert alert-success fade show" role="alert" id="alertDiv" style="display: none"></div>
+        <!-- END: Alert Div -->
+
+        <div class="card card-body">
+          <section class="row">
+            <div class="col-md-4">
+              <form id="uploadForm" enctype="multipart/form-data" action="/profile/general/upload" method="POST">
+                <div class="image-upload">
+                  <div class="image-edit">
+                    <input type='file' id="imageUpload" name="image" accept=".png, .jpg, .jpeg, .gif" />
+                    <label for="imageUpload"></label>
+                  </div>
+                  <div class="image-preview">
+                    <div id="imagePreview" style="background-image: url(<%=profileImage%>);">
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-md-7">
+              <form id="generalForm" class="form-horizontal form-simple">
+                <div class="row">
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="firstname">First Name</label>
+                      <input type="text" class="form-control form-control-lg input-lg" id="firstnameInput"
+                        name="firstname" placeholder="Your first name" value="<%=user.firstname%>" required>
+                    </fieldset>
+                  </div>
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="lastname">Last Name</label>
+                      <input type="text" class="form-control form-control-lg input-lg" id="lastnameInput"
+                        name="lastname" placeholder="Your last name" value="<%=user.lastname%>" required>
+                    </fieldset>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="email">Email</label>
+                      <input type="email" class="form-control form-control-lg input-lg" id="emailInput" name="email"
+                        value="<%=user.email%>" required>
+                    </fieldset>
+                  </div>
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="phoneNumber">Phone Number</label>
+                      <input type="text" class="form-control form-control-lg input-lg" id="phoneNumberInput1"
+                        name="phoneNumber1" placeholder="Your Phone Number"
+                        value="<%=user.phone_numbers && user.phone_numbers[0] && user.phone_numbers[0].phone_number%>"
+                        required>
+                    </fieldset>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="phoneNumber">Alternative Phone Number</label>
+                      <input type="text" class="form-control form-control-lg input-lg" id="phoneNumberInput2"
+                        name="phoneNumber2" placeholder="Your Alternative Phone Number"
+                        value="<%=user.phone_numbers && user.phone_numbers[1] && user.phone_numbers[1].phone_number%>">
+                    </fieldset>
+                  </div>
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="street">Street</label>
+                      <input type="text" class="form-control form-control-lg input-lg" id="streetInput" name="street"
+                        placeholder="Your Street" value="<%=user.address.street%>">
+
+                    </fieldset>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="city">City</label>
+                      <input type="text" class="form-control form-control-lg input-lg" id="cityInput" name="city"
+                        placeholder="Your City" value="<%=user.address.city%>">
+                    </fieldset>
+                  </div>
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="state">State</label>
+                      <input type="text" class="form-control form-control-lg input-lg" id="stateInput" name="state"
+                        placeholder="Your State" value="<%=user.address.state%>">
+                    </fieldset>
+                  </div>
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="zipcode">Zip Code</label>
+                      <input type="text" class="form-control form-control-lg input-lg" id="zipcodeInput" name="zipcode"
+                        placeholder="Zip Code" value="<%=user.address.zipcode%>">
+                    </fieldset>
+                  </div>
+                  <div class="col-md-6">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="country">Country</label>
+                      <select class="form-control" id="countryInput" name="country" required>
+                          <option class="text-dark" value="US"  <%= user.address.country === 'US' ? 'selected' : '' %>>USA</option>
+                          <option class="text-dark" value="CA"  <%= user.address.country === 'CA' ? 'selected' : '' %>>Canada</option>
+                      </select>
+                    </fieldset>
+                  </div>
+                  <div class="col-md-6 ml-auto">
+                    <fieldset class="form-group position-relative mb-2">
+                      <label for="submit" style="visibility: hidden;">Submit</label> <br>
+                      <input type="button" class="btn btn-primary btn-block" id="submitBtn" value="Save Changes">
+                    </fieldset>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <!-- END: Content-->
+  </div>
+
+  <!-- footer partial -->
+  <%- include('../partials/footer.ejs') %>
+
+
+  <!-- scripts partial -->
+  <%- include('../partials/scripts.ejs') %>
+
+  <!-- Library for ajaxSubmit -->
+  <script src="/public/js/scripts/jquery.form.min.js"></script>
+  <script>
+    const alertDiv = document.querySelector('#alertDiv');
+
+    // show preview on upload
+    $('#imageUpload').change(function () {
+      showPreview(this, 'imagePreview');
+      // upload the image
+      $('#uploadForm').ajaxSubmit({
+        error: function (xhr) {
+          showAlert(alertDiv, 'error', 'Something went wrong! Please try again later.');
+          scrollTo('#alertDiv');
+        },
+
+        success: function (message) {
+          showAlert(alertDiv, 'success', message);
+          scrollTo('#alertDiv');
+        },
+        beforeSend: function (message) {
+          showAlert(alertDiv, 'success', 'Image uploading ...');
+          scrollTo('#alertDiv');
+        },
+      });
+    });
+
+    // ajaxFormSubmit variables
+    const formInputs = document.querySelectorAll(
+      '#firstnameInput, #emailInput, #lastnameInput, #phoneNumberInput1, #phoneNumberInput2,  #countryInput, #stateInput, #cityInput, #zipcodeInput, #streetInput'
+    );
+    const submitBtn = document.querySelector('#submitBtn');
+    const url = '/profile/general';
+    const formId = '#generalForm';
+
+    // submit the form
+    ajaxFormSubmit(formInputs, submitBtn, alertDiv, url, formId);
+  </script>
+</body>
+<!-- END: Body-->
+
+</html>

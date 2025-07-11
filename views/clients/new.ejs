@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+  <!-- head partial -->
+  <%- include('../partials/head.ejs') %>
+
+  <!-- styles partial -->
+  <%- include('../partials/styles.ejs') %>
+
+  <style>
+    #submitBtn {
+      margin-top: 27px;
+    }
+  </style>
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body class="vertical-layout vertical-content-menu 2-columns fixed-navbar" data-open="click"
+  data-menu="vertical-content-menu" data-col="2-columns">
+  <!-- top-menu partial -->
+  <%- include('../partials/top-menu.ejs') %>
+
+  <!-- BEGIN: Content-->
+  <div class="app-content content">
+    <div class="content-wrapper">
+      <!-- main-menu partial -->
+      <%- include('../partials/main-menu.ejs') %>
+
+      <% if(currentUser) { %>
+      <!-- BEGIN: Page title -->
+      <div class="content-body card card-body  border-left-success border-right-success ">
+        <div class="row page-header-container">
+          <div class="col-md-6">
+            <h1 class="text-bold-500 primary float-left">Add Client</h1>
+          </div>
+          <div class="col-md-6">
+            <div class="btn-container float-right">
+              <a href="/clients">
+                <button class="btn btn-outline-primary px-2" type="button">
+                  <i class="ft-arrow-left icon-left"></i> Back
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END: Page title -->
+
+      <!-- BEGIN: Alert Div -->
+      <div class=" alert alert-success fade show" role="alert" id="alertDiv" style="display: none"></div>
+      <!-- END: Alert Div -->
+
+      <div class="content-body card card-body">
+        <section class="row pb-4 justify-content-around">
+          <div class="col-lg-9 col-md-10 mt-2">
+            <form id="addForm" class="form-horizontal form-simple" action="/clients" method="POST">
+              <div class="row">
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="firstname"><span style="color:red">*</span> First Name</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="firstnameInput"
+                      name="firstname" placeholder="Your first name" value="" required />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="lastname"><span style="color:red">*</span> Last Name</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="lastnameInput" name="lastname"
+                      placeholder="Your last name" value="" required />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="email"><span style="color:red">*</span> Email</label>
+                    <input type="email" class="form-control form-control-lg input-lg" id="emailInput" name="email"
+                      placeholder="Your Email" required autocomplete="off" />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="website"><span style="color:red">*</span> Website</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="websiteInput" name="website"
+                      placeholder="Your Website" required autocomplete="off" />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="password"><span style="color:red">*</span> Password</label>
+                    <input type="password" class="form-control form-control-lg input-lg" id="passwordInput"
+                      name="password" placeholder="Your Password" required autocomplete="off" />
+                  </fieldset>
+                  <p id="alertWeakPwd" style="display: none;" class="text-primary"></p>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="repeatPassword"><span style="color:red">*</span> Repeat Password</label>
+                    <input type="password" class="form-control form-control-lg input-lg" id="repeatPasswordInput"
+                      name="repeatPassword" placeholder="Repeat password" required />
+                  </fieldset>
+                  <p id="alertMismatch" style="display: none;" class="text-primary">* Passwords do not
+                    match</p>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="phoneNumber"><span style="color:red">*</span> Phone Number</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="phoneNumberInput1"
+                      name="phoneNumber1" placeholder="Your Phone Number  ex: +15417543010" required />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="phoneNumber">Alternative Phone Number</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="phoneNumberInput2"
+                      name="phoneNumber2" placeholder="Your Second Phone Number" />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="street">Street</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="streetInput" name="street"
+                      placeholder="Your Street" />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="cityInput" name="city"
+                      placeholder="Your City" />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="state">State</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="stateInput" name="state"
+                      placeholder="Your State" />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="zipcode">Zip Code</label>
+                    <input type="text" class="form-control form-control-lg input-lg" id="zipcodeInput" name="zipcode"
+                      placeholder="Zip Code" />
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <fieldset class="form-group position-relative mb-2">
+                    <label for="country">Country</label>
+                    <select class="form-control" id="countryInput" name="country" required>
+                        <option class="text-dark" value="US"  selected>USA</option>
+                        <option class="text-dark" value="CA"  >Canada</option>
+                    </select>
+                  </fieldset>
+                </div>
+                <div class="col-md-6">
+                  <button id="submitBtn" type="submit" class="btn btn-outline-primary btn-block">Add Client</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  <!-- END: Content-->
+
+  <div class="sidenav-overlay"></div>
+  <div class="drag-target"></div>
+
+  <!-- footer partial -->
+  <%- include('../partials/footer.ejs') %>
+
+  <!-- scripts partial -->
+  <%- include('../partials/scripts.ejs') %>
+
+  <script>
+    // get the inputs
+    let passwordInputsArr = document.querySelectorAll('#passwordInput, #repeatPasswordInput');
+    let elem = id => document.getElementById(id);
+
+    // disable the button
+    elem('submitBtn').disabled = true;
+    elem('submitBtn').style.cursor = 'not-allowed';
+
+    // listen to the 'input' event
+    passwordInputsArr.forEach(item => {
+      item.addEventListener('input', () => {
+        let passwordInput = elem('passwordInput').value;
+        let repeatPasswordInput = elem('repeatPasswordInput').value;
+
+        if (passwordInput.length != 0 && repeatPasswordInput.length != 0 && passwordInput ===
+          repeatPasswordInput) {
+          elem('submitBtn').disabled = false;
+          $('#alertMismatch').hide();
+          elem('submitBtn').style.cursor = 'pointer';
+        } else {
+          elem('submitBtn').disabled = true;
+          if ($('#repeatPasswordInput').val())
+            $('#alertMismatch').show();
+          elem('submitBtn').style.cursor = 'not-allowed';
+        }
+
+        if(isValidPassword(passwordInput)) $('#alertWeakPwd').hide()
+      });
+    })
+
+    // change inputs on email to small letters on typing
+    $('#emailInput').on('keyup', (e) => {
+      $('#emailInput').val($('#emailInput').val().toLowerCase())
+    });
+
+
+    function isValidPassword(password) {
+
+      // Password criteria
+      const minLength = 8;
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password);
+
+      // Check if password meets criteria
+      if (password.length < minLength ||
+          !hasUppercase ||
+          !hasLowercase ||
+          !hasNumber ||
+          !hasSpecialChar) {
+            $('#alertWeakPwd').show()
+            $('#alertWeakPwd').html( 'Password must meet the criteria: <br>' +
+            '- Minimum length of 8 characters. <br>' +
+            '- At least one uppercase letter (A-Z). <br>' +
+            '- At least one lowercase letter (a-z). <br>' +
+            '- At least one numeric digit (0-9). <br>' +
+            '- At least one special character (e.g., !@#$%^&*');
+            scrollTo('#addForm');
+            return false;
+      }
+
+      // If the password is valid
+      return true;
+    }
+
+    $(document).ready(function(){
+      // Add a click event listener to the submit button
+      $('#submitBtn').click(function(event) {
+        event.preventDefault();
+        if(isValidPassword($('#passwordInput').val())){
+          $('#addForm').submit();
+        }
+      });
+    })
+  </script>
+</body>
+<!-- END: Body-->
+
+</html>

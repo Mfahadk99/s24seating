@@ -1,0 +1,15 @@
+{
+  "Alberta": [403, 587, 780, 825],
+  "British Columbia": [236, 778, 250, 604],
+  "Manitoba": [204, 431],
+  "New Brunswick": [506],
+  "Newfoundland": [709],
+  "Northwest Territories": [867],
+  "Nova Scotia": [902, 782],
+  "Nunavut": [867],
+  "Ontario": [437, 249, 343, 416, 519, 647, 905, 365, 548, 705, 226, 289, 613, 807],
+  "Prince Edward Island": [902, 782],
+  "Quebec": [514, 581, 819, 438, 418, 450, 367, 579, 873],
+  "Saskatchewan": [306, 639],
+  "Yukon": [867]
+}

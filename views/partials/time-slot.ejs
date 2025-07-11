@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schedule Management</title>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-/v2TqO1lt0..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="public/css/timeslots/timeslots.css">
+</head>
+<body>
+
+  <!-- Mobile Overlay -->
+  <div class="ap-mobile-overlay" id="ap-mobileOverlay"></div>
+
+  <!-- Toast notification container -->
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Success!</span>
+  </div>
+
+  <!-- Schedule Management -->
+  <div class="schedule-container">
+    <div class="page-header">
+      <h1><i class="fas fa-calendar-alt"></i> Schedule Management</h1>
+      <p>Create and manage shifts for your restaurant</p>
+    </div>
+
+    <div class="page-content">
+      <!-- Weekly Schedule View -->
+      <div class="schedule-grid">
+        <div class="time-header">Hours</div>
+        <div class="day-header">Monday</div>
+        <div class="day-header">Tuesday</div>
+        <div class="day-header">Wednesday</div>
+        <div class="day-header">Thursday</div>
+        <div class="day-header">Friday</div>
+        <div class="day-header">Saturday</div>
+        <div class="day-header">Sunday</div>
+        
+        <!-- Time slots from 1 to 24 hours -->
+        <% for (let hour = 0; hour < 24; hour++) { %>
+          <div class="time-label"><%= hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour-12} PM` %></div>
+          <% for (let day = 0; day < 7; day++) { %>
+            <div class="schedule-cell" data-hour="<%= hour %>" data-day="<%= day %>" id="cell-<%= day %>-<%= hour %>"></div>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shift Management Modal -->
+  <div class="modal-overlay" id="shiftModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2><i class="fas fa-clock"></i> <span id="modalTitle">Manage Shift</span></h2>
+        <button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="shiftForm">
+          <div class="time-slot-grid">
+            <div class="form-group">
+              <label for="shiftName"><i class="fas fa-tag"></i> Shift Name</label>
+              <input type="text" id="shiftName" name="name" class="form-control" placeholder="Morning Shift" required>
+            </div>
+
+            <div class="form-group">
+              <label for="shiftDay"><i class="fas fa-calendar-day"></i> Day</label>
+              <select id="shiftDay" name="day" class="form-control" required>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="startTime"><i class="fas fa-play"></i> Start Time</label>
+              <input type="time" id="startTime" name="startTime" class="form-control" required step="900">
+            </div>
+
+            <div class="form-group">
+              <label for="endTime"><i class="fas fa-stop"></i> End Time</label>
+              <input type="time" id="endTime" name="endTime" class="form-control" required step="900">
+            </div>
+
+            <div class="form-group">
+              <label for="duration"><i class="fas fa-hourglass-half"></i> Duration (minutes)</label>
+              <input type="number" id="duration" name="duration" class="form-control" placeholder="60" required>
+            </div>
+
+            <div class="form-group">
+              <label for="bufferTime"><i class="fas fa-hourglass-half"></i> Buffer Time (minutes)</label>
+              <input type="number" id="bufferTime" name="bufferTime" class="form-control" placeholder="15" required>
+            </div>
+
+            <input type="hidden" id="restaurantId" name="restaurantId" value="<%= restaurantId %>" required>
+            <input type="hidden" id="selectedHour" name="selectedHour">
+            <input type="hidden" id="selectedDay" name="selectedDay">
+            <input type="hidden" id="shiftId" name="shiftId">
+
+            <div class="form-group full-width">
+              <div class="button-group">
+                <button type="submit" class="btn-primary" id="submitButton">
+                  <i class="fas fa-plus"></i> Create Shift
+                </button>
+                <button type="button" class="btn-delete-shift" id="deleteShiftButton" style="display: none;">
+                  <i class="fas fa-trash"></i> Delete Shift
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Time Slots List (only shown when editing an existing shift) -->
+        <div class="time-slots-list" id="timeSlotsList" style="display: none;">
+          <h3 style="margin: 1.5rem 0 1rem; color: #374151;">
+            <i class="fas fa-list"></i> Time Slots
+          </h3>
+          <div id="timeSlotItems">
+            <div class="loading-container" id="timeSlotsLoading">
+              <div class="spinner"></div>
+              <span class="loading-text">Loading time slots...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="public/js/pages/timeslots/timeslots.js"></script>
+</body>
+</html>

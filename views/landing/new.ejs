@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- head partial -->
+    <%- include('../partials/head.ejs') %>
+
+    <!-- styles partial -->
+    <%- include('../partials/styles.ejs') %>
+    <title>MyLittleHelper - AI</title>
+    <style>
+      .title {
+        text-align: center;
+        padding: 20px;
+        background-color: #0f228a;
+        color: #ffffff;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+      }
+
+      .btn-primary {
+        color: #fff !important;
+      }
+
+      .new-bot-form {
+        background: #ffffff;
+        padding: 50px;
+        border-radius: 10px;
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(255, 255, 255, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .progress-container {
+        width: 60%;
+        text-align: center;
+      }
+
+      .progress-bar {
+        width: 0%;
+        height: 20px;
+        background-color: #007bff;
+        transition: width 0.5s ease;
+      }
+
+      .loading-text {
+        margin-top: 15px;
+        font-size: 1.5rem;
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Welcome to MylittleHelper.ai</h1>
+    <div class="container">
+      <form class="mt-5 pt-4 new-bot-form" role="form" id="newBotForm">
+        <!-- Form Fields -->
+        <div class="form-group">
+          <label for="nameInput" class="">Name*</label>
+          <input
+            type="text"
+            placeholder="Name of the chatbot"
+            class="form-control"
+            id="nameInput"
+            name="name"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="websiteUrlInp" class="">Website URL*</label>
+          <input
+            type="url"
+            class="form-control"
+            id="websiteUrlInp"
+            name="websiteUrl"
+            placeholder="Website URL of your business"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="phoneInput" class="">Phone*</label>
+          <input
+            type="tel"
+            class="form-control"
+            id="phoneInput"
+            name="phone"
+            placeholder="Your phone number"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="emailInput" class="">Email*</label>
+          <input
+            type="email"
+            class="form-control"
+            id="emailInput"
+            name="email"
+            placeholder="Your email address"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="sendMethod" class=""
+            >How Would You Like to Receive Your Demo Bot?*</label
+          >
+          <select
+            class="form-control"
+            id="sendMethod"
+            name="sendMethod"
+            required
+          >
+            <option value="sms">SMS</option>
+            <option value="email">Email</option>
+          </select>
+        </div>
+
+        <!-- Status message area -->
+        <div id="statusMessage" class="alert d-none"></div>
+
+        <!-- Fullscreen Loader with Progress Bar -->
+        <div id="loadingSpinner" class="loading-overlay d-none">
+          <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <p class="loading-text">Submitting, please wait...</p>
+          </div>
+        </div>
+
+        <button type="submit" class="form-control btn btn-primary">
+          Submit
+        </button>
+      </form>
+    </div>
+
+    <!-- scripts partial -->
+    <%- include('../partials/scripts.ejs') %>
+
+    <!-- footer partial -->
+    <%- include('../partials/footer.ejs') %>
+
+    <script>
+      function updateProgressBar() {
+        const progressBar = document.getElementById("progressBar");
+        let width = 1;
+        const interval = setInterval(() => {
+          if (width >= 100) {
+            clearInterval(interval);
+          } else {
+            width++;
+            progressBar.style.width = width + "%";
+          }
+        }, 50); // You can adjust the speed here
+      }
+      $(document).ready(function () {
+        $("#newBotForm").on("submit", function (e) {
+          e.preventDefault(); // Prevent default form submission
+
+          // Clear previous messages and show the spinner
+          $("#statusMessage")
+            .removeClass("alert-success alert-danger")
+            .addClass("d-none");
+
+          // Show the advanced loader
+          $("#loadingSpinner").removeClass("d-none");
+          updateProgressBar(); // Start progress bar
+
+          $.ajax({
+            url: "/new",
+            type: "POST",
+            data: $(this).serialize(), // Serialize form data
+            beforeSend: function () {
+              // You can show additional progress message here, if needed
+              $("#statusMessage")
+                .removeClass("d-none")
+                .text("Submitting the form...");
+            },
+            success: function (response) {
+              // Handle success: Show success message
+              if (response == "success") {
+                $("#statusMessage")
+                  .removeClass("d-none alert-danger")
+                  .addClass("alert alert-success")
+                  .text("The chatbot is ready!");
+              } else {
+                $("#statusMessage")
+                  .removeClass("d-none alert-success")
+                  .addClass("alert alert-danger")
+                  .text("There was an error submitting the form:" + response);
+              }
+              $("#loadingSpinner").addClass("d-none"); // Hide the loading spinner
+            },
+            error: function (error) {
+              console.log(error);
+              // Handle error: Show error message
+              $("#loadingSpinner").addClass("d-none"); // Hide the loading spinner
+              $("#statusMessage")
+                .removeClass("d-none alert-success")
+                .addClass("alert alert-danger")
+                .text(
+                  "There was an error submitting the form:" +
+                    error.responseText,
+                );
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

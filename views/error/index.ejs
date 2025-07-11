@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" data-textdirection="ltr">
+  <!-- BEGIN: Head-->
+
+  <head>
+    <!-- head partial -->
+    <%- include('../partials/head') %>
+
+    <!-- styles partial -->
+    <%- include('../partials/styles') %>
+
+    <link rel="stylesheet" type="text/css" href="/public/css/pages/error.css" />
+    <style>
+      body {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      .footer {
+        background: #fff;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      .home-btn {
+        position: relative;
+        top: 13rem;
+      }
+
+      a.text-primary:hover,
+      a.text-primary:focus {
+        color: #fff !important;
+      }
+
+      .error-message {
+        text-align: center;
+        margin: 20px 0;
+        color: #dc3545;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .error-details {
+        text-align: center;
+        margin: 10px 0;
+        color: #6c757d;
+        font-size: 14px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
+  </head>
+  <!-- END: Head-->
+
+  <!-- BEGIN: Body-->
+  <link
+    href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:100,200,300,400"
+    rel="stylesheet"
+  />
+
+  <body class="loading">
+    <h1><%= locals.statusCode || '500' %></h1>
+    <h2><%= locals.title || 'Unexpected Error' %> <b>:(</b></h2>
+    
+    <!-- Dynamic error message -->
+    <% if (locals.message) { %>
+      <div class="error-message">
+        <%= message %>
+      </div>
+    <% } %>
+    
+    <!-- Error details for debugging (only show in development) -->
+    <% if (locals.error && process.env.NODE_ENV === 'development') { %>
+      <div class="error-details">
+        <strong>Error Details:</strong><br>
+        <%= error %>
+      </div>
+    <% } %>
+
+    <div class="gears-container">
+      <div class="gears">
+        <div class="gear one">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <div class="gear two">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <div class="gear three">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-2 text-center home-btn">
+      <a href="/dashboard" class="btn btn-danger text-white m-1"
+        >Go to Home Page</a
+      >
+      <a href="/contact" class="btn btn-outline-primary text-primary"
+        >Contact Support Team</a
+      >
+      <!-- Back button if referrer exists -->
+      <% if (locals.referrer) { %>
+        <a href="<%= referrer %>" class="btn btn-outline-secondary"
+          >Go Back</a
+        >
+      <% } %>
+    </div>
+
+    <!-- footer partial -->
+    <%- include('../partials/footer') %>
+
+    <!-- scripts partial -->
+    <%- include('../partials/scripts') %>
+    <script type="text/javascript">
+      $(function () {
+        setTimeout(function () {
+          $("body").removeClass("loading");
+        }, 1000);
+      });
+
+      //check for reload
+      if (window.performance) {
+        console.info("window.performance works fine on this browser");
+      }
+      console.info(performance.navigation.type);
+      if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+        console.info("This page is reloaded");
+        window.location.href = "/dashboard";
+      } else {
+        console.info("This page is not reloaded");
+      }
+    </script>
+  </body>
+  <!-- END: Body-->
+</html>

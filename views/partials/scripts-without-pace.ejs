@@ -1,0 +1,52 @@
+<!-- BEGIN: Vendor JS-->
+<script src="/public/vendors/js/vendors-without-pace.min.js"></script>
+<!-- BEGIN Vendor JS-->
+
+<!-- BEGIN: Page Vendor JS-->
+<script src="/public/vendors/js/ui/headroom.min.js"></script>
+<!-- END: Page Vendor JS-->
+
+<script src="/public/vendors/js/extensions/sweetalert.min.js"></script>
+
+<!-- BEGIN: Theme JS-->
+<script src="/public/js/core/app-menu.js"></script>
+<script src="/public/js/core/app.js"></script>
+<!-- END: Theme JS-->
+
+<!-- BEGIN: JQuery FORM -->
+<script src="/public/js/scripts/jquery.form.min.js"></script>
+<!-- END: JQuery FORM -->
+
+
+<!-- BEGIN: Custom Functions -->
+<script src="/public/js/custom-functions.js"></script>
+<!-- END: Custom Functions -->
+
+<!-- BEGIN: Page JS-->
+<script src="/public/js/custom.js"></script>
+<!-- END: Page JS-->
+<script>
+    // enable tooltip
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    /*------------------ Dynamic Active Class: Main Menu -------------------*/
+
+    $(document).ready(function () {
+        const originalUrl = window.location.pathname;
+        if (!$(`#main-menu-navigation a[href='${originalUrl}']`).parent().html()) {
+            var url = originalUrl;
+            let urlPartials = originalUrl.split('/');
+            // in case of X/x/id
+            url = '/' + urlPartials[1];
+            $(`#main-menu-navigation a[href='${url}']`).parent().addClass('active is-shown').parent().parent()
+                .addClass('open');
+        } else {
+            $(`#main-menu-navigation a[href='${originalUrl}']`).parent().addClass('active is-shown').parent()
+                .parent()
+                .addClass('open');
+        }
+
+    });
+</script>

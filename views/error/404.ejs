@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en" data-textdirection="ltr">
+  <!-- BEGIN: Head-->
+
+  <head>
+    <!-- head partial -->
+    <%- include('../partials/head') %>
+
+    <!-- styles partial -->
+    <%- include('../partials/styles') %>
+
+    <link rel="stylesheet" type="text/css" href="/public/css/pages/error.css" />
+    <style>
+      body {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      .footer {
+        background: #fff;
+        /* position: relative; */
+        /* top: -15px; */
+        position: absolute;
+        /* top: 0; */
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      .home-btn {
+        position: relative;
+        top: 15rem;
+      }
+
+      a.text-primary:hover,
+      a.text-primary:focus {
+        color: #fff !important;
+      }
+    </style>
+  </head>
+  <!-- END: Head-->
+
+  <!-- BEGIN: Body-->
+  <link
+    href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:100,200,300,400"
+    rel="stylesheet"
+  />
+
+  <body class="loading pt-5">
+    <h1>404</h1>
+    <h2>Unexpected Error - Page Not Found <b>:(</b></h2>
+    <div class="gears">
+      <div class="gear one">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <div class="gear two">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+      <div class="gear three">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+    </div>
+
+    <div class="p-2 text-center home-btn">
+      <a href="/" class="btn btn-danger text-white m-1">Go to Home Page</a>
+      <a href="/contact" class="btn btn-outline-primary text-primary m-1"
+        >Contact Support Team</a
+      >
+    </div>
+
+    <!-- footer partial -->
+    <%- include('../partials/footer') %>
+
+    <!-- scripts partial -->
+    <%- include('../partials/scripts') %>
+    <script type="text/javascript">
+      $(function () {
+        setTimeout(function () {
+          $("body").removeClass("loading");
+        }, 1000);
+      });
+
+      //check for reload
+      if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+        console.info("This page is reloaded");
+        window.location.href = "/dashboard";
+      } else {
+        console.info("This page is not reloaded");
+      }
+    </script>
+  </body>
+  <!-- END: Body-->
+</html>

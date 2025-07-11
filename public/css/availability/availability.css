@@ -1,0 +1,1393 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+.app-container {
+  display: flex;
+  height: 83vh;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Sidebar Styles */
+.ap-sidebar {
+  width: 160px !important;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1000;
+  flex-shrink: 0;
+}
+
+.ap-sidebar.collapsed {
+  width: 50px !important;
+}
+
+.ap-sidebar-header {
+  padding: 10px !important;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.ap-sidebar-header-content {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.ap-burger-menu {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.ap-burger-menu:hover {
+  background: #e2e8f0;
+}
+
+.ap-burger-menu:active {
+  background: #cbd5e1;
+}
+
+.ap-burger-line {
+  width: 18px;
+  height: 2px;
+  background: #374151;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+  display: block;
+  pointer-events: none;
+}
+
+.ap-sidebar.collapsed .ap-burger-menu .ap-burger-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.ap-sidebar.collapsed .ap-burger-menu .ap-burger-line:nth-child(2) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.ap-sidebar.collapsed .ap-burger-menu .ap-burger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.ap-sidebar-title {
+  font-size: 12px !important;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.ap-sidebar.collapsed .ap-sidebar-title {
+  opacity: 0;
+  width: 0;
+}
+
+.ap-nav-menu {
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.ap-nav-item {
+  list-style: none;
+}
+
+.ap-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px !important;
+  color: #475569;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+  gap: 8px;
+  position: relative;
+}
+
+.ap-nav-link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.ap-nav-link.active {
+  background: #eff6ff;
+  color: #2563eb;
+  border-left-color: #2563eb;
+}
+
+.ap-nav-icon {
+  font-size: 16px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.ap-nav-text {
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.ap-sidebar.collapsed .ap-nav-text {
+  opacity: 0;
+  width: 0;
+}
+
+.ap-sidebar.collapsed .ap-nav-link {
+  justify-content: center;
+  padding: 10px;
+}
+
+/* Tooltip for collapsed sidebar */
+.ap-sidebar.collapsed .ap-nav-link::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  margin-left: 8px;
+  z-index: 1000;
+}
+
+.ap-sidebar.collapsed .ap-nav-link:hover::after {
+  opacity: 1;
+}
+
+.ap-elements-section {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+  transition: padding 0.3s ease;
+}
+
+.ap-sidebar.collapsed .ap-elements-section {
+  padding: 16px 8px;
+}
+
+.ap-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ap-section-icon {
+  font-size: 14px;
+  min-width: 14px;
+}
+
+.ap-section-text {
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.ap-sidebar.collapsed .ap-section-text {
+  opacity: 0;
+  width: 0;
+}
+
+.ap-sidebar.collapsed .ap-section-title {
+  justify-content: center;
+}
+
+.ap-elements-grid {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 10px;
+}
+
+.ap-sidebar.collapsed .ap-elements-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.ap-table-element {
+  width: 50px;
+  height: 50px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.ap-sidebar.collapsed .ap-table-element {
+  width: 20px;
+  height: 20px;
+}
+
+.ap-table-element:hover {
+  border-color: #6b7280;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ap-table-element:active {
+  cursor: grabbing;
+}
+
+.ap-table-shape {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #9ca3af;
+  transition: all 0.3s ease;
+}
+
+/* Tooltip for table elements when sidebar is collapsed */
+.ap-sidebar.collapsed .ap-table-element::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  margin-left: 8px;
+  z-index: 1000;
+}
+
+.ap-sidebar.collapsed .ap-table-element:hover::after {
+  opacity: 1;
+}
+
+/* Table Shape Styles */
+.round-2 {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.ap-sidebar.collapsed .round-2 {
+  width: 8px;
+  height: 8px;
+}
+
+.round-4 {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.round-6 {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.round-8 {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.ap-sidebar.collapsed .round-8 {
+  width: 12px;
+  height: 12px;
+}
+
+.square-2 {
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+}
+
+.ap-sidebar.collapsed .square-2 {
+  width: 8px;
+  height: 8px;
+}
+
+.rect-4 {
+  width: 28px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.ap-sidebar.collapsed .rect-4 {
+  width: 12px;
+  height: 6px;
+}
+
+.hex-6 {
+  width: 24px;
+  height: 24px;
+  background: #9ca3af;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
+}
+
+.ap-sidebar.collapsed .hex-6 {
+  width: 10px;
+  height: 10px;
+}
+
+/* Main Content */
+.ap-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  transition: margin-left 0.3s ease;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ap-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.ap-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ap-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ap-toolbar-btn {
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 6px;
+}
+
+.ap-toolbar-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.ap-tables-info {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ap-tables-count {
+  font-weight: 600;
+  color: #374151;
+}
+
+.ap-unpublished-notice {
+  background: #dbeafe;
+  border: 1px solid #93c5fd;
+  color: #1e40af;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ap-close-btn {
+  background: none;
+  border: none;
+  color: #1e40af;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 8px;
+}
+
+/* Canvas */
+.ap-canvas-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.ap-canvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #ffffff;
+  overflow: auto;
+  cursor: crosshair;
+  background-image:
+    linear-gradient(to right, #f1f5f9 1px, transparent 1px), linear-gradient(to bottom, #f1f5f9 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.ap-canvas-content {
+  position: relative;
+  width: 2000px;
+  height: 1500px;
+  z-index: 2;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.ap-dropped-table {
+  position: absolute;
+  cursor: move;
+  background: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  user-select: none;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+
+.ap-dropped-table:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ap-dropped-table.selected {
+  box-shadow: 0 0 0 2px #2563eb;
+}
+
+.ap-dropped-table.dragging {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+}
+
+.ap-dropped-table.reserved {
+  background-color: #fecaca !important;
+  border: 2px solid #dc2626 !important;
+  color: #dc2626 !important;
+}
+
+.ap-dropped-table.reserved:hover {
+  background-color: #fca5a5 !important;
+}
+
+/* Drop Zone */
+.ap-drop-zone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(37, 99, 235, 0.05);
+  border: 2px dashed #2563eb;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.ap-drop-zone.active {
+  display: flex;
+}
+
+.ap-drop-message {
+  background: #ffffff;
+  padding: 16px 24px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-weight: 500;
+  color: #374151;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Right Panel Styles */
+.ap-right-panel {
+  width: 200px;
+  background: #ffffff;
+  border-left: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.ap-panel-section {
+  margin-bottom: 24px;
+}
+
+.ap-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ap-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.ap-info-icon {
+  width: 16px;
+  height: 16px;
+  background: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #6b7280;
+  cursor: help;
+}
+
+.ap-table-count {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ap-form-group {
+  margin-bottom: 16px;
+}
+
+.ap-form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.ap-form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #ffffff;
+}
+
+.ap-form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.ap-form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.ap-button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ap-btn {
+  flex: 1;
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: #ffffff;
+  color: #374151;
+}
+
+.ap-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Mobile Overlay */
+.ap-mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ap-mobile-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Mobile burger menu in toolbar */
+.ap-mobile-burger-menu {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  position: relative;
+  z-index: 10;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 40px;
+  height: 40px;
+}
+
+.ap-mobile-burger-menu:hover {
+  background: #f3f4f6;
+}
+
+.ap-mobile-burger-menu:active {
+  background: #e5e7eb;
+}
+
+.ap-mobile-burger-line {
+  width: 20px;
+  height: 2px;
+  background: #374151;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 3px 0;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .app-container {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Show mobile burger menu */
+  .ap-mobile-burger-menu {
+    display: flex !important;
+  }
+
+  /* Hide desktop burger menu on mobile */
+  .ap-burger-menu {
+    display: none !important;
+  }
+
+  /* Hide the sidebar title on mobile */
+  .ap-sidebar-title {
+    display: none !important;
+  }
+
+  /* Adjust the header content spacing since title is hidden */
+  .ap-sidebar-header-content {
+    justify-content: center !important;
+  }
+
+  /* Ensure burger menu is properly centered */
+  .ap-burger-menu {
+    margin: 0 !important;
+  }
+
+  /* From here can change the mobile view of the sidebar */
+  .ap-sidebar {
+    margin-top: 70px;
+    width: 120px !important;
+    transform: translateX(-180px);
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+    background: #ffffff;
+  }
+
+  .ap-sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+
+  .ap-sidebar.collapsed {
+    width: 280px;
+    transform: translateX(-100%);
+  }
+
+  .ap-sidebar.collapsed.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Show desktop burger menu when sidebar is open on mobile */
+  .ap-sidebar.mobile-open .ap-burger-menu {
+    display: flex !important;
+  }
+
+  /* Main content adjustments */
+  .ap-main-content {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  /* Right panel mobile behavior */
+  .ap-right-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: 320px;
+    z-index: 1001;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+    background: #ffffff;
+  }
+
+  .ap-right-panel.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Toolbar adjustments */
+  .ap-toolbar {
+    padding: 8px 12px;
+  }
+
+  .ap-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ap-toolbar-left span {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Canvas adjustments */
+  .ap-canvas-content {
+    width: 100%;
+    min-width: 800px;
+  }
+
+  /* Elements grid adjustments */
+  .ap-elements-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    padding: 8px 5px !important;
+    width: 100% !important;
+  }
+
+  .ap-table-element {
+    width: 100% !important;
+    height: 45px !important;
+    margin: 0 !important;
+    padding: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+  }
+
+  /* Ensure table shapes are properly sized in mobile view */
+  .ap-table-shape {
+    width: 30px !important;
+    height: 30px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Remove the text labels */
+  .ap-table-element::after {
+    display: none !important;
+  }
+
+  /* Hide any existing text elements */
+  .ap-table-element-text {
+    display: none !important;
+  }
+
+  /* Show mobile settings button */
+  .ap-mobile-settings-btn {
+    display: block !important;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .ap-sidebar {
+    width: 175px !important; /* Adjust this value for your desired width */
+  }
+
+  /* Desktop collapsed state width */
+  .ap-sidebar.collapsed {
+    width: 60px !important;
+  }
+
+  /* Adjust main content to account for sidebar width */
+  .ap-main-content {
+    flex: 1 !important;
+    margin-left: 0 !important; /* Remove any margin */
+  }
+
+  .ap-burger-menu {
+    display: flex !important;
+  }
+
+  .ap-mobile-burger-menu {
+    display: none !important;
+  }
+
+  .ap-mobile-settings-btn {
+    display: none !important;
+  }
+
+  /* Elements grid layout for desktop */
+  .ap-elements-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* Single column when collapsed */
+    gap: 6px !important;
+    padding: 8px 4px !important;
+    width: 100% !important;
+  }
+
+  /* Smaller table elements for desktop */
+  .ap-table-element {
+    width: 100% !important;
+    height: 45px !important;
+    padding: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 4px !important;
+    background: #ffffff !important;
+    cursor: pointer !important;
+  }
+
+  /* Smaller table shapes for desktop */
+  .ap-table-shape {
+    width: 20px !important; /* Much smaller */
+    height: 20px !important; /* Much smaller */
+  }
+
+  /* Adjust specific table shapes sizes */
+  .round-2,
+  .round-8,
+  .square-2,
+  .rect-4,
+  .hex-6 {
+    transform: scale(0.85) !important;
+  }
+
+  /* Hide section title when collapsed */
+  .ap-sidebar.collapsed .ap-section-title {
+    display: none !important;
+  }
+
+  /* Add tooltips for collapsed elements */
+  .ap-sidebar.collapsed .ap-table-element::after {
+    content: attr(title);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    margin-left: 8px;
+    z-index: 1000;
+  }
+
+  .ap-sidebar.collapsed .ap-table-element:hover::after {
+    opacity: 1;
+  }
+
+  /* Ensure elements are clickable */
+  .ap-sidebar.collapsed .ap-table-element {
+    position: relative !important;
+    overflow: visible !important;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .ap-sidebar {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .ap-right-panel {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .ap-toolbar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .ap-toolbar-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ap-toolbar-right {
+    flex-shrink: 0;
+  }
+
+  .ap-canvas-content {
+    min-width: 600px;
+  }
+
+  .ap-elements-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ap-form-input,
+  .ap-form-select {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}
+
+/* Mobile settings button */
+.ap-mobile-settings-btn {
+  display: none;
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 14px;
+  color: #374151;
+}
+
+.ap-mobile-settings-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .ap-table-element:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .ap-nav-link:hover {
+    background: transparent;
+  }
+
+  .ap-btn:hover {
+    background: #ffffff;
+    border-color: #d1d5db;
+  }
+
+  .ap-toolbar-btn:hover {
+    background: #ffffff;
+    border-color: #d1d5db;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .ap-canvas {
+    background-size: 10px 10px;
+  }
+}
+
+/* Sidebar content layout - ensure consistent vertical layout */
+.ap-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Table elements container */
+.ap-table-elements {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+/* Individual table element */
+.ap-table-element {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+  .ap-sidebar {
+    width: 250px; /* Consistent width for mobile */
+    transform: translateX(-100%);
+  }
+
+  .ap-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Ensure table elements stay vertical on mobile */
+  .ap-table-elements {
+    flex-direction: column !important; /* Force vertical layout */
+    width: 100% !important;
+  }
+
+  .ap-table-element {
+    width: 100% !important;
+    margin: 5px 0;
+  }
+
+  /* Improve touch targets on mobile */
+  .ap-table-element {
+    min-height: 50px; /* Larger touch target */
+    padding: 12px 15px;
+  }
+}
+
+/* Ensure table icons and text align properly */
+.ap-table-element-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.ap-table-element-text {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Elements section layout */
+.ap-elements-section {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+/* Modal Styles */
+.ap-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+.ap-modal-overlay.active {
+  display: flex !important;
+}
+
+.ap-modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ap-modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ap-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.ap-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ap-modal-body {
+  padding: 1rem;
+}
+
+.ap-modal-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.ap-form-group {
+  margin-bottom: 1rem;
+}
+
+.ap-form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.ap-form-input,
+.ap-form-textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.ap-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.ap-btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.ap-btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.ap-required {
+  color: #ef4444;
+}
+
+.ap-error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  display: none;
+}
+
+.ap-error-message.show {
+  display: block;
+}
+
+.ap-char-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+/* Fullscreen styles */
+.app-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: #ffffff;
+}
+
+.app-container.fullscreen .ap-sidebar,
+.app-container.fullscreen .ap-right-panel {
+  height: 100vh;
+}
+
+.app-container.fullscreen .ap-main-content {
+  height: 100vh;
+}
+
+.fullscreen-icon {
+  font-size: 16px;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.app-container.fullscreen .fullscreen-icon {
+  transform: rotate(180deg);
+}
+
+/* Adjust canvas container in fullscreen */
+.app-container.fullscreen .ap-canvas-container {
+  height: calc(100vh - 60px); /* Subtract toolbar height */
+}
+
+/* Ensure proper stacking in fullscreen */
+.app-container.fullscreen {
+  display: flex;
+}
+
+/* Hide scrollbars in fullscreen */
+.app-container.fullscreen {
+  overflow: hidden;
+}
+
+.app-container.fullscreen .ap-canvas {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.app-container.fullscreen .ap-canvas::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.app-container.fullscreen .ap-canvas::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-container.fullscreen .ap-canvas::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
+/* Add notification styles */
+.ap-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+  font-size: 14px;
+}
+
+.ap-notification.error {
+  background: #fee2e2;
+  color: #dc2626;
+  border-left: 4px solid #dc2626;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+

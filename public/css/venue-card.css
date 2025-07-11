@@ -1,0 +1,170 @@
+
+  .card-wrapper {
+    width: 280px;
+    height: 466px;
+    background: white;
+    /* margin: auto; */
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px 10px 10px 10px;
+    /* box-shadow: 0; */
+    box-shadow: 5px 20px 30px rgba(23, 1, 151, 0.3);
+    transform: scale(0.95);
+    transition: box-shadow 0.5s, transform 0.5s;
+  }
+  .card-wrapper:hover {
+    box-shadow: 5px 20px 30px rgba(0, 0, 0, 0.2);
+  }
+  .card-wrapper .card-container {
+    width: 100%;
+    height: 100%;
+  }
+  .card-wrapper .card-container .card-top {
+    height: 80%;
+    width: 100%;
+    /* -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover; */
+  }
+  .card-wrapper .card-container .card-bottom {
+    width: 200%;
+    height: 20%;
+    transition: transform 0.5s;
+  }
+  .card-wrapper .card-container .card-bottom.clicked {
+    transform: translateX(-50%);
+  }
+  .card-wrapper .card-container .card-bottom h4 {
+    /* font-family: sans-serif !important; */
+    /* font-weight: 700; */
+    /* font-size: 19px; */
+    /* color: #000000; */
+    margin: 0;
+    padding: 0;
+  }
+  .card-wrapper .card-container .card-bottom p {
+    margin: 0;
+    padding: 0;
+  }
+  .card-wrapper .card-container .card-bottom .card-left {
+    height: 100%;
+    width: 50%;
+    background: #f4f4f4;
+    position: relative;
+    float: left;
+  }
+  .card-wrapper .card-container .card-bottom .card-left .card-details {
+    padding: 20px;
+    padding-right: 7px;
+    padding-top: 32px;
+    float: left;
+    width: calc(70%);
+  }
+  .card-wrapper .card-container .card-bottom .card-left .actionBtn {
+    float: right;
+    width: calc(30% - 2px);
+    height: 50%;
+    background: #f1f1f1;
+    transition: background 0.5s;
+    border-left: solid thin rgba(0, 0, 0, 0.1);
+    border-top: solid thin rgba(0, 0, 0, 0.1);
+  }
+
+  .actionBtn-icon {
+    font-size: 22px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    /* color: #254053; */
+    color: #1F30D7;
+    transition: transform 0.5s;
+  }
+  .actionBtn-sub-icon {
+    font-size: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    /* color: #254053; */
+    color: #1F30D7;
+    transition: transform 0.5s;
+  }
+  .actionBtn-sub-icon:hover {
+    color: orange;
+  }
+  .actionBtn-hover {
+    background: #f1f1f1;
+  }
+  .actionBtn-hover:hover {
+    background: #A6CDDE !important;
+  }
+  /* .card-wrapper .card-container .card-bottom .card-left .actionBtn i {
+    font-size: 22px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    color: #1F30D7;
+    transition: transform 0.5s;
+  } */
+  /* .card-wrapper .card-container .card-bottom .card-left .actionBtn:hover {
+    background: #A6CDDE;
+  } */
+  /* .card-wrapper .card-container .card-bottom .card-left .actionBtn:hover i {
+    color: #1F30D7;
+  }
+   */
+  .card-wrapper .card-inside {
+    z-index: 9;
+    background: #4FBFE7;
+    width: 140px;
+    height: 140px;
+    position: absolute;
+    top: -70px;
+    right: -70px;
+    border-radius: 0px 0px 200px 200px;
+    transition: all 0.5s, border-radius 2s, top 1s;
+    overflow: hidden;
+  }
+  .card-wrapper .card-inside .card-icon {
+    position: absolute;
+    right: 85px;
+    top: 85px;
+    color: white;
+    opacity: 1;
+  }
+  .card-wrapper .card-inside:hover {
+    width: 100%;
+    right: 0;
+    top: 0;
+    border-radius: 0;
+    height: 80%;
+  }
+  .card-wrapper .card-inside:hover .card-icon {
+    opacity: 0;
+    right: 15px;
+    top: 15px;
+  }
+  .card-wrapper .card-inside:hover .card-contents {
+    opacity: 1;
+    transform: scale(1);
+    transform: translateY(0);
+    word-break: break-word;
+    
+  }
+  .card-wrapper .card-inside .card-contents {
+    padding: 5%;
+    opacity: 0;
+    transform: scale(0.5);
+    transform: translateY(-200%);
+    transition: opacity 0.2s, transform 0.8s;
+  }
+  .card-wrapper .card-inside .card-contents table {
+    text-align: left;
+    width: 100%;
+  }
+  .card-wrapper .card-inside .card-contents h1, .card-wrapper .card-inside .card-contents p, .card-wrapper .card-inside .card-contents table {
+    color: white;
+  }
+  .card-wrapper .card-inside .card-contents p {
+    font-size: 13px;
+  }

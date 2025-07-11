@@ -1,0 +1,51 @@
+<style>
+  .loader-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    background-color: #fff;
+    z-index: 99;
+    width: 100%;
+    height: 100%;
+  }
+
+  @media screen and (min-width: 1200px) {
+    .loader-wrapper {
+      width: 104%;
+      border-left: 30px solid #f4f5fa;
+      border-right: 30px solid #f4f5fa;
+    }
+  }
+
+  @media screen and (min-width: 600px) and (max-width: 1200px) {
+    .loader-wrapper {
+      width: 109%;
+      border-left: 30px solid #f4f5fa;
+      border-right: 30px solid #f4f5fa;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .loader-wrapper {
+      width: 107%;
+      border-left: 16px solid #f4f5fa;
+      border-right: 16px solid #f4f5fa;
+    }
+  }
+</style>
+
+<div class="loader-wrapper" id="loaderDiv">
+  <div class="loader-container bg-white">
+    <div class="ball-beat loader-primary text-center">
+      <div></div>
+      <div></div>
+      <div></div>
+      <strong>
+        <h3 class="pt-2 text-primary text-weight-bold">Loading...</h3>
+      </strong>
+    </div>
+  </div>
+</div>

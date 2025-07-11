@@ -1,0 +1,29 @@
+Q: What are your hours of operation?
+A: We are open from 11:00 AM to 10:00 PM every day.
+
+Q: Do you offer delivery?
+A: Yes, we offer delivery through third-party services like Uber Eats, Grubhub, and DoorDash. You can place your order directly through their apps.
+
+Q: Can I make a reservation?
+A: Of course! You can make a reservation by calling us at (123) 456-7890 or by visiting our website and booking through our reservation system.
+
+Q: What is your most popular dish?
+A: Our signature dish is the grilled chicken with rosemary potatoes. It's a customer favorite and pairs perfectly with our homemade garlic bread!
+
+Q: Do you have vegetarian options?
+A: Yes, we offer several vegetarian dishes including a vegetable stir-fry, a hearty veggie burger, and a fresh garden salad with house-made dressing.
+
+Q: Are there any gluten-free options?
+A: Yes, we have a selection of gluten-free options! Some popular choices include our gluten-free pizza crust, quinoa salad, and roasted chicken with mashed potatoes.
+
+Q: Can I see your menu?
+A: You can view our full menu [here](insert link). We also update our specials regularly, so be sure to check that out when you visit!
+
+Q: Do you offer catering services?
+A: Yes, we provide catering for events! We offer custom menus for parties, weddings, and corporate events. You can get more details and request a quote on our catering page on the website.
+
+Q: What is your policy on cancellations?
+A: We ask for a 24-hour notice for any reservation cancellations. If you cancel within 24 hours, a small cancellation fee may apply.
+
+Q: Is parking available?
+A: Yes, we have free parking available behind the restaurant. There are also additional street parking spots nearby if needed.

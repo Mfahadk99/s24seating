@@ -1,0 +1,273 @@
+#mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* position: relative; */
+}
+.full-screen-btn {
+  top: 10px;
+  float: right;
+}
+#drawflow {
+  height: 70vh; /* Full height */
+  position: relative;
+  overflow-x: visible;
+  background: rgba(255, 255, 255, 1);
+  background-size: 16px;
+  background-image: linear-gradient(
+      to right,
+      rgba(248, 248, 248, 1) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(248, 248, 248, 1) 1px, transparent 1px);
+  border: 1px solid #80808061;
+  flex: 1;
+}
+
+.drawflow-node .title-box {
+  font-weight: 600;
+  /* margin-bottom: 5px; */
+  cursor: pointer;
+}
+
+.node.event .title-box {
+  display: flex;
+  align-items: center;
+}
+
+.drawflow-node .title-box i {
+  position: relative;
+  top: 1px;
+  font-weight: 600;
+  padding-right: 5px;
+}
+
+.toolbar {
+  position: absolute;
+  /* top: 110px; */
+  /* top: 25px; */
+  left: 25px; /* Place it on the left side */
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 10px; /* Add space between buttons */
+  z-index: 10; /* Ensure it stays on top of the editor */
+  background-color: #fcfcfc;
+  padding: 5px;
+  direction: rtl;
+  overflow-y: auto;
+  /* height: 95vh; */
+}
+
+.toolbar-content {
+  display: flex;
+  flex-direction: column;
+  /* padding: 10px; */
+  direction: ltr;
+}
+
+.toolbar-content i {
+  padding-right: 2px;
+}
+
+.toolbar-content button {
+  margin-bottom: 5px;
+  text-align: left;
+  max-width: 145px;
+  line-height: 1.6;
+}
+
+.toolbar-footer {
+  /* padding: 10px 20px; */
+  border-top: 1px solid #ddd;
+}
+
+.toolbar-footer button {
+  display: block;
+  margin-bottom: 5px;
+  width: 145px;
+}
+
+.node {
+  padding: 10px;
+  border-radius: 14px !important;
+  /* border: 1px solid #ccc; */
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  /* min-width: 145px; */
+}
+
+.drawflow .drawflow-node {
+  padding: 0px;
+  width: auto;
+}
+.node input,
+.node textarea {
+  border: none;
+  background: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.node label {
+  margin-top: 11px;
+}
+
+.node input:focus {
+  outline: none;
+}
+.node.start {
+  background-color: #fafafa;
+  border-color: #424242;
+  text-align: center;
+  font-weight: 600;
+}
+.node.start i {
+  position: relative;
+  top: 1px;
+  font-weight: 600;
+}
+.node.event {
+  background-color: #0051a1;
+  border-color: #727272;
+  color: white;
+}
+.node.action {
+  background-color: #3a3a3a;
+  border-color: #424040;
+  color: white;
+  max-width: 250px;
+  width: max-content;
+}
+
+.event-name {
+  background: transparent !important;
+  color: white;
+  font-weight: bold;
+}
+
+.event-name::placeholder {
+  color: #ccc; /* Replace with your desired color */
+}
+
+.drawflow .drawflow-node.selected {
+  background-color: unset !important;
+  padding: 0px;
+  border-radius: 8px;
+  border: 1px solid;
+  z-index: 10;
+}
+
+.drawflow .drawflow-node .input,
+.drawflow .drawflow-node .output {
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+
+.drawflow .drawflow-node .input {
+  left: -12px;
+}
+
+.drawflow .drawflow-node .output {
+  right: 2px;
+  top: 2px;
+}
+
+.drawflow .connection .main-path {
+  stroke-width: 5px;
+  stroke: #464855;
+}
+
+.zoom-toolbar {
+  position: absolute;
+  bottom: 35px;
+  right: 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 2;
+}
+
+.zoom-toolbar button {
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.3s;
+}
+
+.zoom-toolbar button:hover {
+  background-color: #0056b3;
+}
+
+.drawflow .drawflow-node .input::before,
+.drawflow .drawflow-node .output::before {
+  content: "";
+  position: absolute;
+  width: 40px; /* Increased touch area */
+  height: 40px; /* Increased touch area */
+  top: -8px; /* Adjust as needed */
+  left: -8px; /* Adjust as needed */
+  z-index: 1;
+}
+
+/* Override Bootstrap collapse transition duration */
+.custom-collapse,
+.custom-collapse .collapsing {
+  opacity: 0;
+  overflow: hidden;
+  height: 0;
+  transition: opacity 0.01s ease;
+}
+
+.custom-collapse.show {
+  opacity: 1;
+  height: auto;
+  transition: opacity 0.01s ease;
+}
+
+.collapsible .toolbar-content {
+  display: none;
+}
+
+.toolbar-section .collapse.show {
+  display: block;
+}
+.toolbar-section-title.btn {
+  text-align: left;
+}
+
+.toolbar-section-title {
+  border-bottom: 1px solid #bababa;
+  padding-left: 0px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding-left: 4px;
+}
+.toggle-icon {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.section-header {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.actions-btn {
+  width: 145px;
+}
+
+#mainActionsSideBar {
+  height: 90vh;
+}
+
+.collapse-icon {
+  padding: 5px;
+}
+
+#mainToolbarSideBar {
+  height: 92vh;
+}

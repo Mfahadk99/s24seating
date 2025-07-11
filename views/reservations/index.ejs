@@ -1,0 +1,573 @@
+<!doctype html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <!-- head partial -->
+    <%- include('../partials/head.ejs') %>
+    <!-- styles partial -->
+    <%- include('../partials/styles.ejs') %>
+    <!-- reservations css -->
+    <link rel="stylesheet" type="text/css" href="/public/css/reservations/reservations.css">
+    <!-- availability css -->
+    <link rel="stylesheet" type="text/css" href="/public/css/availability/availability.css">
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body class="vertical-layout vertical-content-menu 2-columns fixed-navbar" data-open="click"
+    data-menu="vertical-content-menu" data-col="2-columns">
+
+    <!-- top-menu partial -->
+    <!-- <%- include('../partials/top-menu.ejs') %> -->
+
+        <!-- BEGIN: Content-->
+        <div class="app-content content">
+            <div class="content-wrapper">
+                <!-- main-menu partial -->
+                <!-- <%- include('../partials/main-menu.ejs') %> -->
+
+                <!-- Main Layout -->
+                <div class="content-body"> <!-- reservations-layout -->
+                    <div class="app-container">
+                        <!-- Date Header -->
+                        <div class="date-header">
+                            <div class="date-navigation">
+                                <button class="date-nav-btn" id="prev-date" title="Previous Day">
+                                    <i class="la la-angle-left"></i>
+                                </button>
+
+                                <div class="date-display">
+                                    <div class="current-date" id="current-date" title="Click to select date">
+                                        <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric',
+                                            month: 'long', day: 'numeric' }) %>
+                                    </div>
+                                </div>
+
+                                <button class="date-nav-btn" id="next-date" title="Next Day">
+                                    <i class="la la-angle-right"></i>
+                                </button>
+                            </div>
+
+                            <!-- Hidden date picker -->
+                            <input type="date" id="date-picker" class="date-picker-input"
+                                value="<%= new Date().toISOString().split('T')[0] %>">
+                        </div>
+
+                        <!-- Main Content -->
+                        <div class="main-content">
+                            <!-- Left Panel -->
+                            <div class="left-panel">
+                                <!-- Section: Table Reservations -->
+                                <div class="panel-section">
+                                    <div class="panel-header">
+                                        <div class="panel-header-content">
+                                            <h2>Reservations</h2>
+                                            <p class="subtitle">Manage your restaurant seating</p>
+                                        </div>
+                                        <button class="section-toggle-btn" data-section="reservations" title="Expand/Collapse Section">
+                                            <i class="la la-angle-up"></i>
+                                        </button>
+                                        <button class="filter-toggle-btn" id="filter-toggle" title="Filter Options">
+                                            <i class="la la-filter"></i>
+                                            <span class="filter-badge" id="filter-badge">1</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="section-content" id="reservations-section">
+                                        <!-- Filters -->
+                                        <div class="filter-section" id="filter-section">
+                                            <div class="filter-group">
+                                                <label for="filter-status">Status</label>
+                                                <select id="filter-status">
+                                                    <option value="">All Tables</option>
+                                                    <option value="available">Available</option>
+                                                    <option value="reserved">Reserved</option>
+                                                </select>
+                                            </div>
+                                            <div class="filter-group">
+                                                <label for="filter-type">Table Type</label>
+                                                <select id="filter-type">
+                                                    <option value="">All Types</option>
+                                                    <option value="round">Round</option>
+                                                    <option value="square">Square</option>
+                                                    <option value="rectangular">Rectangular</option>
+                                                    <option value="hexagon">Hexagon</option>
+                                                    <option value="bar">Bar</option>
+                                                </select>
+                                            </div>
+                                            <div class="filter-group">
+                                                <label for="filter-seats">Minimum Seats</label>
+                                                <select id="filter-seats">
+                                                    <option value="">Any</option>
+                                                    <option value="2">2+</option>
+                                                    <option value="4">4+</option>
+                                                    <option value="6">6+</option>
+                                                    <option value="8">8+</option>
+                                                </select>
+                                            </div>
+                                            <div class="filter-actions">
+                                                <button class="filter-action-btn filter-reset" id="filter-reset">Reset</button>
+                                                <button class="filter-action-btn filter-apply" id="filter-apply">Apply
+                                                    Filters</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Search Box -->
+                                        <div class="search-box">
+                                            <input type="text" id="filter-search" class="search-input"
+                                                placeholder="Search tables or customers...">
+                                        </div>
+
+                                        <!-- Table List -->
+                                        <div class="table-list" id="table-list">
+                                            <% if (!reservations || reservations.length===0) { %>
+                                                <div class="no-data">
+                                                    <i class="la la-calendar-times-o"></i>
+                                                    <h4>No Reservations Found</h4>
+                                                    <p>No reservations available for the selected date.</p>
+                                                </div>
+                                            <% } else { %>
+                                                <!-- Reservation List Header -->
+                                                <div class="reservation-list-header">
+                                                    <div class="reservation-row header">
+                                                        <div class="col table-name">Table</div>
+                                                        <div class="col seats">Seats</div>
+                                                        <div class="col time">Time</div>
+                                                        <div class="col customer">Customer</div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Reservation List Body -->
+                                                <div class="reservation-list-body">
+                                                    <% reservations.forEach(reservation => { %>
+                                                        <div class="reservation-row" 
+                                                            data-table-id="<%= reservation.tableId ? reservation.tableId._id : '' %>"
+                                                            data-reservation-id="<%= reservation._id %>">
+                                                            <div class="col table-name">
+                                                                <%= reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table' %>
+                                                            </div>
+                                                            <div class="col seats">
+                                                                <%= reservation.tableId ? reservation.tableId.seats : 'N/A' %>
+                                                            </div>
+                                                            <div class="col time">
+                                                                <%= new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %> - 
+                                                                <%= new Date(reservation.endTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %>
+                                                            </div>
+                                                            <div class="col customer">
+                                                                <%= reservation.metadata && reservation.metadata.name ? reservation.metadata.name : 'Guest' %>
+                                                            </div>
+                                                        </div>
+                                                    <% }); %>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section: Seated -->
+                                <div class="panel-section">
+                                    <div class="panel-header">
+                                        <div class="panel-header-content">
+                                            <h2>Seated</h2>
+                                            <p class="subtitle">Currently seated guests</p>
+                                        </div>
+                                        <button class="section-toggle-btn" data-section="seated" title="Expand/Collapse Section">
+                                            <i class="la la-angle-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="section-content" id="seated-section">
+                                        <div class="table-list" id="seated-list">
+                                            <div class="no-data">
+                                                <i class="la la-chair"></i>
+                                                <h4>No Seated Guests</h4>
+                                                <p>No guests are currently seated.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section: Waitlists -->
+                                <div class="panel-section">
+                                    <div class="panel-header">
+                                        <div class="panel-header-content">
+                                            <h2>Waitlists</h2>
+                                            <p class="subtitle">Guests waiting for tables</p>
+                                        </div>
+                                        <button class="section-toggle-btn" data-section="waitlists" title="Expand/Collapse Section">
+                                            <i class="la la-angle-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="section-content" id="waitlists-section">
+                                        <div class="table-list" id="waitlist-list">
+                                            <div class="no-data">
+                                                <i class="la la-clock"></i>
+                                                <h4>No Waitlisted Guests</h4>
+                                                <p>No guests are currently on the waitlist.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section: Servers -->
+                                <div class="panel-section">
+                                    <div class="panel-header">
+                                        <div class="panel-header-content">
+                                            <h2>Servers</h2>
+                                            <p class="subtitle">Server assignments and status</p>
+                                        </div>
+                                        <button class="section-toggle-btn" data-section="servers" title="Expand/Collapse Section">
+                                            <i class="la la-angle-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="section-content" id="servers-section">
+                                        <div class="table-list" id="servers-list">
+                                            <div class="no-data">
+                                                <i class="la la-user"></i>
+                                                <h4>No Active Servers</h4>
+                                                <p>No servers are currently assigned.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section: Finished -->
+                                <div class="panel-section">
+                                    <div class="panel-header">
+                                        <div class="panel-header-content">
+                                            <h2>Finished</h2>
+                                            <p class="subtitle">Completed reservations</p>
+                                        </div>
+                                        <button class="section-toggle-btn" data-section="finished" title="Expand/Collapse Section">
+                                            <i class="la la-angle-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="section-content" id="finished-section">
+                                        <div class="table-list" id="finished-list">
+                                            <div class="no-data">
+                                                <i class="la la-check-circle"></i>
+                                                <h4>No Finished Reservations</h4>
+                                                <p>No reservations have been completed today.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section: Removed -->
+                                <div class="panel-section">
+                                    <div class="panel-header">
+                                        <div class="panel-header-content">
+                                            <h2>Removed</h2>
+                                            <p class="subtitle">Cancelled or no-show reservations</p>
+                                        </div>
+                                        <button class="section-toggle-btn" data-section="removed" title="Expand/Collapse Section">
+                                            <i class="la la-angle-down"></i>
+                                        </button>
+                                    </div>
+                                    <div class="section-content" id="removed-section">
+                                        <div class="table-list" id="removed-list">
+                                            <div class="no-data">
+                                                <i class="la la-times-circle"></i>
+                                                <h4>No Removed Reservations</h4>
+                                                <p>No reservations have been cancelled today.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Panel - Canvas (Using availability.ejs canvas design) -->
+                            <div class="right-panel">
+                                <!-- Canvas Toolbar -->
+                                <div class="ap-toolbar">
+                                    <div class="ap-toolbar-left">
+                                        <span style="font-weight: 600; font-size: 16px;">Floor plan</span>
+                                        <select class="floor-selector" id="floorPlanSelector">
+                                            <option value="" disabled selected>Loading floor plans...</option>
+                                        </select>
+                                    </div>
+                                    <div class="ap-toolbar-right">
+                                        <button class="ap-toolbar-btn" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">🔍+</button>
+                                        <button class="ap-toolbar-btn" id="zoomOutBtn" title="Zoom out" aria-label="Zoom out">🔍-</button>
+                                        <button class="ap-toolbar-btn" id="fullscreenBtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
+                                            <span class="fullscreen-icon">⛶</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Canvas Container -->
+                                <div class="ap-canvas-container">
+                                    <div class="ap-canvas" id="ap-canvas" tabindex="0" role="application" aria-label="Floor plan canvas">
+                                        <div class="ap-canvas-content" id="ap-canvasContent">
+                                            <% if (!reservations || reservations.length===0) { %>
+                                                <div class="no-data">
+                                                    <i class="la la-table"></i>
+                                                    <h4>No Tables to Display</h4>
+                                                    <p>No table layout available for the current reservations.</p>
+                                                </div>
+                                            <% } else { %>
+                                                <div class="ap-drop-zone" id="ap-dropZone">
+                                                    <div class="ap-drop-message">Drop table here to add to floor plan</div>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END: Content-->
+
+        <div class="sidenav-overlay"></div>
+        <div class="drag-target"></div>
+
+        <!-- Store reservations data for JavaScript -->
+        <div id="reservations-data" data-reservations="<%= JSON.stringify(reservations || []) %>" style="display: none;"></div>
+        <!-- Helper scripts for new features -->
+        <script>
+            function formatTime(timeString) {
+                return new Date(timeString).toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            }
+            function changePage(newPage) {
+                currentPage = newPage;
+                renderReservationsList(reservationsData);
+            }
+            function retryLoadFloorPlan(floorPlanId) {
+                loadFloorPlan(floorPlanId);
+            }
+            function setupTableClickListeners() {
+                document.querySelectorAll('.reservation-row').forEach(row => {
+                    row.addEventListener('click', function() {
+                        const tableId = this.dataset.tableId;
+                        if (tableId) {
+                            selectTable(tableId);
+                        }
+                    });
+                });
+            }
+        </script>
+
+        <!-- footer partial -->
+        <%- include('../partials/footer.ejs') %>
+
+        <!-- scripts partial -->
+        <%- include('../partials/scripts-without-pace.ejs') %>
+        
+        <!-- Availability JavaScript files FIRST -->
+        <script src="/public/js/pages/availability.js"></script>
+        <script src="/public/js/pages/availability/floorPlanApi.js"></script>
+        <script src="/public/js/pages/availability/tableApi.js"></script>
+        <script src="/public/js/pages/availability/ui.js"></script>
+        <script src="/public/js/pages/availability/canvas.js"></script>
+        
+        <!-- Reservations specific JavaScript LAST -->
+        <script src="/public/js/pages/reservations/reservations.js"></script>
+        
+        <script>
+            const currentUser = '<%= currentUser.user_type %>';
+        </script>
+        <!-- Integration Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Keep track of currently expanded section
+                let currentlyExpandedSection = 'reservations'; // Default expanded section
+
+                // Function to collapse all sections except the specified one
+                function collapseAllExcept(exceptSectionId) {
+                    document.querySelectorAll('.section-content').forEach(section => {
+                        if (section.id !== `${exceptSectionId}-section`) {
+                            // Collapse section
+                            section.classList.remove('expanded');
+                            section.style.display = 'none';
+                            
+                            // Update the corresponding button icon
+                            const button = document.querySelector(`[data-section="${section.id.replace('-section', '')}"]`);
+                            if (button) {
+                                const icon = button.querySelector('i');
+                                icon.classList.remove('la-angle-up');
+                                icon.classList.add('la-angle-down');
+                            }
+                        }
+                    });
+                }
+
+                // Setup section toggle functionality
+                document.querySelectorAll('.section-toggle-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const sectionId = this.getAttribute('data-section');
+                        const sectionContent = document.getElementById(`${sectionId}-section`);
+                        const icon = this.querySelector('i');
+                        
+                        if (currentlyExpandedSection === sectionId) {
+                            // Clicking on already expanded section - collapse it
+                            sectionContent.classList.remove('expanded');
+                            sectionContent.style.display = 'none';
+                            icon.classList.remove('la-angle-up');
+                            icon.classList.add('la-angle-down');
+                            currentlyExpandedSection = null;
+                        } else {
+                            // Collapse all other sections
+                            collapseAllExcept(sectionId);
+                            
+                            // Expand clicked section
+                            sectionContent.style.display = 'block';
+                            sectionContent.classList.add('expanded');
+                            icon.classList.remove('la-angle-down');
+                            icon.classList.add('la-angle-up');
+                            currentlyExpandedSection = sectionId;
+                        }
+                    });
+                });
+
+                // Initialize the Reservations section as expanded by default
+                const reservationsSection = document.getElementById('reservations-section');
+                if (reservationsSection) {
+                    reservationsSection.classList.add('expanded');
+                    reservationsSection.style.display = 'block';
+                    // Ensure all other sections are collapsed
+                    collapseAllExcept('reservations');
+                }
+
+                // Get restaurantId from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const restaurantId = urlParams.get('restaurantId');
+                
+                if (!restaurantId) {
+                    console.error('Restaurant ID not found in URL');
+                    return;
+                }
+
+                // Initialize floor plan selector
+                const floorSelector = document.getElementById('floorPlanSelector');
+                if (!floorSelector) return;
+
+                // Use FloorPlanApi to fetch floor plans
+                window.FloorPlanApi.fetchFloorPlans(restaurantId)
+                    .then(floorPlans => {
+                        // Clear loading option
+                        floorSelector.innerHTML = '';
+                        
+                        if (floorPlans.length === 0) {
+                            const option = document.createElement('option');
+                            option.value = '';
+                            option.textContent = 'No floor plans available';
+                            option.disabled = true;
+                            option.selected = true;
+                            floorSelector.appendChild(option);
+                            return;
+                        }
+
+                        // Add floor plans to selector
+                        floorPlans.forEach(plan => {
+                            const option = document.createElement('option');
+                            option.value = plan._id;
+                            option.textContent = plan.name;
+                            floorSelector.appendChild(option);
+                        });
+
+                        // Select first floor plan by default
+                        if (floorPlans.length > 0) {
+                            floorSelector.value = floorPlans[0]._id;
+                            // Load tables for this floor plan
+                            loadFloorPlan(floorPlans[0]._id);
+                        }
+
+                        // Add change event listener
+                        floorSelector.addEventListener('change', function() {
+                            loadFloorPlan(this.value);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching floor plans:', error);
+                        floorSelector.innerHTML = '<option value="" disabled selected>Error loading floor plans</option>';
+                    });
+            });
+
+            async function loadFloorPlan(floorPlanId) {
+                if (!floorPlanId) return;
+
+                try {
+                    // Clear existing tables from canvas
+                    const canvasContent = document.getElementById('ap-canvasContent');
+                    if (canvasContent) {
+                        canvasContent.innerHTML = '<div class="ap-drop-zone" id="ap-dropZone"><div class="ap-drop-message">Drop table here to add to floor plan</div></div>';
+                    }
+
+                    // Use TableApi to fetch tables
+                    const tables = await window.TableApi.fetchTablesForFloorPlan(floorPlanId);
+                    tables.forEach(table => {
+                        renderTableOnCanvas(table);
+                    });
+                } catch (error) {
+                    console.error('Error loading floor plan:', error);
+                }
+            }
+
+            function renderTableOnCanvas(table) {
+                const canvasContent = document.getElementById('ap-canvasContent');
+                if (!canvasContent) return;
+
+                const droppedTable = document.createElement('div');
+                droppedTable.className = `ap-dropped-table ${table.isReserved ? 'reserved' : ''}`;
+                droppedTable.textContent = table.name || table.tableId;
+                droppedTable.dataset.seats = table.seats;
+                droppedTable.dataset.type = table.tableType;
+                droppedTable.dataset.id = table.tableId;
+                droppedTable.dataset.serverId = table._id;
+
+                // Set position
+                droppedTable.style.left = `${table.position?.x || 0}px`;
+                droppedTable.style.top = `${table.position?.y || 0}px`;
+
+                // Set size and shape based on table type and seats
+                setTableStyle(droppedTable, table.tableType, table.seats);
+
+                // Remove draggable functionality - tables should be unmovable
+                // if (window.makeTableDraggable) {
+                //     window.makeTableDraggable(droppedTable);
+                // }
+
+                canvasContent.appendChild(droppedTable);
+            }
+
+            function setTableStyle(table, type, seats) {
+                switch (type) {
+                    case 'round':
+                        table.style.borderRadius = '50%';
+                        table.style.width = seats <= 4 ? '50px' : seats <= 8 ? '60px' : '80px';
+                        table.style.height = table.style.width;
+                        break;
+                    case 'square':
+                        table.style.borderRadius = '4px';
+                        table.style.width = seats <= 4 ? '50px' : '60px';
+                        table.style.height = table.style.width;
+                        break;
+                    case 'rectangular':
+                        table.style.borderRadius = '4px';
+                        table.style.width = seats <= 4 ? '80px' : seats <= 8 ? '120px' : '140px';
+                        table.style.height = seats <= 4 ? '40px' : seats <= 8 ? '60px' : '70px';
+                        break;
+                    case 'hexagon':
+                        table.style.width = '50px';
+                        table.style.height = '50px';
+                        table.style.clipPath = 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)';
+                        break;
+                    case 'bar':
+                        table.style.width = '100px';
+                        table.style.height = '30px';
+                        table.style.borderRadius = '15px';
+                        break;
+                }
+            }
+        </script>
+</body>
+<!-- END: Body-->
+
+</html>
