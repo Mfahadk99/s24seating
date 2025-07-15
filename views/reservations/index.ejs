@@ -573,6 +573,9 @@
                 const dateString = currentDate.toISOString().split('T')[0];
                 document.getElementById('date-picker').value = dateString;
                 
+                // Update URL with new date and shift
+                updateUrlWithDateAndShift(dateString);
+                
                 // Reload data with new date
                 const urlParams = new URLSearchParams(window.location.search);
                 const restaurantId = urlParams.get('restaurantId');
@@ -581,24 +584,75 @@
                 }
             }
 
+            function updateUrlWithDateAndShift(dateString) {
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('date', dateString);
+                
+                // Get current shift selection
+                const shiftSelect = document.getElementById('shift-select');
+                const selectedShift = shiftSelect ? shiftSelect.value : '';
+                
+                if (selectedShift) {
+                    urlParams.set('shift', selectedShift);
+                } else {
+                    urlParams.delete('shift');
+                }
+                
+                // Update URL without reloading the page
+                const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+                history.replaceState({}, '', newUrl);
+            }
+
             function setupDateNavigation() {
+                // Initialize current date from URL if available
+                const urlParams = new URLSearchParams(window.location.search);
+                const dateParam = urlParams.get('date');
+                if (dateParam) {
+                    currentDate = new Date(dateParam + 'T00:00:00');
+                }
+                
                 // Previous day button
                 document.getElementById('prev-date').addEventListener('click', function() {
-                    currentDate.setDate(currentDate.getDate() - 1);
+                    const newDate = new Date(currentDate);
+                    newDate.setDate(newDate.getDate() - 1);
+                    currentDate = newDate;
                     updateDateDisplay();
                 });
                 
                 // Next day button
                 document.getElementById('next-date').addEventListener('click', function() {
-                    currentDate.setDate(currentDate.getDate() + 1);
+                    const newDate = new Date(currentDate);
+                    newDate.setDate(newDate.getDate() + 1);
+                    currentDate = newDate;
                     updateDateDisplay();
                 });
                 
                 // Date picker change
                 document.getElementById('date-picker').addEventListener('change', function() {
-                    currentDate = new Date(this.value);
+                    currentDate = new Date(this.value + 'T00:00:00');
                     updateDateDisplay();
                 });
+                
+                // Shift dropdown change
+                const shiftSelect = document.getElementById('shift-select');
+                if (shiftSelect) {
+                    // Set initial shift value from URL
+                    const shiftParam = urlParams.get('shift');
+                    if (shiftParam) {
+                        shiftSelect.value = shiftParam;
+                    }
+                    
+                    shiftSelect.addEventListener('change', function() {
+                        const dateString = currentDate.toISOString().split('T')[0];
+                        updateUrlWithDateAndShift(dateString);
+                        
+                        // Reload data with new shift
+                        const restaurantId = urlParams.get('restaurantId');
+                        if (restaurantId) {
+                            loadAllSectionData(restaurantId, dateString);
+                        }
+                    });
+                }
                 
                 // Initialize display
                 updateDateDisplay();
@@ -830,14 +884,18 @@
             
             async function loadAllSectionData(restaurantId, date) {
                 try {
+                    // Get current shift selection
+                    const shiftSelect = document.getElementById('shift-select');
+                    const selectedShift = shiftSelect ? shiftSelect.value : '';
+
                     // Load seated reservations
-                    await loadSeatedReservations(restaurantId);
+                    await loadSeatedReservations(restaurantId, selectedShift);
 
                     // Load finished reservations
-                    await loadFinishedReservations(restaurantId, date);
+                    await loadFinishedReservations(restaurantId, date, selectedShift);
 
                     // Load removed reservations
-                    await loadRemovedReservations(restaurantId, date);
+                    await loadRemovedReservations(restaurantId, date, selectedShift);
 
                     // Load waitlist
                     await loadWaitlist(restaurantId);
@@ -851,9 +909,13 @@
             }
 
             // Load seated reservations
-            async function loadSeatedReservations(restaurantId) {
+            async function loadSeatedReservations(restaurantId, shift = '') {
                 try {
-                    const response = await fetch(`/reservation?restaurantId=${restaurantId}&filter=seated&isJSON=true`);
+                    let url = `/reservation?restaurantId=${restaurantId}&filter=seated&isJSON=true`;
+                    if (shift) {
+                        url += `&shift=${shift}`;
+                    }
+                    const response = await fetch(url);
                     const data = await response.json();
 
                     if (data.success) {
@@ -866,9 +928,13 @@
             }
 
             // Load finished reservations
-            async function loadFinishedReservations(restaurantId, date) {
+            async function loadFinishedReservations(restaurantId, date, shift = '') {
                 try {
-                    const response = await fetch(`/reservation?restaurantId=${restaurantId}&filter=finished&date=${date}&isJSON=true`);
+                    let url = `/reservation?restaurantId=${restaurantId}&filter=finished&date=${date}&isJSON=true`;
+                    if (shift) {
+                        url += `&shift=${shift}`;
+                    }
+                    const response = await fetch(url);
                     const data = await response.json();
 
                     if (data.success) {
@@ -881,9 +947,13 @@
             }
 
             // Load removed reservations
-            async function loadRemovedReservations(restaurantId, date) {
+            async function loadRemovedReservations(restaurantId, date, shift = '') {
                 try {
-                    const response = await fetch(`/reservation?restaurantId=${restaurantId}&filter=removed&date=${date}&isJSON=true`);
+                    let url = `/reservation?restaurantId=${restaurantId}&filter=removed&date=${date}&isJSON=true`;
+                    if (shift) {
+                        url += `&shift=${shift}`;
+                    }
+                    const response = await fetch(url);
                     const data = await response.json();
 
                     if (data.success) {
