@@ -1,0 +1,33 @@
+                        <div class="date-header">
+                            <div class="date-navigation">
+                                <button class="date-nav-btn" id="prev-date" title="Previous Day">
+                                    <i class="la la-angle-left"></i>
+                                </button>
+
+                                <div class="date-display">
+                                    <div class="current-date" id="current-date" title="Click to select date">
+                                        <%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric',
+                                            month: 'long', day: 'numeric' }) %>
+                                    </div>
+                                </div>
+
+                                <button class="date-nav-btn" id="next-date" title="Next Day">
+                                    <i class="la la-angle-right"></i>
+                                </button>
+                            </div>
+
+                            <!-- Shift Dropdown -->
+                            <div class="shift-dropdown" style="display: inline-block; margin-left: 20px;">
+                                <label for="shift-select" style="font-weight: 500; margin-right: 8px;">Shift:</label>
+                                <select id="shift-select" class="form-control" style="display: inline-block; width: auto; border-radius: 10px;">
+                                    <option value="">All Shifts</option>
+                                    <option value="breakfast">Breakfast</option>
+                                    <option value="lunch">Lunch</option>
+                                    <option value="dinner">Dinner</option>
+                                </select>
+                            </div>
+
+                            <!-- Hidden date picker -->
+                            <input type="date" id="date-picker" class="date-picker-input"
+                                value="<%= new Date().toISOString().split('T')[0] %>">
+                        </div>
