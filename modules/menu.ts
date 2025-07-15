@@ -46,7 +46,7 @@ class Menu {
       "/restaurants",
       "/floorplans",
       "/reservation",
-      "/time-slots/restaurant",
+      "/shifts/restaurant",
       "/restaurants/admin-restaurant",
       "/restaurants/settings",
       "/restaurants/owner",
@@ -59,7 +59,9 @@ class Menu {
       "/server",
       "/server/restaurant",
       "/server/assign-reservation",
-      "/server/remove-reservation"
+      "/server/remove-reservation",
+      "/settings/restaurant",
+      "/settings"
     ];
     this.superAdmin = [
       ...this.common,

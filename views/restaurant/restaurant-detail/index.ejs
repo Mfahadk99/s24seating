@@ -379,7 +379,7 @@
                                     <% if (restaurant.operatingHours && restaurant.operatingHours.isOpen) { %>
                                         <span class="status-badge badge-success">Open Now</span>
                                         <% } else { %>
-                                            <span class="status-badge badge-danger">Closed</span>
+                                            <!-- <span class="status-badge badge-danger">Closed</span> -->
                                             <% } %>
                                 </div>
                             </div>
@@ -412,10 +412,10 @@
                             </div>
 
                             <!-- Gallery Section -->
-                            <div class="content-section">
+                            <!-- <div class="content-section">
                                 <h3 class="section-title">Gallery</h3>
                                 <div class="gallery-container">
-                                    <!-- Sample gallery images -->
+                                   
                                     <div class="gallery-item">
                                         <img src="<%= restaurant.image || '/public/images/placeholder-plot.png' %>"
                                             alt="Restaurant Interior">
@@ -436,13 +436,12 @@
                                         <img src="/public/images/placeholder-plot.png" alt="Chef Special">
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- Menu Section -->
-                            <div class="content-section">
+                            <!-- <div class="content-section">
                                 <h3 class="section-title">Menu</h3>
 
-                                <!-- Appetizers -->
                                 <div class="menu-category">
                                     <h4 class="category-title">Appetizers</h4>
                                     <div class="menu-items">
@@ -469,7 +468,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Main Courses -->
+                              
                                 <div class="menu-category">
                                     <h4 class="category-title">Main Courses</h4>
                                     <div class="menu-items">
@@ -496,7 +495,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Desserts -->
+                             
                                 <div class="menu-category">
                                     <h4 class="category-title">Desserts</h4>
                                     <div class="menu-items">
@@ -522,13 +521,13 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- Reviews Section -->
-                            <div class="content-section">
+                            <!-- <div class="content-section">
                                 <h3 class="section-title">Reviews</h3>
 
-                                <!-- Sample reviews -->
+                                
                                 <div class="review">
                                     <div class="review-header">
                                         <img src="/public/images/default-profile.png" class="reviewer-avatar"
@@ -592,7 +591,7 @@
                                             never disappoints. The menu has a great variety and the staff is always
                                             friendly and attentive. Their seasonal specials are always worth trying!</p>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
 
                         <!-- Right Column - Sidebar -->
@@ -739,7 +738,7 @@
                             </div>
 
                             <!-- Restaurant Info -->
-                            <div class="content-section">
+                            <!-- <div class="content-section">
                                 <h3 class="section-title">Restaurant Info</h3>
                                 <ul class="info-list">
                                     <li>
@@ -797,14 +796,14 @@
                                     </li>
                                 </ul>
 
-                                <!-- Map placeholder -->
+                               
                                 <div class="map-container">
                                     <iframe width="100%" height="100%" frameborder="0" style="border:0"
                                         src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA0s1a7phLN0iaD6-UE7m4qP-z21pH0eSc&q=<%= encodeURIComponent(restaurant.fullAddress || (restaurant.address ? `${restaurant.address.street}, ${restaurant.address.city}` : restaurant.name)) %>"
                                         allowfullscreen>
                                     </iframe>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>

@@ -5,10 +5,6 @@ const serverSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  reservationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Reservation",
-  },
   restaurantId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Restaurant",

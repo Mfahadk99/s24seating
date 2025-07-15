@@ -3,7 +3,7 @@ import TableElement from '../models/table.model';
 import FloorPlan from '../models/floor.model';
 import Restaurant from '../models/restaurant.model';
 import { handleResponse, handleError } from '../utils/responseHandler';
-
+// import Settings from '../models/settings.model';
 interface IUserRequest extends Request {
   user: { _id: string };
 }
@@ -57,6 +57,15 @@ export const createTable = async (req: Request, res: Response) => {
       return handleError(req, res, 404, 'Floor plan not found');
     }
 
+
+    const findSettingByRestaurantId = await Settings.find({ restaurantId: floorPlan.restaurantId });
+
+
+    // if (findSettingByRestaurantId) {
+    //   const timeSlotId = findSettingByRestaurantId.diningTimes.filter((diningTime: any) => diningTime.guest == req.body.capacity.minParty);
+    // }
+
+
     const tableData = {
       tableId: req.body.tableId,
       name: req.body.name || req.body.tableId,
@@ -68,7 +77,7 @@ export const createTable = async (req: Request, res: Response) => {
       isReserved: req.body.isReserved || false,
       floorPlanId: req.body.floorPlanId,
       restaurantId: floorPlan.restaurantId,
-      createdBy: req.user?._id || undefined
+      createdBy: req.user?._id
     };
 
     const table = new TableElement(tableData);

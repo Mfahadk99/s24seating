@@ -223,9 +223,9 @@
                           <polyline points="12 6 12 12 16 14"></polyline>
                         </svg>
                       </div>
-                      <h4 class="card-title">Shifts Management</h4>
-                      <p class="card-text">Configure shifts and scheduling options</p>
-                      <a href="/time-slots/restaurant/<%= restaurantId %>" class="btn">
+                      <h4 class="card-title">Shift Management</h4>
+                      <p class="card-text">Configure Shifts and scheduling options</p>
+                      <a href="/shifts/restaurant/shifts/<%= restaurantId %>" class="btn">
                         <i class="la la-external-link"></i> Manage Shifts
                       </a>
                     </div>
@@ -245,9 +245,9 @@
                         </svg>
                       </div>
                       <h4 class="card-title">Front of House</h4>
-                      <p class="card-text">View and manage front of house</p>
+                      <p class="card-text">View and manage customer reservations</p>
                       <a href="/reservation?restaurantId=<%= restaurantId %>&date=<%= new Date().toISOString().split('T')[0]; %>" class="btn">
-                        <i class="la la-external-link"></i> Manage Reservations
+                        <i class="la la-external-link"></i> Manage Front of House
                       </a>
                     </div>
                   </div>

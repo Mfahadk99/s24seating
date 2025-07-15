@@ -1,5 +1,6 @@
 import User from "../../models/user.model";
 import { Handler } from "express";
+import Restaurant from "../../models/restaurant.model";
 
 const filter: Handler = async (req, res, next) => {
   try {
@@ -115,7 +116,14 @@ const filter: Handler = async (req, res, next) => {
       .sort(sortFilter)
       .exec();
 
-    res.locals.clients = clients;
+    const clientsWithRestaurantCount = await Promise.all(
+      clients.map(async (client) => {
+        const restaurants = await Restaurant.find({ owner: client._id });
+        return { ...client.toObject(), restaurants };
+      })
+    );
+
+    res.locals.clients = clientsWithRestaurantCount;
     return next();
   } catch (err) {
     return next(err);

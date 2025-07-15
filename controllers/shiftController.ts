@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import Shift from "../models/shift";
 import mongoose from "mongoose";
+import { Menu } from "../modules/menu";
+import { handleError, handleResponse } from "../utils/responseHandler";
 
 export const createShift = async (req: Request, res: Response) => {
   try {
@@ -51,14 +53,14 @@ export const createShift = async (req: Request, res: Response) => {
     await shift.save();
 
     // Generate time slots for this shift
-    const timeSlotIds = await shift.generateTimeSlots();
+    // const timeSlotIds = await shift.generateTimeSlots();
 
     return res.status(201).json({
       success: true,
       message: "Shift created successfully with time slots",
       data: {
         shift,
-        timeSlotCount: timeSlotIds.length,
+        // timeSlotCount: timeSlotIds.length,
       },
     });
   } catch (error) {
@@ -174,18 +176,18 @@ export const updateShift = async (req: Request, res: Response) => {
     // If time-related parameters changed, regenerate time slots
     if (startTime || endTime || duration || bufferTime) {
       // Clear existing time slots
-      shift.timeSlots = [];
+      // shift.timeSlots = [];
       await shift.save();
 
       // Generate new time slots
-      const timeSlotIds = await shift.generateTimeSlots();
+      // const timeSlotIds = await shift.generateTimeSlots();
 
       return res.status(200).json({
         success: true,
         message: "Shift updated successfully with new time slots",
         data: {
           shift,
-          timeSlotCount: timeSlotIds.length,
+          // timeSlotCount: timeSlotIds.length,
         },
       });
     }
@@ -240,48 +242,47 @@ export const deleteShift = async (req: Request, res: Response) => {
   }
 };
 
-export const regenerateTimeSlots = async (req: Request, res: Response) => {
+
+export const getTimeSlots = async (req: Request, res: Response) => {
   try {
-    const { shiftId } = req.params;
+    const { restaurantId } = req.params;
 
-    if (!shiftId) {
-      return res.status(400).json({
-        success: false,
-        message: "Shift ID is required",
+    if (!restaurantId) {
+      return handleError(req, res, 400, "Restaurant ID is required");
+    }
+
+    // const timeSlots = await TimeSlot.find({ restaurantId }).sort({ order: 1 });
+
+    // Import the Menu class
+    const menuInstance = new Menu();
+
+    if (req.query.isJSON === 'true') {
+      return handleResponse(req, res, 200, {
+        success: true,
+        message: "Time slots retrieved successfully",
+        // data: timeSlots
+      });
+    } else {
+      return res.render('shifts/index', {
+        timeSlots: [],
+        title: "Time Slots",
+        menu: menuInstance.client, // Add menu variable from Menu class
+        restaurantId: restaurantId, // Pass restaurantId to the view
+        currentUser: {
+          firstname: 'Guest',
+          lastname: 'User',
+          image_url: '/public/images/default-profile.png'
+        }
       });
     }
 
-    // Find the shift by ID
-    const shift = await Shift.findById(shiftId);
-
-    if (!shift) {
-      return res.status(404).json({
-        success: false,
-        message: "Shift not found",
-      });
-    }
-
-    // Clear existing time slots
-    shift.timeSlots = [];
-    await shift.save();
-
-    // Generate new time slots
-    const timeSlotIds = await shift.generateTimeSlots();
-
-    return res.status(200).json({
-      success: true,
-      message: "Time slots regenerated successfully",
-      data: {
-        shift,
-        timeSlotCount: timeSlotIds.length,
-      },
-    });
   } catch (error) {
-    console.error("Error regenerating time slots:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to regenerate time slots",
-      error: error.message,
-    });
+    console.error("Error retrieving time slots:", error);
+    return handleError(req, res, 500, "Error retrieving time slots");
   }
 };
+
+
+
+
+

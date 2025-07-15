@@ -42,10 +42,10 @@ import tableRoutes from './routes/tableRoutes';
 import floorPlanRoutes from './routes/floorPlanRoutes';
 // import slotRoutes from './routes/slotRoutes';
 import reservationRoutes from './routes/reservationRoutes';
-import timeSlotRoutes from './routes/timeSlotRoutes';
 import shiftsRouter from './routes/shifts';
 import waitlistRoutes from './routes/waitlistRoutes';
 import serverRoutes from './routes/server';
+import settingsRoutes from './routes/settings';
 
 
 
@@ -91,13 +91,6 @@ app.use(cookieParser());
 app.use(methodOverride("_method"));
 app.use(flash());
 
-
-
-//public api routes
-app.use('/reservation', reservationRoutes as any);
-app.use('/time-slots', timeSlotRoutes as any);
-app.use('/waitlist', waitlistRoutes as any);
-app.use('/server', serverRoutes as any);
 
 /*--------------- Configure passport ------------------*/
 
@@ -150,7 +143,14 @@ app.use((req: any, res, next) => {
 });
 
 app.use('/restaurants', restaurantRoutes);
+app.use('/reservation', reservationRoutes);
 app.use('/floorplans', floorPlanRoutes);
+//public api routes
+app.use('/reservation', reservationRoutes as any);
+// app.use('/time-slots', timeSlotRoutes as any);
+app.use('/waitlist', waitlistRoutes as any);
+app.use('/server', serverRoutes as any);
+app.use('/settings', settingsRoutes as any);
 // app.use('/slots', slotRoutes);
 app.use('/tables', tableRoutes);
 

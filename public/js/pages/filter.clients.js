@@ -200,61 +200,32 @@ function createUserElements(data) {
 
     let name = fullName.length > 12 ? fullName.substr(0, 12) + "." : fullName;
 
-    let chatbotElement = ``;
-    if (user.chatbots && user.chatbots) {
-      chatbotElement += `<div id="collapse${user._id}" class="collapse hide">`;
-      chatbotElement += `
-                            <table class="mt-2" style="width: 100%">
-                                <thead>
-                                    <tr>
-                                        <th class="pb-1">Chatbot</th>
-                                        <th class="text-center pb-1"></th>
-                                    </tr>
-                                </thead>
-                            <tbody>`;
-      user.chatbots.forEach((chatbot) => {
-        chatbotElement += `
-                            <tr>
-                                <td class="text-left pb-1">${chatbot.name} <br> <a href="/preview/${chatbot._id}" >View</a></td>
-                                <td class="text-center py-1"></td>
-                            </tr>    
-                    `;
-      });
-      chatbotElement += `
-                    </tbody>
-                </table>
-            `;
-      chatbotElement += `</div>`;
-    } else {
-      //chatbotElement += `<h3 class="text-danger mt-2">No keyword Found!</h3>`
-    }
-
-    let callAgentElement = ``;
-    if (user.callAgents && user.callAgents) {
-      callAgentElement += `<div id="collapse${user._id}" class="collapse hide">`;
-      callAgentElement += `<table class="mt-2" style="width: 100%">
+    let restaurantElement = ``;
+    if (user.restaurants && user.restaurants.length > 0) {
+      restaurantElement += `<div id="collapse${user._id}" class="collapse hide">`;
+      restaurantElement += `<table class="mt-2" style="width: 100%">
                             <thead>
                                 <tr>
-                                    <th class="pb-1">Call Agent</th>
+                                    <th class="pb-1">Restaurants</th>
                                     <th class="text-center pb-1"></th>
                                 </tr>
                             </thead>
                           <tbody>`;
-      user.callAgents.forEach((callAgent) => {
-        callAgentElement += `
+      user.restaurants.forEach((restaurant) => {
+        restaurantElement += `
                             <tr>
-                                <td class="text-left pb-1">${callAgent.name} <br><a href="#">${callAgent.phone_number}</a></td>
+                                <td class="text-left pb-1">${restaurant.name} <br><a href="#">${restaurant.phone}</a></td>
                                 <td class="text-center py-1"></td>
                             </tr>    
                     `;
       });
-      callAgentElement += `
+      restaurantElement += `
                     </tbody>
                 </table>
             `;
-      callAgentElement += `</div>`;
+      restaurantElement += `</div>`;
     } else {
-      // callAgentElement += `<h3 class="text-danger mt-2">No call agent Found!</h3>`;
+      // restaurantElement += `<h3 class="text-danger mt-2">No restaurant found!</h3>`;
     }
 
     let individualElement = `
@@ -271,16 +242,9 @@ function createUserElements(data) {
                 user._id
               }" aria-expanded="true" aria-controls="collapse${user._id}">
               ${
-                user.chatbots && user.chatbots.length ? user.chatbots.length : 0
-              } Chatbots 
+                user.restaurants && user.restaurants.length ? user.restaurants.length : 0
+              } Restaurants 
               <br>
-              <span class="">
-              ${
-                user.callAgents && user.callAgents.length
-                  ? user.callAgents.length
-                  : 0
-              } Call Agents
-              </span>
               </h5>
 
               <a href="/clients/takeover/${user._id}">
@@ -291,10 +255,7 @@ function createUserElements(data) {
             </div>
 
             <div class="col-6">
-              ${chatbotElement}
-            </div>
-            <div class="col-6">
-              ${callAgentElement}
+              ${restaurantElement}
             </div>
             <div class="option-div text-right">
               <a href="" class="option-dots" data-toggle="dropdown" aria-haspopup="true"

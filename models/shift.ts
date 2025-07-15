@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-import TimeSlot, { ITimeSlot } from "./timeSlot.model";
+// import TimeSlot, { ITimeSlot } from "./timeSlot.model";
 
 export interface IShift extends Document {
     name: string;
@@ -10,7 +10,7 @@ export interface IShift extends Document {
     duration: number;       
     bufferTime: number;     
     restaurantId: mongoose.Types.ObjectId;
-    timeSlots: mongoose.Types.ObjectId[] | ITimeSlot[]; 
+    // timeSlots: mongoose.Types.ObjectId[] | ITimeSlot[]; 
     active: boolean;        
     
     // Method to generate time slots
@@ -85,68 +85,7 @@ function formatTimeLabel(time: string): string {
     return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
 }
 
-// Method to generate time slots based on shift parameters
-ShiftSchema.methods.generateTimeSlots = async function(): Promise<mongoose.Types.ObjectId[]> {
-    const shift = this as IShift;
-    
-    // Convert start and end times to minutes for easier calculation
-    const startMinutes = timeToMinutes(shift.startTime);
-    const endMinutes = timeToMinutes(shift.endTime);
-    
-    // Total slot time (duration + buffer)
-    const totalSlotTime = shift.duration + shift.bufferTime;
-    
-    // Array to store created time slot IDs
-    const timeSlotIds: mongoose.Types.ObjectId[] = [];
-    
-    // Generate time slots
-    let currentMinutes = startMinutes;
-    let order = 1;
-    
-    while (currentMinutes + shift.duration <= endMinutes) {
-        const slotTime = minutesToTime(currentMinutes);
-        const slotLabel = formatTimeLabel(slotTime);
-        
-        // Create the time slot
-        const timeSlot = new TimeSlot({
-            label: slotLabel,
-            value: slotTime,
-            order: order++,
-            restaurantId: shift.restaurantId,
-            duration: shift.duration,
-            bufferTime: shift.bufferTime,
-            shiftId: shift._id
-        });
-        
-        try {
-            const savedTimeSlot = await timeSlot.save();
-            timeSlotIds.push(savedTimeSlot._id as mongoose.Types.ObjectId);
-        } catch (error) {
-            // If the time slot already exists (due to unique index), find it and use its ID
-            if (error.code === 11000) {
-                const existingSlot = await TimeSlot.findOne({
-                    restaurantId: shift.restaurantId,
-                    value: slotTime
-                });
-                
-                if (existingSlot) {
-                    timeSlotIds.push(existingSlot._id as mongoose.Types.ObjectId);
-                }
-            } else {
-                throw error;
-            }
-        }
-        
-        // Move to the next slot
-        currentMinutes += totalSlotTime;
-    }
-    
-    // Update the shift with the generated time slots
-    shift.timeSlots = timeSlotIds;
-    await shift.save();
-    
-    return timeSlotIds;
-};
+
 
 // Create indexes for faster lookups
 ShiftSchema.index({ restaurantId: 1, date: 1 });

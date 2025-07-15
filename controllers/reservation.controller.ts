@@ -6,21 +6,15 @@ import {
 } from "../utils/responseHandler";
 import TableElement from "../models/table.model";
 import Restaurant from "../models/restaurant.model";
-import TimeSlot from "../models/timeSlot.model";
+// import TimeSlot from "../models/timeSlot.model";
 import { Menu } from "../modules/menu";
 import Shift from "../models/shift"; // Added import for Shift
+import { Request, Response } from "express";
 
 export const createReservation = async (req, res) => {
   try {
-    const {
-      restaurantId,
-      tableId,
-      userId,
-      partySize,
-      slotId,
-      date, // New field: date for the reservation
-      metadata, // Optional metadata with name, email, phone, specialRequests
-    } = req.body;
+    const { restaurantId, tableId, userId, partySize, slotId, date, metadata } =
+      req.body;
 
     if (!slotId || !date) {
       return handleError(req, res, 400, "Slot ID and date are required");
@@ -32,17 +26,27 @@ export const createReservation = async (req, res) => {
       return handleError(req, res, 404, "Time slot not found");
     }
 
-    // Parse the date and time
-    const reservationDate = new Date(date);
+    // ✅ Fix: Parse date properly
+    const reservationDate = new Date(date + "T00:00:00.000Z"); // Force UTC
     const [hours, minutes] = timeSlot.value.split(":").map(Number);
 
-    // Set start time
+    // ✅ Fix: Set start time using the correct date
     const startTime = new Date(reservationDate);
     startTime.setHours(hours, minutes, 0, 0);
 
-    // Calculate end time using slot duration
+    // ✅ Fix: Calculate end time using slot duration
     const endTime = new Date(startTime);
     endTime.setMinutes(startTime.getMinutes() + timeSlot.duration);
+
+    // ✅ Debug logging
+    console.log("Reservation Time Calculation:", {
+      requestDate: date,
+      parsedDate: reservationDate.toISOString(),
+      slotValue: timeSlot.value,
+      slotDuration: timeSlot.duration,
+      calculatedStartTime: startTime.toISOString(),
+      calculatedEndTime: endTime.toISOString(),
+    });
 
     // Allow guest reservations
     let actualUserId = userId;
@@ -58,12 +62,38 @@ export const createReservation = async (req, res) => {
       return handleError(req, res, 404, "Table not found");
     }
 
-    // Check if table is already reserved
+    // ✅ Fix: Better conflict check with proper date range
+    const dayStart = new Date(reservationDate);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(reservationDate);
+    dayEnd.setHours(23, 59, 59, 999);
+
     const existingReservation = await Reservation.findOne({
       tableId,
       status: { $ne: "cancelled" },
-      startTime: { $lt: endTime },
-      endTime: { $gt: startTime },
+      // ✅ Check within the same day and time overlap
+      date: { $gte: dayStart, $lt: dayEnd },
+      $or: [
+        {
+          startTime: { $lt: endTime },
+          endTime: { $gt: startTime },
+        },
+      ],
+    });
+
+    console.log("Conflict Check:", {
+      tableId,
+      dayStart: dayStart.toISOString(),
+      dayEnd: dayEnd.toISOString(),
+      newStartTime: startTime.toISOString(),
+      newEndTime: endTime.toISOString(),
+      existingReservation: existingReservation
+        ? {
+            id: existingReservation._id,
+            startTime: existingReservation.startTime,
+            endTime: existingReservation.endTime,
+          }
+        : null,
     });
 
     if (existingReservation) {
@@ -86,13 +116,21 @@ export const createReservation = async (req, res) => {
       partySize,
       startTime,
       endTime,
-      status: "confirmed",
+      status: "pending",
       metadata,
       slotId,
-      date: reservationDate, // Store the date separately
+      date: reservationDate,
     });
 
     await reservation.save();
+
+    // ✅ Debug final saved data
+    console.log("Reservation Saved:", {
+      id: reservation._id,
+      date: reservation.date,
+      startTime: reservation.startTime,
+      endTime: reservation.endTime,
+    });
 
     if (req.query.isJSON === "true") {
       return handleResponse(req, res, 201, {
@@ -106,11 +144,11 @@ export const createReservation = async (req, res) => {
         reservation: reservation,
         title: "Reservation Created",
         menu: menuInstance.client,
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
+        // currentUser: req.user || {
+        //   firstname: "Guest",
+        //   lastname: "User",
+        //   image_url: "/public/images/default-profile.png",
+        // },
       });
     }
   } catch (error) {
@@ -122,17 +160,17 @@ export const createReservation = async (req, res) => {
         reservation: null,
         error: "Failed to create reservation",
         title: "Reservation Error",
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
+        // currentUser: req.user || {
+        //   firstname: "Guest",
+        //   lastname: "User",
+        //   image_url: "/public/images/default-profile.png",
+        // },
       });
     }
   }
 };
 
-export const getReservation = async (req, res) => {
+export const getReservation = async (req: Request, res: Response) => {
   try {
     const { reservationId } = req.params;
     const reservation = await Reservation.findById(reservationId)
@@ -140,6 +178,7 @@ export const getReservation = async (req, res) => {
       .populate("restaurantId", "name location")
       .populate("slotId", "value duration label"); // Added slot details
 
+      console.log("reservation controller", req);
     if (!reservation) {
       if (req.query.isJSON === "true") {
         return handleError(req, res, 404, "Reservation not found");
@@ -148,11 +187,11 @@ export const getReservation = async (req, res) => {
           reservation: null,
           error: "Reservation not found",
           title: "Reservation Not Found",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
+          // currentUser: req.user || {
+          //   firstname: "Guest",
+          //   lastname: "User",
+          //   image_url: "/public/images/default-profile.png",
+          // },
         });
       }
     }
@@ -169,11 +208,11 @@ export const getReservation = async (req, res) => {
         reservation: reservation,
         title: "Reservation Details",
         menu: menuInstance.client,
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
+        // currentUser: req.user || {
+        //   firstname: "Guest",
+        //   lastname: "User",
+        //   image_url: "/public/images/default-profile.png",
+        // },
       });
     }
   } catch (error) {
@@ -181,16 +220,16 @@ export const getReservation = async (req, res) => {
     if (req.query.isJSON === "true") {
       return handleError(req, res, 500, "Error retrieving reservation");
     } else {
-      return res.render("reservations/detail", {
-        reservation: null,
-        error: "Failed to load reservation",
-        title: "Reservation Error",
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
-      });
+              return res.render("reservations/detail", {
+          reservation: null,
+          error: "Failed to load reservation",
+          title: "Reservation Error",
+          // currentUser: req.user || {
+          //   firstname: "Guest",
+          //   lastname: "User",
+          //   image_url: "/public/images/default-profile.png",
+          // },
+        });
     }
   }
 };
@@ -200,6 +239,8 @@ export const getAllReservations = async (req, res) => {
     const { restaurantId, status, date, customerId, userId, filter } =
       req.query;
 
+    console.log("reservation controller", res.locals.currentUser);
+
     if (!restaurantId) {
       if (req.query.isJSON === "true") {
         return handleError(req, res, 400, "Restaurant ID is required");
@@ -208,11 +249,11 @@ export const getAllReservations = async (req, res) => {
           reservations: [],
           error: "Restaurant ID is required",
           title: "Reservations List Error",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
+          // currentUser: req.user || {
+          //   firstname: "Guest",
+          //   lastname: "User",
+          //   image_url: "/public/images/default-profile.png",
+          // },
         });
       }
     }
@@ -233,47 +274,43 @@ export const getAllReservations = async (req, res) => {
       const endDate = new Date(date as string);
       endDate.setHours(23, 59, 59, 999);
 
-      // Filter by createdAt field instead of date field
-      baseFilter.createdAt = { $gte: startDate, $lte: endDate };
+      // ✅ Use date field instead of createdAt
+      baseFilter.date = { $gte: startDate, $lte: endDate };
     }
 
     // Apply specific filters based on the filter parameter
     let finalFilter = { ...baseFilter };
     switch (filter) {
       case "finished":
-        // Completed reservations (confirmed and time passed)
+        // Completed reservations
         finalFilter = {
           ...baseFilter,
-          status: "confirmed",
-          endTime: { $lt: currentTime },
+          status: "finished",
         };
         break;
       case "removed":
-        // Cancelled reservations
+        // Removed/cancelled reservations
         finalFilter = {
           ...baseFilter,
-          status: "cancelled",
+          status: "removed",
         };
         break;
       case "seated":
-        // Current active reservations (confirmed and time is between start and end)
+        // Currently seated reservations
         finalFilter = {
           ...baseFilter,
-          status: "confirmed",
-          startTime: { $lte: currentTime },
-          endTime: { $gt: currentTime },
+          status: "seated",
+        };
+        break;
+      case "pending":
+        // Pending reservations
+        finalFilter = {
+          ...baseFilter,
+          status: "pending",
         };
         break;
       default:
-        // If no specific filter, show all non-cancelled future reservations
-        // if (!status) {
-        //   finalFilter = {
-        //     ...baseFilter,
-        //     status: { $ne: "cancelled" },
-        //     endTime: { $gt: currentTime },
-        //   };
-        // }
-
+        // If no specific filter, use the baseFilter with any provided status
         if (status) {
           finalFilter = { ...baseFilter };
         }
@@ -282,7 +319,7 @@ export const getAllReservations = async (req, res) => {
     // Find all active reservations for this restaurant
     const activeReservations = await Reservation.find({
       restaurantId,
-      status: "confirmed",
+      status: { $in: ["seated", "pending"] }, // Updated to use new status values
       startTime: { $lte: currentTime },
       endTime: { $gt: currentTime },
     }).select("tableId");
@@ -313,15 +350,7 @@ export const getAllReservations = async (req, res) => {
     // Add a computed status for UI display
     const reservationsWithStatus = reservations.map((reservation) => {
       const res = reservation.toObject();
-      if (res.status === "cancelled") {
-        res.computedStatus = "removed";
-      } else if (res.endTime < currentTime) {
-        res.computedStatus = "finished";
-      } else if (res.startTime <= currentTime && res.endTime > currentTime) {
-        res.computedStatus = "seated";
-      } else {
-        res.computedStatus = "upcoming";
-      }
+      res.computedStatus = res.status; // Use the actual status directly since it matches the UI states
       return res;
     });
 
@@ -340,11 +369,11 @@ export const getAllReservations = async (req, res) => {
         menu: menuInstance.client,
         restaurantId: restaurantId,
         activeFilter: filter || "all",
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
+        // currentUser: req.user || {
+        //   firstname: "Guest",
+        //   lastname: "User",
+        //   image_url: "/public/images/default-profile.png",
+        // },
       });
     }
   } catch (error) {
@@ -356,11 +385,11 @@ export const getAllReservations = async (req, res) => {
         reservations: [],
         error: "Failed to load reservations",
         title: "Reservations List Error",
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
+        // currentUser: req.user || {
+        //   firstname: "Guest",
+        //   lastname: "User",
+        //   image_url: "/public/images/default-profile.png",
+        // },
       });
     }
   }
@@ -381,11 +410,11 @@ export const deleteReservation = async (req, res) => {
           reservation: null,
           error: "Reservation not found",
           title: "Delete Error",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
+          // currentUser: req.user || {
+          //   firstname: "Guest",
+          //   lastname: "User",
+          //   image_url: "/public/images/default-profile.png",
+          // },
         });
       }
     }
@@ -418,11 +447,11 @@ export const deleteReservation = async (req, res) => {
         reservation: null,
         error: "Failed to delete reservation",
         title: "Delete Error",
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
+        // currentUser: req.user || {
+        //   firstname: "Guest",
+        //   lastname: "User",
+        //   image_url: "/public/images/default-profile.png",
+        // },
       });
     }
   }
@@ -445,11 +474,11 @@ export const updateReservation = async (req, res) => {
           reservation: null,
           error: "Reservation not found",
           title: "Update Error",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
+          // currentUser: req.user || {
+          //   firstname: "Guest",
+          //   lastname: "User",
+          //   image_url: "/public/images/default-profile.png",
+          // },
         });
       }
     }
@@ -471,11 +500,11 @@ export const updateReservation = async (req, res) => {
             reservation: existingReservation,
             error: "Time slot not found",
             title: "Update Error",
-            currentUser: {
-              firstname: "Guest",
-              lastname: "User",
-              image_url: "/public/images/default-profile.png",
-            },
+            // currentUser: {
+            //   firstname: "Guest",
+            //   lastname: "User",
+            //   image_url: "/public/images/default-profile.png",
+            // },
           });
         }
       }
@@ -508,11 +537,11 @@ export const updateReservation = async (req, res) => {
             reservation: existingReservation,
             error: "Table not found",
             title: "Update Error",
-            currentUser: {
-              firstname: "Guest",
-              lastname: "User",
-              image_url: "/public/images/default-profile.png",
-            },
+            // currentUser: {
+            //   firstname: "Guest",
+            //   lastname: "User",
+            //   image_url: "/public/images/default-profile.png",
+            // },
           });
         }
       }
@@ -522,7 +551,12 @@ export const updateReservation = async (req, res) => {
         _id: { $ne: reservationId }, // Exclude current reservation
         tableId: tableToCheck,
         status: { $ne: "cancelled" },
-        createdAt: { $lt: endTime },
+        $or: [
+          {
+            startTime: { $lt: endTime },
+            endTime: { $gt: startTime },
+          },
+        ],
       });
 
       if (conflictingReservation) {
@@ -538,11 +572,11 @@ export const updateReservation = async (req, res) => {
             reservation: existingReservation,
             error: "Table is already reserved for this time",
             title: "Update Error",
-            currentUser: {
-              firstname: "Guest",
-              lastname: "User",
-              image_url: "/public/images/default-profile.png",
-            },
+            // currentUser: {
+            //   firstname: "Guest",
+            //   lastname: "User",
+            //   image_url: "/public/images/default-profile.png",
+            // },
           });
         }
       }
@@ -596,29 +630,29 @@ export const updateReservation = async (req, res) => {
         title: "Reservation Updated",
         menu: menuInstance.client,
         success: "Reservation updated successfully",
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
+        // currentUser: req.user || {
+        //   firstname: "Guest",
+        //   lastname: "User",
+        //   image_url: "/public/images/default-profile.png",
+        // },
       });
     }
   } catch (error) {
-    console.error("Update reservation error:", error);
-    if (req.query.isJSON === "true") {
-      return handleError(req, res, 500, "Error updating reservation");
-    } else {
-      return res.render("reservations/detail", {
-        reservation: null,
-        error: "Failed to update reservation",
-        title: "Update Error",
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
-      });
-    }
+    // console.error("Update reservation error:", error);
+    // if (req.query.isJSON === "true") {
+    //   return handleError(req, res, 500, "Error updating reservation");
+    // } else {
+    //   return res.render("reservations/detail", {
+    //     reservation: null,
+    //     error: "Failed to update reservation",
+    //     title: "Update Error",
+    //     currentUser: {
+    //       firstname: "Guest",
+    //       lastname: "User",
+    //       image_url: "/public/images/default-profile.png",
+    //     },
+    //   });
+    // }
   }
 };
 
@@ -659,11 +693,11 @@ export const getAvailableTimeSlots = async (req, res) => {
             error:
               "Missing required parameters: restaurantId, date, and partySize are required",
             title: "Available Time Slots",
-            currentUser: {
-              firstname: "Guest",
-              lastname: "User",
-              image_url: "/public/images/default-profile.png",
-            },
+            // currentUser: {
+            //   firstname: "Guest",
+            //   lastname: "User",
+            //   image_url: "/public/images/default-profile.png",
+            // },
           });
         }
       }
@@ -684,11 +718,11 @@ export const getAvailableTimeSlots = async (req, res) => {
           return res.render("reservations/time-slots", {
             error: "Restaurant not found",
             title: "Available Time Slots",
-            currentUser: {
-              firstname: "Guest",
-              lastname: "User",
-              image_url: "/public/images/default-profile.png",
-            },
+            // currentUser: {
+            //   firstname: "Guest",
+            //   lastname: "User",
+            //   image_url: "/public/images/default-profile.png",
+            // },
           });
         }
       }
@@ -738,11 +772,11 @@ export const getAvailableTimeSlots = async (req, res) => {
             tables: [],
             message,
             title: "Available Time Slots",
-            currentUser: {
-              firstname: "Guest",
-              lastname: "User",
-              image_url: "/public/images/default-profile.png",
-            },
+            // currentUser: {
+            //   firstname: "Guest",
+            //   lastname: "User",
+            //   image_url: "/public/images/default-profile.png",
+            // },
           });
         }
       }
@@ -781,11 +815,11 @@ export const getAvailableTimeSlots = async (req, res) => {
               tables: [],
               message,
               title: "Available Time Slots",
-              currentUser: {
-                firstname: "Guest",
-                lastname: "User",
-                image_url: "/public/images/default-profile.png",
-              },
+              // currentUser: {
+              //   firstname: "Guest",
+              //   lastname: "User",
+              //   image_url: "/public/images/default-profile.png",
+              // },
             });
           }
         }
@@ -858,11 +892,11 @@ export const getAvailableTimeSlots = async (req, res) => {
             tables: [],
             message,
             title: "Available Time Slots",
-            currentUser: {
-              firstname: "Guest",
-              lastname: "User",
-              image_url: "/public/images/default-profile.png",
-            },
+            // currentUser: {
+            //   firstname: "Guest",
+            //   lastname: "User",
+            //   image_url: "/public/images/default-profile.png",
+            // },
           });
         }
       }
@@ -898,11 +932,11 @@ export const getAvailableTimeSlots = async (req, res) => {
             tables: [],
             message,
             title: "Available Time Slots",
-            currentUser: {
-              firstname: "Guest",
-              lastname: "User",
-              image_url: "/public/images/default-profile.png",
-            },
+            // currentUser: {
+            //   firstname: "Guest",
+            //   lastname: "User",
+            //   image_url: "/public/images/default-profile.png",
+            // },
           });
         }
       }
@@ -911,13 +945,48 @@ export const getAvailableTimeSlots = async (req, res) => {
     // Get existing reservations for the selected date
     const existingReservations = await Reservation.find({
       restaurantId,
-      startTime: { $gte: startOfDay, $lt: endOfDay },
+      // ✅ Fix: Use proper date range for the selected date
+      $or: [
+        // Method 1: Check by date field
+        { date: { $gte: startOfDay, $lt: endOfDay } },
+        // Method 2: Check by startTime/endTime (for backward compatibility)
+        {
+          startTime: { $gte: startOfDay, $lt: endOfDay },
+          endTime: { $gte: startOfDay, $lt: endOfDay },
+        },
+      ],
       status: { $in: ["confirmed", "pending"] },
+    }).populate("slotId", "value duration");
+
+    // ✅ Enhanced debug logging
+    console.log("=== AVAILABILITY DEBUG ===");
+    console.log("Selected Date:", selectedDate.toISOString());
+    console.log("Start of Day:", startOfDay.toISOString());
+    console.log("End of Day:", endOfDay.toISOString());
+    console.log(
+      "Existing Reservations:",
+      existingReservations.map((r) => ({
+        id: r._id,
+        tableId: r.tableId,
+        date: r.date,
+        startTime: r.startTime,
+        endTime: r.endTime,
+      }))
+    );
+
+    existingReservations.forEach((res, index) => {
+      console.log(`Reservation ${index + 1}:`, {
+        id: res._id,
+        tableId: res.tableId,
+        date: res.date,
+        startTime: res.startTime,
+        endTime: res.endTime,
+        slotValue: res.slotId?.value,
+      });
     });
 
     // Check availability for each time slot and table combination
     const availabilityData = timeSlots.map((slot) => {
-      // Calculate slot time range
       const [hour, minute] = slot.value.split(":").map(Number);
       const slotStartTime = new Date(selectedDate);
       slotStartTime.setHours(hour, minute, 0, 0);
@@ -927,21 +996,39 @@ export const getAvailableTimeSlots = async (req, res) => {
 
       // Find available tables for this time slot
       const availableTables = suitableTables.filter((table) => {
-        // Check if table is reserved during this time slot
         const isReserved = existingReservations.some((reservation) => {
+          console.log("Checking reservation:", {
+            reservationId: reservation._id,
+            reservationTableId: reservation.tableId,
+            currentTableId: table._id,
+            reservationStart: reservation.startTime,
+            reservationEnd: reservation.endTime,
+            slotStart: slotStartTime,
+            slotEnd: slotEndTime,
+          });
+
+          // ✅ Proper null checks
+          if (!reservation.startTime || !reservation.endTime) {
+            console.warn(`Reservation ${reservation._id} missing time data`);
+            return false;
+          }
+
           const reservationStart = new Date(reservation.startTime);
           const reservationEnd = new Date(reservation.endTime);
 
           // Check if table is the same and times overlap
-          return (
-            reservation.tableId.toString() === table._id.toString() &&
-            ((slotStartTime >= reservationStart &&
-              slotStartTime < reservationEnd) ||
-              (slotEndTime > reservationStart &&
-                slotEndTime <= reservationEnd) ||
-              (slotStartTime <= reservationStart &&
-                slotEndTime >= reservationEnd))
-          );
+          const tableMatch =
+            reservation.tableId.toString() === table._id.toString();
+          const timeOverlap =
+            slotStartTime < reservationEnd && slotEndTime > reservationStart;
+
+          if (tableMatch && timeOverlap) {
+            console.log(
+              `Table ${table.tableId} is reserved during slot ${slot.value}`
+            );
+          }
+
+          return tableMatch && timeOverlap;
         });
 
         return !isReserved;
@@ -1006,11 +1093,11 @@ export const getAvailableTimeSlots = async (req, res) => {
       return res.render("reservations/time-slots", {
         ...responseData,
         title: "Available Time Slots",
-        currentUser: {
-          firstname: "Guest",
-          lastname: "User",
-          image_url: "/public/images/default-profile.png",
-        },
+        // currentUser: {
+        //   firstname: "Guest",
+        //   lastname: "User",
+        //   image_url: "/public/images/default-profile.png",
+        // },
       });
     }
   } catch (error) {
@@ -1034,11 +1121,11 @@ export const getAvailableTimeSlots = async (req, res) => {
         return res.render("reservations/time-slots", {
           error: "Failed to load available time slots",
           title: "Available Time Slots",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
+          // currentUser: {
+          //   firstname: "Guest",
+          //   lastname: "User",
+          //   image_url: "/public/images/default-profile.png",
+          // },
         });
       }
     }

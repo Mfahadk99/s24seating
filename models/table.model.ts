@@ -28,6 +28,8 @@ export interface ITableElement extends Document {
   isReserved: boolean;
   restaurantId: mongoose.Types.ObjectId;
   floorPlanId: mongoose.Types.ObjectId;
+  diningTimeId: mongoose.Types.ObjectId;
+
   createdBy: mongoose.Types.ObjectId;
   updatedBy?: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -66,7 +68,7 @@ const tableElementSchema = new Schema<ITableElement>(
         validator: function (this: any, v: number) {
           // Make sure tableType exists before checking
           if (!this.tableType) return true;
-          
+
           const maxSeats: Record<TableType, number> = {
             round: 16,
             square: 8,
@@ -134,6 +136,12 @@ const tableElementSchema = new Schema<ITableElement>(
       ref: "Restaurant",
       required: true,
     },
+    diningTimeId: [{
+      type: mongoose.Schema.Types.ObjectId,
+      // Reference the Settings model, specifically the diningTimes subdocument
+      ref: "Settings",
+      required: false,
+    }],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -143,6 +151,7 @@ const tableElementSchema = new Schema<ITableElement>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+
   },
   {
     timestamps: true,

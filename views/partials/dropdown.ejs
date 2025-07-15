@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Reusable Dropdown Menu</title>
+    <style>
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .dropdown-toggle {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 14px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #2980b9;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 14px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Dropdown Example</h2>
+
+    <!-- Dropdown Menu -->
+    <div class="dropdown">
+        <button class="dropdown-toggle">
+            <%= title %>
+        </button>
+        <div class="dropdown-content">
+            <% items.forEach(item=> { %>
+                <a href="<%= item.link || '#' %>">
+                    <%= item.label %>
+                </a>
+                <% }) %>
+        </div>
+    </div>
+
+</body>
+
+</html>

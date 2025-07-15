@@ -5,7 +5,7 @@ import {
     getShiftById,
     updateShift,
     deleteShift,
-    regenerateTimeSlots,
+    getTimeSlots
 } from "../controllers/shiftController";
 import isLoggedIn from "../middlewares/auth/is-logged-in";
 
@@ -29,7 +29,8 @@ router.put("/:shiftId", updateShift);
 // Delete a shift
 router.delete("/:shiftId", deleteShift);
 
-// Regenerate time slots for a shift
-router.post("/:shiftId/regenerate-slots", regenerateTimeSlots);
+
+router.get('/restaurant/shifts/:restaurantId', getTimeSlots as any);
+
 
 export default router; 

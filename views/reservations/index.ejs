@@ -50,6 +50,17 @@
                                 </button>
                             </div>
 
+                            <!-- Shift Dropdown -->
+                            <div class="shift-dropdown" style="display: inline-block; margin-left: 20px;">
+                                <label for="shift-select" style="font-weight: 500; margin-right: 8px;">Shift:</label>
+                                <select id="shift-select" class="form-control" style="display: inline-block; width: auto; border-radius: 10px;">
+                                    <option value="">All Shifts</option>
+                                    <option value="breakfast">Breakfast</option>
+                                    <option value="lunch">Lunch</option>
+                                    <option value="dinner">Dinner</option>
+                                </select>
+                            </div>
+
                             <!-- Hidden date picker -->
                             <input type="date" id="date-picker" class="date-picker-input"
                                 value="<%= new Date().toISOString().split('T')[0] %>">
@@ -200,6 +211,11 @@
                                         </button>
                                     </div>
                                     <div class="section-content" id="waitlists-section">
+                                        <div class="waitlist-add-form">
+                                            <button id="addWaitlistBtn" class="btn btn-primary btn-sm">
+                                                <i class="la la-plus"></i> Add waitlist
+                                            </button>
+                                        </div>
                                         <div class="table-list" id="waitlist-list">
                                             <div class="no-data">
                                                 <i class="la la-clock"></i>
@@ -222,6 +238,12 @@
                                         </button>
                                     </div>
                                     <div class="section-content" id="servers-section">
+                                        <div class="server-add-form">
+                                            <div class="server-add-input-group">
+                                                <input type="text" id="newServerName" class="server-add-input" placeholder="Enter server name">
+                                                <button id="addServerBtn" class="server-add-btn">Add Server</button>
+                                            </div>
+                                        </div>
                                         <div class="table-list" id="servers-list">
                                             <div class="no-data">
                                                 <i class="la la-user"></i>
@@ -283,9 +305,14 @@
                                 <div class="ap-toolbar">
                                     <div class="ap-toolbar-left">
                                         <span style="font-weight: 600; font-size: 16px;">Floor plan</span>
-                                        <select class="floor-selector" id="floorPlanSelector">
-                                            <option value="" disabled selected>Loading floor plans...</option>
-                                        </select>
+                                        <div class="dropdown ml-1 d-inline-block">
+                                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="floorPlanDropdownBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span id="selectedFloorPlanText">Loading floor plans...</span>
+                                            </button>
+                                            <div class="dropdown-menu" id="floorPlanDropdown" aria-labelledby="floorPlanDropdownBtn">
+                                                <!-- Floor plans will be populated here -->
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="ap-toolbar-right">
                                         <button class="ap-toolbar-btn" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">🔍+</button>
@@ -328,7 +355,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="tableDetailsModalLabel">Table Details</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeTableModal()">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -338,53 +365,85 @@
                         </div>
                         
                         <!-- Tabs for different actions -->
-                        <ul class="nav nav-tabs mt-3" id="tableActionTabs" role="tablist">
+                        <ul class="nav nav-tabs" id="tableActionTabs" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="reservation-tab" data-toggle="tab" href="#reservation" role="tab">Make Reservation</a>
+                                <a class="nav-link active" id="reservation-tab" data-toggle="tab" href="#reservation" role="tab">
+                                    <i class="la la-calendar-plus-o mr-1"></i>Make Reservation
+                                </a>
                             </li>
+                            <!-- <li class="nav-item">
+                                <a class="nav-link" id="server-tab" data-toggle="tab" href="#server" role="tab">
+                                    <i class="la la-user mr-1"></i>Assign Server
+                                </a>
+                            </li> -->
                             <li class="nav-item">
-                                <a class="nav-link" id="server-tab" data-toggle="tab" href="#server" role="tab">Assign Server</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="current-reservation-tab" data-toggle="tab" href="#current-reservation" role="tab">Current Reservation</a>
+                                <a class="nav-link" id="current-reservation-tab" data-toggle="tab" href="#current-reservation" role="tab">
+                                    <i class="la la-info-circle mr-1"></i>Current Reservation
+                                </a>
                             </li>
                         </ul>
                         
-                        <div class="tab-content mt-3" id="tableActionTabsContent">
+                        <div class="tab-content" id="tableActionTabsContent">
                             <!-- Make Reservation Tab -->
                             <div class="tab-pane fade show active" id="reservation" role="tabpanel">
                                 <form id="makeReservationForm">
-                                    <div class="form-group">
-                                        <label for="customerName">Customer Name</label>
-                                        <input type="text" class="form-control" id="customerName" name="name" required>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="customerName">Customer Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="customerName" name="name" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="partySize">Party Size <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control" id="partySize" name="partySize" min="1" required>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="customerEmail">Customer Email</label>
-                                        <input type="email" class="form-control" id="customerEmail" name="email">
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="customerEmail">Customer Email</label>
+                                                <input type="email" class="form-control" id="customerEmail" name="email">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="customerPhone">Customer Phone</label>
+                                                <input type="tel" class="form-control" id="customerPhone" name="phone">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="customerPhone">Customer Phone</label>
-                                        <input type="tel" class="form-control" id="customerPhone" name="phone">
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="reservationDate">Date <span class="text-danger">*</span></label>
+                                                <input type="date" class="form-control" id="reservationDate" name="date" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="timeSlot">Time Slot <span class="text-danger">*</span></label>
+                                                <select class="form-control" id="timeSlot" name="slotId" required>
+                                                    <option value="">Select time slot</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="partySize">Party Size</label>
-                                        <input type="number" class="form-control" id="partySize" name="partySize" min="1" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="reservationDate">Date</label>
-                                        <input type="date" class="form-control" id="reservationDate" name="date" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="timeSlot">Time Slot</label>
-                                        <select class="form-control" id="timeSlot" name="slotId" required>
-                                            <option value="">Select time slot</option>
-                                        </select>
-                                    </div>
+                                    
                                     <div class="form-group">
                                         <label for="specialRequests">Special Requests</label>
-                                        <textarea class="form-control" id="specialRequests" name="specialRequests" rows="2"></textarea>
+                                        <textarea class="form-control" id="specialRequests" name="specialRequests" rows="3" placeholder="Enter any special requests or notes here..."></textarea>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Make Reservation</button>
+                                    
+                                    <div class="text-right">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="la la-check mr-1"></i>Make Reservation
+                                        </button>
+                                    </div>
                                 </form>
                             </div>
                             
@@ -398,10 +457,99 @@
                             <!-- Current Reservation Tab -->
                             <div class="tab-pane fade" id="current-reservation" role="tabpanel">
                                 <div id="currentReservationInfo">
-                                    <!-- Current reservation info will be loaded here -->
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Assignment Modal -->
+        <div class="modal fade" id="assignServerModal" tabindex="-1" role="dialog" aria-labelledby="assignServerModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="assignServerModalLabel">Assign Server</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="serverLoadingIndicator" class="text-center py-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading available servers...</p>
+                        </div>
+                        
+                        <div id="serverAssignmentContent" style="display: none;">
+                            <div class="form-group">
+                                <label for="serverSelect">Select Server</label>
+                                <select class="form-control" id="serverSelect">
+                                    <option value="">Select a server...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <small>Only available servers are shown. Servers currently assigned to other reservations are not available.</small>
+                            </div>
+                        </div>
+                        
+                        <div id="noServersMessage" class="alert alert-warning" style="display: none;">
+                            <i class="la la-exclamation-circle"></i> No available servers found. All servers are currently assigned to other reservations.
+                        </div>
+                        
+                        <div id="serverErrorMessage" class="alert alert-danger" style="display: none;">
+                            <i class="la la-times-circle"></i> Error loading servers. Please try again.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="assignServerBtn">Assign</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Waitlist Modal -->
+        <div class="modal fade" id="addWaitlistModal" tabindex="-1" role="dialog" aria-labelledby="addWaitlistModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addWaitlistModalLabel">Add to Waitlist</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addWaitlistForm">
+                            <div class="form-group">
+                                <label for="waitlistGuestName">Guest Name *</label>
+                                <input type="text" class="form-control" id="waitlistGuestName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="waitlistGuestEmail">Guest Email</label>
+                                <input type="email" class="form-control" id="waitlistGuestEmail" name="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="waitlistGuestPhone">Guest Phone *</label>
+                                <input type="tel" class="form-control" id="waitlistGuestPhone" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="waitlistPartySize">Party Size *</label>
+                                <input type="number" class="form-control" id="waitlistPartySize" name="partySize" min="1" value="2" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="waitlistWaitingTime">Estimated Waiting Time (minutes) *</label>
+                                <input type="number" class="form-control" id="waitlistWaitingTime" name="waitingTime" min="5" value="30" required>
+                            </div>
+                            <div id="waitlistFormError" class="alert alert-danger mt-3" style="display: none;"></div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="submitWaitlistBtn">Add to Waitlist</button>
                     </div>
                 </div>
             </div>
@@ -414,7 +562,50 @@
         <div id="reservations-data" data-reservations="<%= JSON.stringify(reservations || []) %>" style="display: none;"></div>
         <!-- Helper scripts for new features -->
         <script>
+            // Fix for the currentDate error in reservations.js
+            let currentDate = new Date(); // Define currentDate globally
+
+            function updateDateDisplay() {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('current-date').textContent = currentDate.toLocaleDateString('en-US', options);
+                
+                // Also update the hidden date picker
+                const dateString = currentDate.toISOString().split('T')[0];
+                document.getElementById('date-picker').value = dateString;
+                
+                // Reload data with new date
+                const urlParams = new URLSearchParams(window.location.search);
+                const restaurantId = urlParams.get('restaurantId');
+                if (restaurantId) {
+                    loadAllSectionData(restaurantId, dateString);
+                }
+            }
+
+            function setupDateNavigation() {
+                // Previous day button
+                document.getElementById('prev-date').addEventListener('click', function() {
+                    currentDate.setDate(currentDate.getDate() - 1);
+                    updateDateDisplay();
+                });
+                
+                // Next day button
+                document.getElementById('next-date').addEventListener('click', function() {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    updateDateDisplay();
+                });
+                
+                // Date picker change
+                document.getElementById('date-picker').addEventListener('change', function() {
+                    currentDate = new Date(this.value);
+                    updateDateDisplay();
+                });
+                
+                // Initialize display
+                updateDateDisplay();
+            }
+
             function formatTime(timeString) {
+                if (!timeString) return 'N/A';
                 return new Date(timeString).toLocaleTimeString('en-US', { 
                     hour: '2-digit', 
                     minute: '2-digit' 
@@ -460,8 +651,6 @@
         </script>
         <!-- Integration Script -->
         <script>
-            let selectedTable = null;
-
             document.addEventListener('DOMContentLoaded', function() {
                 // Keep track of currently expanded section
                 let currentlyExpandedSection = 'reservations'; // Default expanded section
@@ -531,215 +720,92 @@
                     return;
                 }
 
-                // Load data for different sections
-                loadSeatedReservations(restaurantId);
-                loadWaitlist(restaurantId);
-                loadServers(restaurantId);
-                loadFinishedReservations(restaurantId);
-                loadRemovedReservations(restaurantId);
-
-                // Initialize floor plan selector
-                const floorSelector = document.getElementById('floorPlanSelector');
-                if (!floorSelector) return;
+                // Initialize floor plan dropdown
+                const floorPlanDropdown = document.getElementById('floorPlanDropdown');
+                const selectedFloorPlanText = document.getElementById('selectedFloorPlanText');
+                if (!floorPlanDropdown || !selectedFloorPlanText) return;
 
                 // Use FloorPlanApi to fetch floor plans
                 window.FloorPlanApi.fetchFloorPlans(restaurantId)
                     .then(floorPlans => {
-                        // Clear loading option
-                        floorSelector.innerHTML = '';
+                        // Clear dropdown
+                        floorPlanDropdown.innerHTML = '';
                         
                         if (floorPlans.length === 0) {
-                            const option = document.createElement('option');
-                            option.value = '';
-                            option.textContent = 'No floor plans available';
-                            option.disabled = true;
-                            option.selected = true;
-                            floorSelector.appendChild(option);
+                            selectedFloorPlanText.textContent = 'No floor plans available';
+                            
+                            // Add a disabled item to the dropdown
+                            const dropdownItem = document.createElement('a');
+                            dropdownItem.className = 'dropdown-item disabled';
+                            dropdownItem.href = '#';
+                            dropdownItem.textContent = 'No floor plans available';
+                            floorPlanDropdown.appendChild(dropdownItem);
                             return;
                         }
 
-                        // Add floor plans to selector
-                        floorPlans.forEach(plan => {
-                            const option = document.createElement('option');
-                            option.value = plan._id;
-                            option.textContent = plan.name;
-                            floorSelector.appendChild(option);
+                        // Add floor plans to dropdown
+                        floorPlans.forEach((plan, index) => {
+                            const dropdownItem = document.createElement('a');
+                            dropdownItem.className = 'dropdown-item';
+                            dropdownItem.href = '#';
+                            dropdownItem.textContent = plan.name;
+                            dropdownItem.dataset.value = plan._id;
+                            
+                            // Add click event to each item
+                            dropdownItem.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                // Update selected text
+                                selectedFloorPlanText.textContent = this.textContent;
+                                
+                                // Update active class
+                                const allItems = floorPlanDropdown.querySelectorAll('.dropdown-item');
+                                allItems.forEach(item => item.classList.remove('active'));
+                                this.classList.add('active');
+                                
+                                // Load tables for this floor plan
+                                loadFloorPlan(this.dataset.value);
+                            });
+                            
+                            floorPlanDropdown.appendChild(dropdownItem);
+                            
+                            // Select first floor plan by default
+                            if (index === 0) {
+                                selectedFloorPlanText.textContent = plan.name;
+                                dropdownItem.classList.add('active');
+                                // Load tables for this floor plan
+                                loadFloorPlan(plan._id);
+                            }
                         });
 
-                        // Select first floor plan by default
-                        if (floorPlans.length > 0) {
-                            floorSelector.value = floorPlans[0]._id;
-                            // Load tables for this floor plan
-                            loadFloorPlan(floorPlans[0]._id);
-                        }
-
-                        // Add change event listener
-                        floorSelector.addEventListener('change', function() {
-                            loadFloorPlan(this.value);
-                        });
+                        loadAllSectionData(restaurantId, new Date().toISOString().split('T')[0]);
+                        // $('#tableDetailsModal').modal('show');
                     })
                     .catch(error => {
                         console.error('Error fetching floor plans:', error);
-                        floorSelector.innerHTML = '<option value="" disabled selected>Error loading floor plans</option>';
+                        selectedFloorPlanText.textContent = 'Error loading floor plans';
+                        
+                        // Add an error item to the dropdown
+                        const dropdownItem = document.createElement('a');
+                        dropdownItem.className = 'dropdown-item disabled text-danger';
+                        dropdownItem.href = '#';
+                        dropdownItem.textContent = 'Error loading floor plans';
+                        floorPlanDropdown.appendChild(dropdownItem);
                     });
 
-                // Setup table click handlers using event delegation
-                document.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('ap-dropped-table')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const tableId = e.target.dataset.id;
-                        const serverId = e.target.dataset.serverId;
-                        console.log('Table clicked:', tableId, serverId);
-                        showTableDetailsModal(tableId, serverId);
-                    }
-                });
+                // Initialize date navigation
+                if (document.getElementById('prev-date') && 
+                    document.getElementById('next-date') && 
+                    document.getElementById('current-date')) {
+                    setupDateNavigation();
+                }
+                
+                // Add event listener to date input to refresh time slots if element exists
+                const reservationDateElement = document.getElementById('reservationDate');
+                if (reservationDateElement) {
+                    reservationDateElement.addEventListener('change', populateTimeSlots);
+                }
             });
-
-            async function loadSeatedReservations(restaurantId) {
-                try {
-                    const response = await fetch(`/reservations/${restaurantId}?status=seated&isJSON=true`);
-                    const data = await response.json();
-                    const seatedList = document.getElementById('seated-list');
-                    
-                    if (data.success && data.reservations && data.reservations.length > 0) {
-                        seatedList.innerHTML = data.reservations.map(reservation => `
-                            <div class="reservation-row" data-reservation-id="${reservation._id}">
-                                <div class="col table-name">${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}</div>
-                                <div class="col seats">${reservation.tableId ? reservation.tableId.seats : 'N/A'}</div>
-                                <div class="col time">${new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                                <div class="col customer">${reservation.metadata && reservation.metadata.name ? reservation.metadata.name : 'Guest'}</div>
-                            </div>
-                        `).join('');
-                    } else {
-                        seatedList.innerHTML = `
-                            <div class="no-data">
-                                <i class="la la-chair"></i>
-                                <h4>No Seated Guests</h4>
-                                <p>No guests are currently seated.</p>
-                            </div>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('Error loading seated reservations:', error);
-                }
-            }
-
-            async function loadWaitlist(restaurantId) {
-                try {
-                    const response = await fetch(`/waitlist/${restaurantId}?isJSON=true`);
-                    const data = await response.json();
-                    const waitlistList = document.getElementById('waitlist-list');
-                    
-                    if (data.success && data.waitlist && data.waitlist.length > 0) {
-                        waitlistList.innerHTML = data.waitlist.map(waitlistItem => `
-                            <div class="reservation-row" data-waitlist-id="${waitlistItem._id}">
-                                <div class="col table-name">Waiting</div>
-                                <div class="col seats">${waitlistItem.partySize || 'N/A'}</div>
-                                <div class="col time">${new Date(waitlistItem.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                                <div class="col customer">${waitlistItem.name || 'Guest'}</div>
-                            </div>
-                        `).join('');
-                    } else {
-                        waitlistList.innerHTML = `
-                            <div class="no-data">
-                                <i class="la la-clock"></i>
-                                <h4>No Waitlisted Guests</h4>
-                                <p>No guests are currently on the waitlist.</p>
-                            </div>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('Error loading waitlist:', error);
-                }
-            }
-
-            async function loadServers(restaurantId) {
-                try {
-                    const response = await fetch(`/servers/${restaurantId}?isJSON=true`);
-                    const data = await response.json();
-                    const serversList = document.getElementById('servers-list');
-                    
-                    if (data.success && data.servers && data.servers.length > 0) {
-                        serversList.innerHTML = data.servers.map(server => `
-                            <div class="reservation-row" data-server-id="${server._id}">
-                                <div class="col table-name">Server</div>
-                                <div class="col seats">-</div>
-                                <div class="col time">${server.shift ? 'On Shift' : 'Off Shift'}</div>
-                                <div class="col customer">${server.name || 'Server'}</div>
-                            </div>
-                        `).join('');
-                    } else {
-                        serversList.innerHTML = `
-                            <div class="no-data">
-                                <i class="la la-user"></i>
-                                <h4>No Active Servers</h4>
-                                <p>No servers are currently assigned.</p>
-                            </div>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('Error loading servers:', error);
-                }
-            }
-
-            async function loadFinishedReservations(restaurantId) {
-                try {
-                    const response = await fetch(`/reservations/${restaurantId}?status=finished&isJSON=true`);
-                    const data = await response.json();
-                    const finishedList = document.getElementById('finished-list');
-                    
-                    if (data.success && data.reservations && data.reservations.length > 0) {
-                        finishedList.innerHTML = data.reservations.map(reservation => `
-                            <div class="reservation-row" data-reservation-id="${reservation._id}">
-                                <div class="col table-name">${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}</div>
-                                <div class="col seats">${reservation.tableId ? reservation.tableId.seats : 'N/A'}</div>
-                                <div class="col time">${new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                                <div class="col customer">${reservation.metadata && reservation.metadata.name ? reservation.metadata.name : 'Guest'}</div>
-                            </div>
-                        `).join('');
-                    } else {
-                        finishedList.innerHTML = `
-                            <div class="no-data">
-                                <i class="la la-check-circle"></i>
-                                <h4>No Finished Reservations</h4>
-                                <p>No reservations have been completed today.</p>
-                            </div>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('Error loading finished reservations:', error);
-                }
-            }
-
-            async function loadRemovedReservations(restaurantId) {
-                try {
-                    const response = await fetch(`/reservations/${restaurantId}?status=removed&isJSON=true`);
-                    const data = await response.json();
-                    const removedList = document.getElementById('removed-list');
-                    
-                    if (data.success && data.reservations && data.reservations.length > 0) {
-                        removedList.innerHTML = data.reservations.map(reservation => `
-                            <div class="reservation-row" data-reservation-id="${reservation._id}">
-                                <div class="col table-name">${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}</div>
-                                <div class="col seats">${reservation.tableId ? reservation.tableId.seats : 'N/A'}</div>
-                                <div class="col time">${new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                                <div class="col customer">${reservation.metadata && reservation.metadata.name ? reservation.metadata.name : 'Guest'}</div>
-                            </div>
-                        `).join('');
-                    } else {
-                        removedList.innerHTML = `
-                            <div class="no-data">
-                                <i class="la la-times-circle"></i>
-                                <h4>No Removed Reservations</h4>
-                                <p>No reservations have been cancelled today.</p>
-                            </div>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('Error loading removed reservations:', error);
-                }
-            }
 
             async function loadFloorPlan(floorPlanId) {
                 if (!floorPlanId) return;
@@ -761,6 +827,795 @@
                 }
             }
 
+            
+            async function loadAllSectionData(restaurantId, date) {
+                try {
+                    // Load seated reservations
+                    await loadSeatedReservations(restaurantId);
+
+                    // Load finished reservations
+                    await loadFinishedReservations(restaurantId, date);
+
+                    // Load removed reservations
+                    await loadRemovedReservations(restaurantId, date);
+
+                    // Load waitlist
+                    await loadWaitlist(restaurantId);
+
+                    // Load servers
+                    await loadServers(restaurantId);
+
+                } catch (error) {
+                    console.error('Error loading section data:', error);
+                }
+            }
+
+            // Load seated reservations
+            async function loadSeatedReservations(restaurantId) {
+                try {
+                    const response = await fetch(`/reservation?restaurantId=${restaurantId}&filter=seated&isJSON=true`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        seatedReservations = data.data;
+                        updateSeatedSection(seatedReservations);
+                    }
+                } catch (error) {
+                    console.error('Error loading seated reservations:', error);
+                }
+            }
+
+            // Load finished reservations
+            async function loadFinishedReservations(restaurantId, date) {
+                try {
+                    const response = await fetch(`/reservation?restaurantId=${restaurantId}&filter=finished&date=${date}&isJSON=true`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        finishedReservations = data.data;
+                        updateFinishedSection(finishedReservations);
+                    }
+                } catch (error) {
+                    console.error('Error loading finished reservations:', error);
+                }
+            }
+
+            // Load removed reservations
+            async function loadRemovedReservations(restaurantId, date) {
+                try {
+                    const response = await fetch(`/reservation?restaurantId=${restaurantId}&filter=removed&date=${date}&isJSON=true`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        removedReservations = data.data;
+                        updateRemovedSection(removedReservations);
+                    }
+                } catch (error) {
+                    console.error('Error loading removed reservations:', error);
+                }
+            }
+
+            // Load servers
+            async function loadServers(restaurantId) {
+                try {
+                    const response = await fetch(`/server/restaurant/${restaurantId}?isJSON=true`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        serversData = data.data;
+                        updateServersSection(serversData);
+                    }
+                } catch (error) {
+                    console.error('Error loading servers:', error);
+                }
+            }
+
+            // Load waitlist
+            async function loadWaitlist(restaurantId) {
+                try {
+                    const response = await fetch(`/waitlist/restaurant/${restaurantId}?isJSON=true`);
+                    const data = await response.json();
+
+                    console.log('Waitlist data:', data);
+
+                    if (data.success) {
+                        waitlistData = data.data || [];
+                        updateWaitlistSection(waitlistData);
+                    } else {
+                        console.warn('Waitlist API returned:', data.message);
+                        waitlistData = [];
+                        updateWaitlistSection(waitlistData);
+                    }
+                } catch (error) {
+                    console.error('Error loading waitlist:', error);
+                    waitlistData = [];
+                    // updateWaitlistSection(waitlistData);
+                }
+            }
+
+            // Update sections with data
+            function updateSeatedSection(seated) {
+                const seatedList = document.getElementById('seated-list');
+                if (!seatedList) return;
+
+                if (seated.length === 0) {
+                    seatedList.innerHTML = `
+                        <div class="no-data">
+                            <i class="la la-chair"></i>
+                            <h4>No Seated Guests</h4>
+                            <p>No guests are currently seated.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = seated.map(reservation => `
+                    <div class="reservation-row" data-reservation-id="${reservation._id}">
+                        <div class="col table-name">
+                            ${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}
+                        </div>
+                        <div class="col customer">
+                            ${reservation.metadata?.name || 'Guest'}
+                        </div>
+                        <div class="col time">
+                            ${formatTime(reservation.startTime)} - ${formatTime(reservation.endTime)}
+                        </div>
+                    </div>
+                `).join('');
+
+                seatedList.innerHTML = html;
+            }
+
+            function updateFinishedSection(finished) {
+                const finishedList = document.getElementById('finished-list');
+                if (!finishedList) return;
+
+                if (finished.length === 0) {
+                    finishedList.innerHTML = `
+                        <div class="no-data">
+                            <i class="la la-check-circle"></i>
+                            <h4>No Finished Reservations</h4>
+                            <p>No reservations have been completed today.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = finished.map(reservation => `
+                    <div class="reservation-row" data-reservation-id="${reservation._id}">
+                        <div class="col table-name">
+                            ${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}
+                        </div>
+                        <div class="col customer">
+                            ${reservation.metadata?.name || 'Guest'}
+                        </div>
+                        <div class="col time">
+                            ${formatTime(reservation.startTime)} - ${formatTime(reservation.endTime)}
+                        </div>
+                    </div>
+                `).join('');
+
+                finishedList.innerHTML = html;
+            }
+
+            function updateRemovedSection(removed) {
+                const removedList = document.getElementById('removed-list');
+                if (!removedList) return;
+
+                if (removed.length === 0) {
+                    removedList.innerHTML = `
+                        <div class="no-data">
+                            <i class="la la-times-circle"></i>
+                            <h4>No Removed Reservations</h4>
+                            <p>No reservations have been cancelled today.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = removed.map(reservation => `
+                    <div class="reservation-row" data-reservation-id="${reservation._id}">
+                        <div class="col table-name">
+                            ${reservation.tableId ? (reservation.tableId.name || reservation.tableId.tableId) : 'Unknown Table'}
+                        </div>
+                        <div class="col customer">
+                            ${reservation.metadata?.name || 'Guest'}
+                        </div>
+                        <div class="col time">
+                            ${formatTime(reservation.startTime)} - ${formatTime(reservation.endTime)}
+                        </div>
+                    </div>
+                `).join('');
+
+                removedList.innerHTML = html;
+            }
+
+            function updateWaitlistSection(waitlist) {
+                const waitlistList = document.getElementById('waitlist-list');
+                if (!waitlistList) return;
+
+                if (waitlist.length === 0) {
+                    waitlistList.innerHTML = `
+                        <div class="no-data">
+                            <i class="la la-clock"></i>
+                            <h4>No Waitlisted Guests</h4>
+                            <p>No guests are currently on the waitlist.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = waitlist.map(entry => `
+                    <div class="reservation-row" data-waitlist-id="${entry._id}">
+                        <div class="col customer" >
+                            ${entry.guestInfo?.name || 'Guest'}
+                        </div>
+                        <div class="col seats" >
+                            ${entry.partySize} people
+                        </div>
+                        <div class="col time" >
+                            ${entry.waitingTime} min wait
+                        </div>
+                        <div class="col" >
+                            <button class="btn btn-sm btn-danger remove-waitlist-btn" data-id="${entry._id}">Remove</button>
+                            <button class="btn btn-sm btn-primary seat-waitlist-btn" data-id="${entry._id}" onclick="openReservationModalFromWaitlist('${entry._id}')">Seat</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                waitlistList.innerHTML = html;
+                
+                // Add event listeners to the buttons
+                document.querySelectorAll('.seat-waitlist-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        openReservationModalFromWaitlist(this.dataset.id);
+                    });
+                });
+                
+                document.querySelectorAll('.remove-waitlist-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        removeWaitlistGuest(this.dataset.id);
+                    });
+                });
+            }
+
+            function updateServersSection(servers) {
+                const serversList = document.getElementById('servers-list');
+                if (!serversList) return;
+
+                if (servers.length === 0) {
+                    serversList.innerHTML = `
+                        <div class="no-data">
+                            <i class="la la-user"></i>
+                            <h4>No Active Servers</h4>
+                            <p>No servers are currently assigned.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = servers.map(server => `
+                    <div class="reservation-row" data-server-id="${server._id}">
+                        <div class="col">
+                            ${server.name}
+                        </div>
+                        <div class="col">
+                            ${server.reservationId ? 'Assigned' : 'Available'}
+                        </div>
+                    </div>
+                `).join('');
+
+                serversList.innerHTML = html;
+            }
+
+            // Table click handlers
+            function setupTableClickHandlers() {
+                // Add event listeners to tables on canvas
+                document.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('ap-dropped-table')) {
+                        const tableId = e.target.dataset.id;
+                        const serverId = e.target.dataset.serverId;
+                        showTableDetailsModal(tableId, serverId);
+                    }
+                });
+            }
+
+            async function showTableDetailsModal(tableId, serverId) {
+                console.log(tableId, 'tableIdddddddd');
+                console.log(serverId, 'serverIddddddd');
+                selectedTable = { tableId, serverId };
+
+                try {
+                    // Get table details
+                    const tableResponse = await fetch(`/tables/${serverId}?isJSON=true`);
+                    const tableData = await tableResponse.json();
+
+                    if (!tableData.success) {
+                        console.error('Error fetching table details');
+                        return;
+                    }
+
+                    const table = tableData.data;
+
+                    // Check if tableInfo element exists before updating
+                    const tableInfoElement = document.getElementById('tableInfo');
+                    if (tableInfoElement) {
+                        // Determine table shape icon
+                        let tableShapeIcon = 'la-square';
+                        if (table.tableType === 'round') tableShapeIcon = 'la-circle';
+                        else if (table.tableType === 'rectangular') tableShapeIcon = 'la-rectangle-wide';
+                        else if (table.tableType === 'hexagon') tableShapeIcon = 'la-hexagon';
+                        else if (table.tableType === 'bar') tableShapeIcon = 'la-grip-lines';
+                        
+                        // Format table type text
+                        const tableTypeText = table.tableType ? 
+                            table.tableType.charAt(0).toUpperCase() + table.tableType.slice(1) : 'N/A';
+                        
+                        tableInfoElement.innerHTML = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="table-icon-container mr-3">
+                                            <i class="la ${tableShapeIcon}" style="font-size: 2rem; color: ${table.isReserved ? '#ea5455' : '#28c76f'};"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">${table.name || 'Unnamed Table'}</h6>
+                                            <small class="text-muted">${tableTypeText} Table</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <p><strong><i class="la la-id-card mr-1"></i> Table ID:</strong> <span class="text-muted">${table.tableId || 'N/A'}</span></p>
+                                    <p><strong><i class="la la-chair mr-1"></i> Seats:</strong> <span class="text-muted">${table.seats || 'N/A'}</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge badge-pill ${table.isReserved ? 'badge-danger' : 'badge-success'} mr-2" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                                            ${table.isReserved ? 'Reserved' : 'Available'}
+                                        </span>
+                                    </div>
+                                    
+                                    <p><strong><i class="la la-users mr-1"></i> Min Party:</strong> <span class="text-muted">${table.capacity?.minParty || 'N/A'}</span></p>
+                                    <p><strong><i class="la la-users mr-1"></i> Max Party:</strong> <span class="text-muted">${table.capacity?.maxParty || 'N/A'}</span></p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        console.error('tableInfo element not found in the DOM');
+                    }
+
+                    // Check if there's a current reservation for this table
+                    const reservations = await getCurrentReservationForTable(tableId, serverId);
+                    
+                    // Check if current-reservation-info element exists
+                    const currentReservationInfoElement = document.getElementById('currentReservationInfo');
+                    if (currentReservationInfoElement) {
+                        if (reservations && reservations.length > 0) {
+                            // Create HTML for all reservations
+                            let reservationsHTML = '';
+                            
+                            reservations.forEach(reservation => {
+                                // Get status badge class
+                                let statusBadgeClass = 'badge-secondary';
+                                if (reservation.status === 'seated') statusBadgeClass = 'badge-success';
+                                else if (reservation.status === 'finished') statusBadgeClass = 'badge-info';
+                                else if (reservation.status === 'removed') statusBadgeClass = 'badge-danger';
+                                
+                                // Format the status text
+                                const statusText = reservation.status ? 
+                                    reservation.status.charAt(0).toUpperCase() + reservation.status.slice(1) : 'N/A';
+                                
+                                reservationsHTML += `
+                                    <div class="alert alert-info mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="mb-0" style="color: white !important;">Reservation at ${formatTime(reservation.startTime)}</h6>
+                                            <span class="badge ${statusBadgeClass}">${statusText}</span>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <p style="color: white !important;"><strong><i class="la la-user mr-1" style="color: white !important;"></i> <span style="color: white !important;">Customer:</span></strong> <span style="color: white !important;">${reservation.metadata?.name || 'Guest'}</span></p>
+                                                <p style="color: white !important;"><strong><i class="la la-clock-o mr-1" style="color: white !important;"></i> <span style="color: white !important;">Time:</span></strong> <span style="color: white !important;">${formatTime(reservation.startTime)} - ${formatTime(reservation.endTime)}</span></p>
+                                                <p style="color: white !important;"><strong><i class="la la-users mr-1" style="color: white !important;"></i> <span style="color: white !important;">Party Size:</span></strong> <span style="color: white !important;">${reservation.partySize}</span></p>
+                                            </div>
+                                            <div class="col-md-6" style="color: white !important;"  >
+                                                ${reservation.metadata?.specialRequests ? 
+                                                    `<p style="color: white !important;"><strong><i class="la la-sticky-note mr-1" style="color: white !important;"></i> <span style="color: white !important;">Special Requests:</span></strong> <span style="color: white !important;">${reservation.metadata.specialRequests}</span></p>` : ''}
+                                                ${reservation.serverId ? 
+                                                    `<p style="color: white !important;"><strong><i class="la la-user-plus mr-1" style="color: white !important;"></i> <span style="color: white !important;">Server:</span></strong> <span class="badge badge-info" style="color: white !important;">${reservation.serverName || 'Assigned'}</span></p>` : ''}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="reservation-actions">
+                                            <button class="btn btn-sm ${reservation.status === 'seated' ? 'btn-secondary' : 'btn-success'}" 
+                                                onclick="markReservationSeated('${reservation._id}')"
+                                                ${reservation.status === 'seated' || reservation.status === 'finished' || reservation.status === 'removed' ? 'disabled' : ''}>
+                                                <i class="la la-chair mr-1"></i>${reservation.status === 'seated' ? 'Seated' : 'Mark Seated'}
+                                            </button>
+
+                                            <button class="btn btn-sm ${reservation.status === 'finished' ? 'btn-secondary' : 'btn-primary'}" 
+                                                onclick="markReservationComplete('${reservation._id}')"
+                                                ${reservation.status === 'finished' || reservation.status === 'removed' ? 'disabled' : ''}>
+                                                <i class="la la-check-circle mr-1"></i>${reservation.status === 'finished' ? 'Completed' : 'Mark Complete'}
+                                            </button>
+
+                                            <button class="btn btn-sm ${reservation.status === 'removed' ? 'btn-secondary' : 'btn-danger'}" 
+                                                onclick="markReservationCancelled('${reservation._id}')"
+                                                ${reservation.status === 'finished' || reservation.status === 'removed' ? 'disabled' : ''}>
+                                                <i class="la la-times-circle mr-1"></i>${reservation.status === 'removed' ? 'Cancelled' : 'Cancel'}
+                                            </button>
+                                            
+                                            ${reservation.serverId ? 
+                                                `<button class="btn btn-sm btn-info" onclick="removeServerFromReservation('${reservation.serverId}')">
+                                                    <i class="la la-user-minus mr-1"></i>Remove Server
+                                                </button>` : 
+                                                `<button class="btn btn-sm btn-info" onclick="openAssignServerModal('${reservation._id}')">
+                                                    <i class="la la-user-plus mr-1"></i>Assign Server
+                                                </button>`
+                                            }
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            
+                            currentReservationInfoElement.innerHTML = `
+                                <h5 class="mb-3"><i class="la la-calendar-check-o mr-2"></i>Reservations for this table</h5>
+                                ${reservationsHTML}
+                            `;
+                            
+                            // Show the current reservation tab if it exists
+                            const currentReservationTab = document.getElementById('current-reservation-tab');
+                            if (currentReservationTab) {
+                                currentReservationTab.classList.remove('d-none');
+                                // Try to make it active, but check if the click method exists
+                                if (typeof currentReservationTab.click === 'function') {
+                                    currentReservationTab.click();
+                                }
+                            }
+                        } else {
+                            currentReservationInfoElement.innerHTML = `
+                                <div class="alert alert-light text-center py-4">
+                                    <i class="la la-calendar-o" style="font-size: 3rem; opacity: 0.5;"></i>
+                                    <p class="mt-3 mb-0">No reservations for this table.</p>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    // Try to populate time slots if the element exists
+                    const reservationDateElement = document.getElementById('reservationDate');
+                    if (reservationDateElement) {
+                        // Set default date to today
+                        const today = new Date().toISOString().split('T')[0];
+                        reservationDateElement.value = today;
+                        
+                        // Populate time slots
+                        populateTimeSlots();
+                    }
+
+                    // Show modal
+                    $('#tableDetailsModal').modal('show');
+
+                } catch (error) {
+                    console.error('Error showing table details:', error);
+                }
+            }
+
+            // Helper function to get current reservation for a table
+            async function getCurrentReservationForTable(tableId, serverId) {
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    if (!restaurantId || !tableId) return null;
+
+                    const response = await fetch(`/reservation?restaurantId=${restaurantId}&isJSON=true`);
+                    const data = await response.json();
+                    console.log(data, 'datallll');
+                    
+                    if (!data.success || !data.data) return null;
+                    
+                    // Filter to get ALL reservations for this table
+                    const reservations = data.data.filter(res => 
+                        res.tableId && 
+                        (res.tableId._id === serverId)
+                    );
+                    
+                    // For each reservation that has a serverId, fetch the server details
+                    for (let i = 0; i < reservations.length; i++) {
+                        if (reservations[i].serverId) {
+                            try {
+                                const serverResponse = await fetch(`/server/${reservations[i].serverId}?isJSON=true`);
+                                const serverData = await serverResponse.json();
+                                
+                                if (serverData.success && serverData.data) {
+                                    // Add server name to the reservation object
+                                    reservations[i].serverName = serverData.data.name;
+                                }
+                            } catch (serverError) {
+                                console.error('Error fetching server details:', serverError);
+                            }
+                        }
+                    }
+                    
+                    console.log(reservations, 'found reservations');
+                    
+                    // Sort reservations by start time
+                    reservations.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+                    
+                    return reservations; // Return an array of reservations
+                } catch (error) {
+                    console.error('Error getting current reservation:', error);
+                    return null;
+                }
+            }
+
+            // Add this code to make the reservation form functional
+            document.addEventListener('DOMContentLoaded', function() {
+                // Add form submission handler
+                const makeReservationForm = document.getElementById('makeReservationForm');
+                if (makeReservationForm) {
+                    makeReservationForm.addEventListener('submit', handleReservationSubmit);
+                }
+            });
+
+            async function handleReservationSubmit(event) {
+                event.preventDefault();
+                
+                try {
+                    // Get form data
+                    const formData = new FormData(event.target);
+                    const reservationData = {
+                        name: formData.get('name'),
+                        email: formData.get('email'),
+                        phone: formData.get('phone'),
+                        partySize: parseInt(formData.get('partySize')),
+                        date: formData.get('date'),
+                        slotId: formData.get('slotId'),
+                        specialRequests: formData.get('specialRequests')
+                    };
+
+                    // Validate required fields
+                    if (!reservationData.name || !reservationData.partySize || !reservationData.date || !reservationData.slotId) {
+                        alert('Please fill in all required fields');
+                        return;
+                    }
+
+                    // Get restaurant ID and table ID
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    
+                    if (!selectedTable || !selectedTable.tableId || !selectedTable.serverId) {
+                        alert('No table selected');
+                        return;
+                    }
+
+                    // Prepare the complete reservation data
+                    const completeReservationData = {
+                        restaurantId: restaurantId,
+                        tableId: selectedTable.serverId, // Use serverId as tableId
+                        partySize: reservationData.partySize,
+                        slotId: reservationData.slotId,
+                        date: reservationData.date,
+                        metadata: {
+                            name: reservationData.name,
+                            email: reservationData.email,
+                            phone: reservationData.phone,
+                            specialRequests: reservationData.specialRequests
+                        }
+                    };
+
+                    console.log('Submitting reservation:', completeReservationData);
+
+                    // Submit reservation
+                    const response = await fetch('/reservation?isJSON=true', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(completeReservationData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Show success message
+                        alert('Reservation created successfully!');
+                        
+                        // Reset form
+                        event.target.reset();
+                        
+                        // Close modal
+                        $('#tableDetailsModal').modal('hide');
+                        
+                        // Reload data to show new reservation
+                        const date = new Date().toISOString().split('T')[0];
+                        loadAllSectionData(restaurantId, date);
+                        
+                        // Refresh floor plan to show updated table status
+                        const floorSelector = document.getElementById('floorPlanSelector');
+                        if (floorSelector && floorSelector.value) {
+                            loadFloorPlan(floorSelector.value);
+                        }
+                    } else {
+                        alert('Error creating reservation: ' + (result.message || 'Unknown error'));
+                    }
+
+                } catch (error) {
+                    console.error('Error submitting reservation:', error);
+                    alert('Error creating reservation. Please try again.');
+                }
+
+            }
+
+            // Update the populateTimeSlots function to only show slots where the selected table is available
+            async function populateTimeSlots() {
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    if (!restaurantId || !selectedTable) return;
+
+                    const reservationDateElement = document.getElementById('reservationDate');
+                    const timeSlotSelect = document.getElementById('timeSlot');
+                    const partySizeElement = document.getElementById('partySize');
+                    
+                    if (!reservationDateElement || !timeSlotSelect) {
+                        console.error('Required elements not found for populating time slots');
+                        return;
+                    }
+                    
+                    const date = reservationDateElement.value;
+                    const partySize = partySizeElement ? partySizeElement.value || 2 : 2;
+                    
+                    // Clear existing options
+                    timeSlotSelect.innerHTML = '<option value="">Select time slot</option>';
+                    
+                    const response = await fetch(`/reservation/available-slots?restaurantId=${restaurantId}&date=${date}&partySize=${partySize}&isJSON=true`);
+                    const data = await response.json();
+                    
+                    console.log(data, 'Available slots data');
+                    
+                    if (!data.success || !data.data || !data.data.availableSlots) {
+                        timeSlotSelect.innerHTML += '<option value="" disabled>No available slots</option>';
+                        return;
+                    }
+                    
+                    // Filter slots to only include those where the selected table is available
+                    const availableSlotsForSelectedTable = data.data.availableSlots.filter(slotData => {
+                        // Check if the selected table is in the available tables for this slot
+                        return slotData.availableTables.some(table => 
+                            table.id === selectedTable.serverId || 
+                            table.tableId === selectedTable.tableId
+                        );
+                    });
+                    
+                    console.log('Available slots for selected table:', availableSlotsForSelectedTable);
+                    
+                    if (availableSlotsForSelectedTable.length === 0) {
+                        timeSlotSelect.innerHTML += '<option value="" disabled>No available slots for this table</option>';
+                        return;
+                    }
+                    
+                    // Add available slots to select
+                    availableSlotsForSelectedTable.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.slot.id;
+                        option.textContent = `${item.slot.label || item.slot.value}`;
+                        timeSlotSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Error populating time slots:', error);
+                }
+            }
+
+            // Add event listener for party size changes to refresh time slots
+            document.addEventListener('DOMContentLoaded', function() {
+                const partySizeElement = document.getElementById('partySize');
+                if (partySizeElement) {
+                    partySizeElement.addEventListener('change', populateTimeSlots);
+                }
+            });
+
+            // Reservation action functions
+function markReservationSeated(reservationId) {
+    updateReservationStatus(reservationId, 'seated');
+}
+
+function markReservationComplete(reservationId) {
+    updateReservationStatus(reservationId, 'finished');
+}
+
+function markReservationCancelled(reservationId) {
+    updateReservationStatus(reservationId, 'removed');
+}
+
+async function updateReservationStatus(reservationId, status) {
+    try {
+        const response = await fetch(`/reservation/${reservationId}?isJSON=true`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Close modal
+            $('#tableDetailsModal').modal('hide');
+            
+            // Get all buttons for this reservation
+            const seatedButton = document.querySelector(`button[onclick="markReservationSeated('${reservationId}')"]`);
+            const completeButton = document.querySelector(`button[onclick="markReservationComplete('${reservationId}')"]`);
+            const cancelButton = document.querySelector(`button[onclick="markReservationCancelled('${reservationId}')"]`);
+
+            // Update buttons based on status
+            switch(status) {
+                case 'seated':
+                    if (seatedButton) {
+                        seatedButton.textContent = 'Seated';
+                        seatedButton.disabled = true;
+                        seatedButton.classList.remove('btn-success');
+                        seatedButton.classList.add('btn-secondary');
+                    }
+                    break;
+
+                case 'finished':
+                    if (completeButton) {
+                        completeButton.textContent = 'Completed';
+                        completeButton.disabled = true;
+                        completeButton.classList.remove('btn-primary');
+                        completeButton.classList.add('btn-secondary');
+                    }
+                    if (seatedButton) {
+                        seatedButton.disabled = true;
+                        seatedButton.classList.remove('btn-success');
+                        seatedButton.classList.add('btn-secondary');
+                    }
+                    if (cancelButton) {
+                        cancelButton.disabled = true;
+                        cancelButton.classList.remove('btn-danger');
+                        cancelButton.classList.add('btn-secondary');
+                    }
+                    break;
+
+                case 'removed':
+                    if (cancelButton) {
+                        cancelButton.textContent = 'Cancelled';
+                        cancelButton.disabled = true;
+                        cancelButton.classList.remove('btn-danger');
+                        cancelButton.classList.add('btn-secondary');
+                    }
+                    if (seatedButton) {
+                        seatedButton.disabled = true;
+                        seatedButton.classList.remove('btn-success');
+                        seatedButton.classList.add('btn-secondary');
+                    }
+                    if (completeButton) {
+                        completeButton.disabled = true;
+                        completeButton.classList.remove('btn-primary');
+                        completeButton.classList.add('btn-secondary');
+                    }
+                    break;
+            }
+
+            // Reload data to update the page
+            const urlParams = new URLSearchParams(window.location.search);
+            const restaurantId = urlParams.get('restaurantId');
+            const date = new Date().toISOString().split('T')[0];
+            loadAllSectionData(restaurantId, date);
+        } else {
+            alert('Error updating reservation: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error updating reservation:', error);
+        alert('Error updating reservation');
+    }
+}
+
+            // Add event listener to date input to refresh time slots
+            document.getElementById('reservationDate').addEventListener('change', populateTimeSlots);
+
+
             function renderTableOnCanvas(table) {
                 const canvasContent = document.getElementById('ap-canvasContent');
                 if (!canvasContent) return;
@@ -772,7 +1627,6 @@
                 droppedTable.dataset.type = table.tableType;
                 droppedTable.dataset.id = table.tableId;
                 droppedTable.dataset.serverId = table._id;
-                droppedTable.style.cursor = 'pointer';
 
                 // Set position
                 droppedTable.style.left = `${table.position?.x || 0}px`;
@@ -780,6 +1634,19 @@
 
                 // Set size and shape based on table type and seats
                 setTableStyle(droppedTable, table.tableType, table.seats);
+
+                // Add click event listener
+                droppedTable.addEventListener('click', function() {
+                    console.log('click on table');
+                    const tableId = this.dataset.id;
+                    const serverId = this.dataset.serverId;
+                    showTableDetailsModal(tableId, serverId);
+                });
+
+                // Remove draggable functionality - tables should be unmovable
+                // if (window.makeTableDraggable) {
+                //     window.makeTableDraggable(droppedTable);
+                // }
 
                 canvasContent.appendChild(droppedTable);
             }
@@ -813,232 +1680,922 @@
                         break;
                 }
             }
+        </script>
 
-            async function showTableDetailsModal(tableId, serverId) {
-                selectedTable = { tableId, serverId };
-                console.log('Opening modal for table:', selectedTable);
+        <!-- Global variable to store the current reservation ID for server assignment -->
+        <script>
+            let currentReservationForServerAssignment = null;
 
+            // Function to open the server assignment modal
+            function openAssignServerModal(reservationId) {
+                currentReservationForServerAssignment = reservationId;
+                
+                // Reset the modal content
+                document.getElementById('serverLoadingIndicator').style.display = 'block';
+                document.getElementById('serverAssignmentContent').style.display = 'none';
+                document.getElementById('noServersMessage').style.display = 'none';
+                document.getElementById('serverErrorMessage').style.display = 'none';
+                
+                // Clear previous server options
+                const serverSelect = document.getElementById('serverSelect');
+                serverSelect.innerHTML = '<option value="">Select a server...</option>';
+                
+                // Show the modal
+                $('#assignServerModal').modal('show');
+                
+                // Fetch available servers
+                fetchAvailableServers();
+            }
+
+            // Function to fetch available servers
+            async function fetchAvailableServers() {
                 try {
-                    // Get table details
-                    const tableResponse = await fetch(`/tables/${serverId}?isJSON=true`);
-                    let tableData = await tableResponse.json();
-
-                    // If first request fails, try alternative endpoint
-                    if (!tableData.success) {
-                        const altResponse = await fetch(`/tables/table/${serverId}?isJSON=true`);
-                        tableData = await altResponse.json();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    
+                    if (!restaurantId) {
+                        throw new Error('Restaurant ID not found');
                     }
-
-                    if (!tableData.success) {
-                        console.error('Error fetching table details:', tableData.message);
-                        alert('Error loading table details');
+                    
+                    const response = await fetch(`/server/restaurant/${restaurantId}?isJSON=true&available=true`);
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'Failed to load servers');
+                    }
+                    
+                    // Hide loading indicator
+                    document.getElementById('serverLoadingIndicator').style.display = 'none';
+                    
+                    if (!data.data || data.data.length === 0) {
+                        // Show no servers message
+                        document.getElementById('noServersMessage').style.display = 'block';
                         return;
                     }
-
-                    const table = tableData.table;
-
-                    // Populate table info
-                    const tableInfo = document.getElementById('tableInfo');
-                    if (tableInfo) {
-                        tableInfo.innerHTML = `
-                            <div class="table-details">
-                                <h6>Table: ${table.name || table.tableId}</h6>
-                                <p><strong>Seats:</strong> ${table.seats}</p>
-                                <p><strong>Type:</strong> ${table.tableType}</p>
-                                <p><strong>Status:</strong> ${table.isReserved ? 'Reserved' : 'Available'}</p>
-                            </div>
-                        `;
-                    }
-
-                    // Load time slots for reservation
-                    await loadTimeSlots();
-
-                    // Load servers for assignment
-                    await loadServersForAssignment();
-
-                    // Load current reservation if table is reserved
-                    if (table.isReserved) {
-                        await loadCurrentReservation(tableId);
-                    }
-
-                    // Show modal
-                    const modal = document.getElementById('tableDetailsModal');
-                    if (modal) {
-                        modal.style.display = 'block';
-                        modal.classList.add('show');
-                        document.body.classList.add('modal-open');
-                        
-                        // Create backdrop if it doesn't exist
-                        if (!document.querySelector('.modal-backdrop')) {
-                            const backdrop = document.createElement('div');
-                            backdrop.className = 'modal-backdrop fade show';
-                            document.body.appendChild(backdrop);
-                        }
-                    }
-
-                } catch (error) {
-                    console.error('Error showing table details:', error);
-                    alert('Error loading table details');
-                }
-            }
-
-            async function loadTimeSlots() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const restaurantId = urlParams.get('restaurantId');
-                const reservationDateInput = document.getElementById('reservationDate');
-                const partySizeInput = document.getElementById('partySize');
-
-                // Set default values
-                if (reservationDateInput && !reservationDateInput.value) {
-                    reservationDateInput.value = new Date().toISOString().split('T')[0];
-                }
-
-                const date = reservationDateInput ? reservationDateInput.value : new Date().toISOString().split('T')[0];
-                const partySize = partySizeInput ? partySizeInput.value || 2 : 2;
-
-                try {
-                    const response = await fetch(`/timeslots/${restaurantId}?isJSON=true`);
-                    const data = await response.json();
-
-                    const timeSlotSelect = document.getElementById('timeSlot');
-                    if (timeSlotSelect && data.success && data.timeSlots) {
-                        timeSlotSelect.innerHTML = '<option value="">Select time slot</option>';
-                        
-                        data.timeSlots.forEach(slot => {
-                            const option = document.createElement('option');
-                            option.value = slot._id;
-                            option.textContent = `${slot.startTime} - ${slot.endTime}`;
-                            timeSlotSelect.appendChild(option);
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error loading time slots:', error);
-                }
-            }
-
-            async function loadServersForAssignment() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const restaurantId = urlParams.get('restaurantId');
-
-                try {
-                    const response = await fetch(`/servers/${restaurantId}?isJSON=true`);
-                    const data = await response.json();
-
-                    const serversList = document.getElementById('serversList');
-                    if (serversList && data.success && data.servers) {
-                        serversList.innerHTML = data.servers.map(server => `
-                            <div class="server-item">
-                                <label>
-                                    <input type="radio" name="assignedServer" value="${server._id}">
-                                    ${server.name || 'Server'} - ${server.shift ? 'On Shift' : 'Off Shift'}
-                                </label>
-                            </div>
-                        `).join('');
-                    }
-                } catch (error) {
-                    console.error('Error loading servers:', error);
-                }
-            }
-
-            async function loadCurrentReservation(tableId) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const restaurantId = urlParams.get('restaurantId');
-
-                try {
-                    const response = await fetch(`/reservations/${restaurantId}?tableId=${tableId}&isJSON=true`);
-                    const data = await response.json();
-
-                    const currentReservationInfo = document.getElementById('currentReservationInfo');
-                    if (currentReservationInfo) {
-                        if (data.success && data.reservations && data.reservations.length > 0) {
-                            const reservation = data.reservations[0];
-                            currentReservationInfo.innerHTML = `
-                                <div class="current-reservation">
-                                    <h6>Current Reservation</h6>
-                                    <p><strong>Customer:</strong> ${reservation.metadata?.name || 'Guest'}</p>
-                                    <p><strong>Email:</strong> ${reservation.metadata?.email || 'N/A'}</p>
-                                    <p><strong>Phone:</strong> ${reservation.metadata?.phone || 'N/A'}</p>
-                                    <p><strong>Party Size:</strong> ${reservation.partySize}</p>
-                                    <p><strong>Time:</strong> ${new Date(reservation.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - ${new Date(reservation.endTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
-                                    <p><strong>Status:</strong> ${reservation.status}</p>
-                                </div>
-                            `;
-                        } else {
-                            currentReservationInfo.innerHTML = '<p>No current reservation found.</p>';
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading current reservation:', error);
-                }
-            }
-
-            function closeTableModal() {
-                const modal = document.getElementById('tableDetailsModal');
-                if (modal) {
-                    modal.style.display = 'none';
-                    modal.classList.remove('show');
-                    document.body.classList.remove('modal-open');
                     
-                    // Remove backdrop
-                    const backdrop = document.querySelector('.modal-backdrop');
-                    if (backdrop) {
-                        backdrop.remove();
-                    }
+                    // Populate server select dropdown
+                    const serverSelect = document.getElementById('serverSelect');
+                    data.data.forEach(server => {
+                        const option = document.createElement('option');
+                        option.value = server._id;
+                        option.textContent = server.name;
+                        serverSelect.appendChild(option);
+                    });
+                    
+                    // Show the server assignment content
+                    document.getElementById('serverAssignmentContent').style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('Error fetching available servers:', error);
+                    document.getElementById('serverLoadingIndicator').style.display = 'none';
+                    document.getElementById('serverErrorMessage').style.display = 'block';
+                    document.getElementById('serverErrorMessage').textContent = `Error: ${error.message}`;
                 }
-                selectedTable = null;
             }
 
-            // Setup form submission for making reservations
-            document.getElementById('makeReservationForm')?.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                if (!selectedTable) {
-                    alert('No table selected');
-                    return;
-                }
-
-                const formData = new FormData(this);
-                const urlParams = new URLSearchParams(window.location.search);
-                const restaurantId = urlParams.get('restaurantId');
-
-                const reservationData = {
-                    tableId: selectedTable.serverId,
-                    restaurantId: restaurantId,
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                    partySize: parseInt(formData.get('partySize')),
-                    date: formData.get('date'),
-                    slotId: formData.get('slotId'),
-                    specialRequests: formData.get('specialRequests')
-                };
-
+            // Function to assign server to reservation
+            async function assignServerToReservation() {
                 try {
-                    const response = await fetch(`/reservations`, {
+                    const serverSelect = document.getElementById('serverSelect');
+                    const serverId = serverSelect.value;
+                    
+                    if (!serverId) {
+                        alert('Please select a server');
+                        return;
+                    }
+                    
+                    if (!currentReservationForServerAssignment) {
+                        alert('No reservation selected');
+                        return;
+                    }
+                    
+                    // Prepare request data
+                    const requestData = {
+                        serverId: serverId,
+                        reservationId: currentReservationForServerAssignment
+                    };
+                    
+                    // Make the API call
+                    const response = await fetch('/server/assign-reservation?isJSON=true', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify(reservationData)
+                        body: JSON.stringify(requestData)
                     });
-
-                    const result = await response.json();
                     
-                    if (result.success) {
-                        alert('Reservation created successfully!');
-                        closeTableModal();
-                        // Reload the page to refresh data
-                        window.location.reload();
-                    } else {
-                        alert('Error creating reservation: ' + result.message);
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'Failed to assign server');
                     }
+                    
+                    // Close the modal
+                    $('#assignServerModal').modal('hide');
+                    
+                    // Show success message
+                    alert('Server assigned successfully');
+                    
+                    // Refresh the table details modal to show the updated server assignment
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    if (restaurantId && selectedTable) {
+                        showTableDetailsModal(selectedTable.tableId, selectedTable.serverId);
+                    }
+                    
                 } catch (error) {
-                    console.error('Error creating reservation:', error);
-                    alert('Error creating reservation');
+                    console.error('Error assigning server:', error);
+                    alert(`Error assigning server: ${error.message}`);
+                }
+            }
+
+            // Add event listener for the assign button when document is ready
+            document.addEventListener('DOMContentLoaded', function() {
+                const assignServerBtn = document.getElementById('assignServerBtn');
+                if (assignServerBtn) {
+                    assignServerBtn.addEventListener('click', assignServerToReservation);
                 }
             });
+
+            // Function to remove server from reservation
+            async function removeServerFromReservation(serverId) {
+                if (!confirm('Are you sure you want to remove the server from this reservation?')) {
+                    return;
+                }
+
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    if (!restaurantId || !serverId) return;
+
+                    const response = await fetch(`/server/${serverId}/remove-reservation?isJSON=true`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert('Server removed from reservation successfully!');
+                        // Close modal
+                        $('#tableDetailsModal').modal('hide');
+                        // Reload data
+                        const date = new Date().toISOString().split('T')[0];
+                        loadAllSectionData(restaurantId, date);
+                        // Refresh floor plan to show updated table status
+                        const activeFloorPlan = document.querySelector('#floorPlanDropdown .dropdown-item.active');
+                        if (activeFloorPlan && activeFloorPlan.dataset.value) {
+                            loadFloorPlan(activeFloorPlan.dataset.value);
+                        }
+                    } else {
+                        alert('Error removing server from reservation: ' + (data.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error removing server from reservation:', error);
+                    alert('Error removing server from reservation. Please try again.');
+                }
+            }
         </script>
+
+        <!-- Add server functionality -->
+        <script>
+            // Add server functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                const addServerBtn = document.getElementById('addServerBtn');
+                if (addServerBtn) {
+                    addServerBtn.addEventListener('click', addNewServer);
+                }
+            });
+
+            async function addNewServer() {
+                try {
+                    const serverNameInput = document.getElementById('newServerName');
+                    const serverName = serverNameInput.value.trim();
+                    
+                    if (!serverName) {
+                        alert('Please enter a server name');
+                        return;
+                    }
+                    
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    
+                    if (!restaurantId) {
+                        alert('Restaurant ID not found');
+                        return;
+                    }
+                    
+                    // Show loading state
+                    const addServerBtn = document.getElementById('addServerBtn');
+                    const originalBtnText = addServerBtn.textContent;
+                    addServerBtn.textContent = 'Adding...';
+                    addServerBtn.disabled = true;
+                    
+                    // Prepare request data
+                    const requestData = {
+                        name: serverName,
+                        restaurantId: restaurantId
+                    };
+                    
+                    // Make API call
+                    const response = await fetch('/server?isJSON=true', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Clear input
+                        serverNameInput.value = '';
+                        
+                        // Show success message
+                        alert('Server added successfully');
+                        
+                        // Refresh servers list
+                        loadServers(restaurantId);
+                    } else {
+                        alert('Error adding server: ' + (data.message || 'Unknown error'));
+                    }
+                    
+                    // Reset button state
+                    addServerBtn.textContent = originalBtnText;
+                    addServerBtn.disabled = false;
+                    
+                } catch (error) {
+                    console.error('Error adding server:', error);
+                    alert('Error adding server. Please try again.');
+                    
+                    // Reset button state
+                    const addServerBtn = document.getElementById('addServerBtn');
+                    if (addServerBtn) {
+                        addServerBtn.textContent = 'Add Server';
+                        addServerBtn.disabled = false;
+                    }
+                }
+            }
+        </script>
+
+        <!-- Add CSS for new server add form -->
+        <style>
+            /* Date Navigation Styles */
+            .date-nav-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                color: #495057;
+                cursor: pointer;
+                text-decoration: none;
+                transition: all 0.2s ease;
+            }
+            
+            .date-nav-btn:hover {
+                background-color: #e9ecef;
+                color: #212529;
+                text-decoration: none;
+            }
+            
+            /* Server Add Form Styles */
+            .server-add-form {
+                padding: 15px;
+                background: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .server-add-input-group {
+                display: flex;
+                gap: 10px;
+            }
+            
+            .server-add-input {
+                flex: 1;
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                transition: border-color 0.3s;
+            }
+            
+            .server-add-input:focus {
+                outline: none;
+                border-color: #5A8DEE;
+                box-shadow: 0 0 0 2px rgba(90, 141, 238, 0.2);
+            }
+            
+            .server-add-btn {
+                background: #5A8DEE;
+                border: 1px solid #5A8DEE;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            
+            .server-add-btn:hover {
+                background: #4c7cdf;
+            }
+            
+            .server-add-btn:disabled {
+                background: #a0b7e9;
+                cursor: not-allowed;
+            }
+            
+            /* Floor Plan Dropdown Styles */
+            .ap-toolbar-left .dropdown {
+                margin-left: 10px;
+            }
+            
+            .ap-toolbar-left .btn-outline-primary {
+                border-color: #0051a1;
+                color: #0051a1;
+                padding: 0.4rem 1rem;
+                font-size: 0.95rem;
+                border-radius: 20px;
+                min-width: 160px;
+                text-align: left;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .ap-toolbar-left .btn-outline-primary:hover {
+                background-color: #0051a1;
+                color: white;
+            }
+            
+            .ap-toolbar-left .dropdown-menu {
+                min-width: 160px;
+                max-height: 300px;
+                overflow-y: auto;
+                box-shadow: 0px 5px 25px 0px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+            
+            .ap-toolbar-left .dropdown-item {
+                padding: 0.65rem 1rem;
+                font-size: 0.95rem;
+                transition: all 0.2s;
+            }
+            
+            .ap-toolbar-left .dropdown-item:hover {
+                background-color: #f0f7ff;
+                color: #0051a1;
+            }
+            
+            .ap-toolbar-left .dropdown-item.active {
+                background-color: #0051a1;
+                color: white;
+            }
+            
+            /* Waitlist Add Form Styles */
+            .waitlist-add-form {
+                padding: 15px;
+                background: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+                display: flex;
+                justify-content: flex-end;
+            }
+            
+            .waitlist-add-form .btn-primary {
+                background-color: #0051a1;
+                border-color: #0051a1;
+                transition: all 0.3s;
+            }
+            
+            .waitlist-add-form .btn-primary:hover {
+                background-color: #003b78;
+                border-color: #003b78;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            
+            #addWaitlistModal .modal-content {
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+            
+            #addWaitlistModal .modal-header {
+                background: linear-gradient(135deg, #0051a1 0%, #0077cc 100%);
+                color: white;
+                border-radius: 10px 10px 0 0;
+            }
+            
+            #addWaitlistModal .modal-title {
+                font-weight: 600;
+            }
+            
+            #currentReservationInfo .alert-info div{
+                color: white !important;
+            }
+            #addWaitlistModal .close {
+                color: white;
+                opacity: 0.8;
+                text-shadow: none;
+            }
+            
+            #addWaitlistModal .close:hover {
+                opacity: 1;
+            }
+            
+            #addWaitlistModal .form-group label {
+                font-weight: 500;
+                color: #495057;
+            }
+            
+            #addWaitlistModal .form-control:focus {
+                border-color: #0051a1;
+                box-shadow: 0 0 0 0.2rem rgba(0, 81, 161, 0.25);
+            }
+            
+            #addWaitlistModal .btn-primary {
+                background-color: #0051a1;
+                border-color: #0051a1;
+            }
+            
+            #addWaitlistModal .btn-primary:hover {
+                background-color: #003b78;
+                border-color: #003b78;
+            }
+            
+            /* Reservation Details Modal Styles */
+            #tableDetailsModal .modal-content {
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                border: none;
+            }
+            
+            #tableDetailsModal .modal-header {
+                background: linear-gradient(135deg, #0051a1 0%, #0077cc 100%);
+                color: white;
+                border-bottom: none;
+                padding: 1.25rem 1.5rem;
+            }
+            
+            #tableDetailsModal .modal-title {
+                font-weight: 600;
+                font-size: 1.25rem;
+            }
+            
+            #tableDetailsModal .close {
+                color: white;
+                opacity: 0.8;
+                text-shadow: none;
+                transition: opacity 0.2s;
+            }
+            
+            #tableDetailsModal .close:hover {
+                opacity: 1;
+            }
+            
+            #tableDetailsModal .modal-body {
+                padding: 1.5rem;
+            }
+            
+            #tableDetailsModal .nav-tabs {
+                border-bottom: 1px solid #e9ecef;
+                margin-bottom: 1.5rem;
+            }
+            
+            #tableDetailsModal .nav-tabs .nav-link {
+                border: none;
+                color: #495057;
+                font-weight: 500;
+                padding: 0.75rem 1rem;
+                transition: all 0.2s;
+                position: relative;
+            }
+            
+            #tableDetailsModal .nav-tabs .nav-link:hover {
+                color: #0051a1;
+                background-color: rgba(0, 81, 161, 0.05);
+            }
+            
+            #tableDetailsModal .nav-tabs .nav-link.active {
+                color: #0051a1;
+                background-color: transparent;
+                font-weight: 600;
+            }
+            
+            #tableDetailsModal .nav-tabs .nav-link.active::after {
+                content: '';
+                position: absolute;
+                bottom: -1px;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background-color: #0051a1;
+            }
+            
+            #tableInfo {
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                padding: 1.25rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            #tableInfo h6 {
+                font-weight: 600;
+                color: #0051a1;
+                margin-bottom: 1rem;
+            }
+            
+            #tableInfo p {
+                margin-bottom: 0.5rem;
+                display: flex;
+                justify-content: space-between;
+            }
+            
+            #tableInfo p strong {
+                color: #495057;
+            }
+            
+            #tableInfo .badge {
+                padding: 0.4rem 0.8rem;
+                font-weight: 500;
+                border-radius: 4px;
+            }
+            
+            #tableInfo .badge-success {
+                background-color: #28c76f;
+            }
+            
+            #tableInfo .badge-danger {
+                background-color: #ea5455;
+            }
+            
+            #currentReservationInfo .alert {
+                border-radius: 8px;
+                border: none;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            }
+            
+            #currentReservationInfo .alert-info {
+                background-color: #e0f4ff;
+                color: #004085;
+                border-left: 4px solid #0051a1;
+            }
+            
+            #currentReservationInfo .alert-light {
+                background-color: #f8f9fa;
+                color: #495057;
+                border-left: 4px solid #ced4da;
+            }
+            
+            #currentReservationInfo h6 {
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+                color: #0051a1;
+            }
+            
+            #currentReservationInfo p {
+                margin-bottom: 0.5rem;
+            }
+            
+            #currentReservationInfo .badge {
+                padding: 0.4rem 0.8rem;
+                font-weight: 500;
+                border-radius: 4px;
+            }
+            
+            #currentReservationInfo .badge-info {
+                background-color: #00cfe8;
+            }
+            
+            .reservation-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .reservation-actions .btn {
+                padding: 0.4rem 0.8rem;
+                font-weight: 500;
+                border-radius: 4px;
+                transition: all 0.2s;
+            }
+            
+            .reservation-actions .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            
+            #makeReservationForm .form-group {
+                margin-bottom: 1.25rem;
+            }
+            
+            #makeReservationForm label {
+                font-weight: 500;
+                color: #495057;
+                margin-bottom: 0.5rem;
+            }
+            
+            #makeReservationForm .form-control {
+                border-radius: 6px;
+                border: 1px solid #ced4da;
+                padding: 0.6rem 0.75rem;
+                transition: all 0.2s;
+            }
+            
+            #makeReservationForm .form-control:focus {
+                border-color: #0051a1;
+                box-shadow: 0 0 0 0.2rem rgba(0, 81, 161, 0.25);
+            }
+            
+            #makeReservationForm .btn-primary {
+                background-color: #0051a1;
+                border-color: #0051a1;
+                padding: 0.6rem 1.5rem;
+                font-weight: 500;
+                border-radius: 6px;
+                transition: all 0.2s;
+            }
+            
+            #makeReservationForm .btn-primary:hover {
+                background-color: #003b78;
+                border-color: #003b78;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+
+        <!-- Waitlist functionality -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Add event listener to the "Add waitlist" button
+                const addWaitlistBtn = document.getElementById('addWaitlistBtn');
+                if (addWaitlistBtn) {
+                    addWaitlistBtn.addEventListener('click', function() {
+                        // Reset form
+                        document.getElementById('addWaitlistForm').reset();
+                        document.getElementById('waitlistFormError').style.display = 'none';
+                        
+                        // Show modal
+                        $('#addWaitlistModal').modal('show');
+                    });
+                }
+                
+                // Add event listener to the submit button
+                const submitWaitlistBtn = document.getElementById('submitWaitlistBtn');
+                if (submitWaitlistBtn) {
+                    submitWaitlistBtn.addEventListener('click', addWaitlistEntry);
+                }
+            });
+            
+            async function addWaitlistEntry() {
+                try {
+                    // Get form values
+                    const name = document.getElementById('waitlistGuestName').value.trim();
+                    const email = document.getElementById('waitlistGuestEmail').value.trim();
+                    const phone = document.getElementById('waitlistGuestPhone').value.trim();
+                    const partySize = parseInt(document.getElementById('waitlistPartySize').value);
+                    const waitingTime = parseInt(document.getElementById('waitlistWaitingTime').value);
+                    
+                    // Validate required fields
+                    if (!name || !phone || !partySize || !waitingTime) {
+                        showWaitlistError('Please fill in all required fields.');
+                        return;
+                    }
+                    
+                    // Get restaurant ID from URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    
+                    if (!restaurantId) {
+                        showWaitlistError('Restaurant ID not found.');
+                        return;
+                    }
+                    
+                    // Show loading state
+                    const submitBtn = document.getElementById('submitWaitlistBtn');
+                    const originalBtnText = submitBtn.textContent;
+                    submitBtn.textContent = 'Adding...';
+                    submitBtn.disabled = true;
+                    
+                    // Prepare request data
+                    const requestData = {
+                        restaurantId: restaurantId,
+                        userId: currentUser, // Using the currentUser variable that's already defined
+                        partySize: partySize,
+                        waitingTime: waitingTime,
+                        guestInfo: {
+                            name: name,
+                            email: email || undefined, // Only include if provided
+                            phone: phone
+                        }
+                    };
+                    
+                    // Make API call
+                    const response = await fetch('/waitlist?isJSON=true', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Close modal
+                        $('#addWaitlistModal').modal('hide');
+                        
+                        // Show success message
+                        alert('Guest added to waitlist successfully!');
+                        
+                        // Reload waitlist data
+                        loadWaitlist(restaurantId);
+                    } else {
+                        showWaitlistError(data.message || 'Failed to add to waitlist.');
+                    }
+                    
+                    // Reset button state
+                    submitBtn.textContent = originalBtnText;
+                    submitBtn.disabled = false;
+                    
+                } catch (error) {
+                    console.error('Error adding to waitlist:', error);
+                    showWaitlistError('An error occurred while adding to waitlist. Please try again.');
+                    
+                    // Reset button state
+                    const submitBtn = document.getElementById('submitWaitlistBtn');
+                    if (submitBtn) {
+                        submitBtn.textContent = 'Add to Waitlist';
+                        submitBtn.disabled = false;
+                    }
+                }
+            }
+            
+            function showWaitlistError(message) {
+                const errorElement = document.getElementById('waitlistFormError');
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                }
+            }
+            
+            // Update the updateWaitlistSection function to handle the waitlist data better
+            function updateWaitlistSection(waitlist) {
+                const waitlistList = document.getElementById('waitlist-list');
+                if (!waitlistList) return;
+
+                if (!waitlist || waitlist.length === 0) {
+                    waitlistList.innerHTML = `
+                        <div class="no-data">
+                            <i class="la la-clock"></i>
+                            <h4>No Waitlisted Guests</h4>
+                            <p>No guests are currently on the waitlist.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = waitlist.map(entry => `
+                    <div class="reservation-row" data-waitlist-id="${entry._id}">
+                        <div class="col customer" >
+                            ${entry.guestInfo?.name || 'Guest'}
+                        </div>
+                        <div class="col seats" >
+                            ${entry.partySize} people
+                        </div>
+                        <div class="col time" >
+                            ${entry.waitingTime} min wait
+                        </div>
+                        <div class="col" >
+                            <button class="btn btn-sm btn-danger remove-waitlist-btn" data-id="${entry._id}">Remove</button>
+                            <button class="btn btn-sm btn-primary seat-waitlist-btn" data-id="${entry._id}" onclick="openReservationModalFromWaitlist('${entry._id}')">Seat</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                waitlistList.innerHTML = html;
+                
+                // Add event listeners to the buttons
+                document.querySelectorAll('.seat-waitlist-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        openReservationModalFromWaitlist(this.dataset.id);
+                    });
+                });
+                
+                document.querySelectorAll('.remove-waitlist-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        removeWaitlistGuest(this.dataset.id);
+                    });
+                });
+            }
+            
+            // Function to seat a waitlisted guest
+            async function seatWaitlistGuest(waitlistId) {
+                if (!confirm('Are you sure you want to seat this guest?')) {
+                    return;
+                }
+                
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    
+                    const response = await fetch(`/waitlist/${waitlistId}/seat?isJSON=true`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ restaurantId })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert('Guest has been seated successfully!');
+                        loadWaitlist(restaurantId);
+                    } else {
+                        alert('Error seating guest: ' + (data.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error seating waitlist guest:', error);
+                    alert('Error seating guest. Please try again.');
+                }
+            }
+            
+            // Function to remove a waitlisted guest
+            async function removeWaitlistGuest(waitlistId) {
+                if (!confirm('Are you sure you want to remove this guest from the waitlist?')) {
+                    return;
+                }
+                
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const restaurantId = urlParams.get('restaurantId');
+                    
+                    const response = await fetch(`/waitlist/${waitlistId}?isJSON=true`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert('Guest has been removed from the waitlist!');
+                        loadWaitlist(restaurantId);
+                    } else {
+                        alert('Error removing guest: ' + (data.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error removing waitlist guest:', error);
+                    alert('Error removing guest. Please try again.');
+                }
+            }
+        </script>
+
+<script>
+async function openReservationModalFromWaitlist(waitlistId) {
+    try {
+        // Fetch waitlist entry details
+        const response = await fetch(`/waitlist/${waitlistId}?isJSON=true`);
+        const data = await response.json();
+        if (!data.success || !data.data) {
+            alert('Could not load waitlist details.');
+            return;
+        }
+        const entry = data.data;
+
+        // Populate modal fields
+        document.getElementById('modal-party-size').textContent = `${entry.partySize} people`;
+        document.getElementById('modal-date').textContent = new Date(entry.createdAt).toLocaleDateString();
+        document.getElementById('modal-time').textContent = `${entry.waitingTime} min wait`;
+
+        document.getElementById('contact-name').value = entry.guestInfo?.name || '';
+        document.getElementById('contact-email').value = entry.guestInfo?.email || '';
+        document.getElementById('contact-phone').value = entry.guestInfo?.phone || '';
+        document.getElementById('special-requests').value = '';
+
+        // Store waitlistId for later use (e.g., hidden input or global variable)
+        document.getElementById('selected-table-id').value = entry._id;
+
+        // Show the modal
+        $('#reservationModal').modal('show');
+    } catch (error) {
+        alert('Error loading waitlist details.');
+        console.error(error);
+    }
+}
+</script>
+
+<%- include('../partials/reservationsModal.ejs') %>
 </body>
 <!-- END: Body-->
 
+</html>
+</html>
 </html>

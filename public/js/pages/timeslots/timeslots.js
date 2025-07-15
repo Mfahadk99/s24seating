@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const submitButton = document.getElementById('submitButton');
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toastMessage');
-    const timeSlotsList = document.getElementById('timeSlotsList');
+    // const timeSlotsList = document.getElementById('timeSlotsList');
     const timeSlotsLoading = document.getElementById('timeSlotsLoading');
     const restaurantId = document.getElementById('restaurantId').value;
     const modal = document.getElementById('shiftModal');
@@ -87,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('shiftDay').value = shift.day || dayNames[dayIndex];
             document.getElementById('startTime').value = shift.startTime || hourTo24Format(hour);
             document.getElementById('endTime').value = shift.endTime || hourTo24Format(hour + 1);
-            document.getElementById('duration').value = shift.duration || 60;
-            document.getElementById('bufferTime').value = shift.bufferTime || 15;
+            // document.getElementById('duration').value = shift.duration || 60;
+            // document.getElementById('bufferTime').value = shift.bufferTime || 15;
             submitButton.innerHTML = '<i class="fas fa-save"></i> Update Shift';
             
             // Show delete button for existing shifts
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteShiftButton.onclick = () => deleteShift(shift._id);
             
             // Show time slots section
-            timeSlotsList.style.display = 'block';
+            // timeSlotsList.style.display = 'block';
             loadTimeSlots(shift._id);
         } else {
             // Create mode
@@ -104,15 +104,15 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('shiftId').value = '';
             document.getElementById('startTime').value = hourTo24Format(hour);
             document.getElementById('endTime').value = hourTo24Format(endHour || (hour + 1));
-            document.getElementById('duration').value = 60;
-            document.getElementById('bufferTime').value = 15;
+            // document.getElementById('duration').value = 60;
+            // document.getElementById('bufferTime').value = 15;
             submitButton.innerHTML = '<i class="fas fa-plus"></i> Create Shift';
             
             // Hide delete button for new shifts
             deleteShiftButton.style.display = 'none';
             
             // Hide time slots section
-            timeSlotsList.style.display = 'none';
+            // timeSlotsList.style.display = 'none';
         }
         
         // Show modal
@@ -483,8 +483,8 @@ document.addEventListener('DOMContentLoaded', function () {
             day: formData.get('day'),
             startTime: formData.get('startTime'),
             endTime: formData.get('endTime'),
-            duration: parseInt(formData.get('duration')),
-            bufferTime: parseInt(formData.get('bufferTime')),
+            // duration: parseInt(formData.get('duration')),
+            // bufferTime: parseInt(formData.get('bufferTime')),
             restaurantId: formData.get('restaurantId')
         };
         

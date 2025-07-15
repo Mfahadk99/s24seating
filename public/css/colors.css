@@ -3344,11 +3344,11 @@ input:focus ~ .bg-info {
 }
 
 .info {
-  color: #1e9ff2 !important;
+  color: #0051a1 !important;
 }
 
 .bg-info {
-  background-color: #1e9ff2 !important;
+  background-color: #0051a1 !important;
 }
 .bg-info .card-header,
 .bg-info .card-footer {
@@ -3364,8 +3364,8 @@ input:focus ~ .bg-info {
 }
 
 .alert-info {
-  border-color: #1e9ff2 !important;
-  background-color: #62bcf6 !important;
+  border-color: #053858 !important;
+  background-color: #0051a1 !important;
   color: #053858 !important;
 }
 .alert-info .alert-link {

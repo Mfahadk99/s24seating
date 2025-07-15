@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import Server from "../models/server.model";
 import { handleResponse, handleError } from "../utils/responseHandler";
+import Reservation from "../models/reservation.schema";
 
 // Create a new server (waiter)
 export const createServer = async (req: Request, res: Response) => {
@@ -85,6 +86,7 @@ export const createServer = async (req: Request, res: Response) => {
 export const getServersByRestaurant = async (req: Request, res: Response) => {
   try {
     const { restaurantId } = req.params;
+    const { available } = req.query; // New parameter to filter available servers
 
     if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
       if (req.query.isJSON || req.query.isJSON === "true") {
@@ -103,10 +105,45 @@ export const getServersByRestaurant = async (req: Request, res: Response) => {
       }
     }
 
-    const servers = await Server.find({
-      restaurantId,
-      isActive: true,
-    });
+    let servers;
+
+    if (available === "true") {
+      // Get current date and time
+      const currentDate = new Date();
+
+      // Find all servers that are active and not assigned to any current reservation
+      servers = await Server.find({
+        restaurantId,
+        isActive: true,
+      }).then(async (allServers) => {
+        // Get array of server IDs
+        const serverIds = allServers.map((server) => server._id);
+
+        // Find all reservations for these servers that are currently active
+        const currentReservations = await Reservation.find({
+          serverId: { $in: serverIds },
+          date: currentDate.toISOString().split("T")[0], // Match current date
+          startTime: { $lte: currentDate }, // Reservation has started
+          endTime: { $gte: currentDate }, // Reservation hasn't ended yet
+        });
+
+        // Get IDs of servers that are currently assigned
+        const busyServerIds = currentReservations.map((res) =>
+          res.serverId.toString()
+        );
+
+        // Filter out busy servers
+        return allServers.filter(
+          (server) => !busyServerIds.includes(server._id.toString())
+        );
+      });
+    } else {
+      // Get all active servers if available filter is not applied
+      servers = await Server.find({
+        restaurantId,
+        isActive: true,
+      });
+    }
 
     if (req.query.isJSON) {
       res.status(200).json({
@@ -207,53 +244,65 @@ export const assignServerToReservation = async (
       }
     }
 
-    const server = await Server.findById(serverId);
+    // Start a session for transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    if (!server) {
-      if (req.query.isJSON || req.query.isJSON === "true") {
-        return handleError(req, res, 404, "Server not found");
-      } else {
-        return res.render("server/detail", {
-          server: null,
-          error: "Server not found",
-          title: "Assignment Error",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
-        });
+    try {
+      // Find and update the server
+      const server = await Server.findById(serverId).session(session);
+      if (!server) {
+        throw new Error("Server not found");
       }
-    }
 
-    server.reservationId = reservationId;
-    server.updatedAt = new Date();
-    await server.save();
+      // Find and update the reservation
+      const reservation =
+        await Reservation.findById(reservationId).session(session);
+      if (!reservation) {
+        throw new Error("Reservation not found");
+      }
 
-    if (req.query.isJSON) {
-      res.status(200).json({
-        success: true,
-        message: "Server assigned to reservation successfully",
-        data: server,
-      });
-    } else {
-      if (req.query.isJSON === "true") {
-        return handleResponse(req, res, 200, {
+      // Update both documents
+      server.updatedAt = new Date();
+      await server.save({ session });
+
+      reservation.serverId = serverId;
+      await reservation.save({ session });
+
+      // Commit the transaction
+      await session.commitTransaction();
+      session.endSession();
+
+      if (req.query.isJSON) {
+        res.status(200).json({
           success: true,
           message: "Server assigned to reservation successfully",
           data: server,
         });
       } else {
-        res.render("server/detail", {
-          server: server,
-          title: "Server Assigned",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
-        });
+        if (req.query.isJSON === "true") {
+          return handleResponse(req, res, 200, {
+            success: true,
+            message: "Server assigned to reservation successfully",
+            data: server,
+          });
+        } else {
+          res.render("server/detail", {
+            server: server,
+            title: "Server Assigned",
+            currentUser: {
+              firstname: "Guest",
+              lastname: "User",
+              image_url: "/public/images/default-profile.png",
+            },
+          });
+        }
       }
+    } catch (error) {
+      // If anything fails, abort the transaction
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
     }
   } catch (error) {
     console.error("Error assigning server:", error);
@@ -305,53 +354,62 @@ export const removeServerFromReservation = async (
       }
     }
 
-    const server = await Server.findById(serverId);
+    // Start a session for transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    if (!server) {
-      if (req.query.isJSON || req.query.isJSON === "true") {
-        return handleError(req, res, 404, "Server not found");
-      } else {
-        return res.render("server/detail", {
-          server: null,
-          error: "Server not found",
-          title: "Remove Assignment Error",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
-        });
+    try {
+      // Find the server
+      const server = await Server.findById(serverId).session(session);
+      if (!server) {
+        throw new Error("Server not found");
       }
-    }
 
-    server.reservationId = null;
-    server.updatedAt = new Date();
-    await server.save();
+      // Find and update any reservations that have this server assigned
+      await Reservation.updateMany(
+        { serverId: serverId },
+        { $set: { serverId: null } },
+        { session }
+      );
 
-    if (req.query.isJSON) {
-      res.status(200).json({
-        success: true,
-        message: "Server removed from reservation successfully",
-        data: server,
-      });
-    } else {
-      if (req.query.isJSON === "true") {
-        return handleResponse(req, res, 200, {
+      // Update server timestamp
+      server.updatedAt = new Date();
+      await server.save({ session });
+
+      // Commit the transaction
+      await session.commitTransaction();
+      session.endSession();
+
+      if (req.query.isJSON) {
+        res.status(200).json({
           success: true,
           message: "Server removed from reservation successfully",
           data: server,
         });
       } else {
-        res.render("server/detail", {
-          server: server,
-          title: "Server Unassigned",
-          currentUser: {
-            firstname: "Guest",
-            lastname: "User",
-            image_url: "/public/images/default-profile.png",
-          },
-        });
+        if (req.query.isJSON === "true") {
+          return handleResponse(req, res, 200, {
+            success: true,
+            message: "Server removed from reservation successfully",
+            data: server,
+          });
+        } else {
+          res.render("server/detail", {
+            server: server,
+            title: "Server Unassigned",
+            currentUser: {
+              firstname: "Guest",
+              lastname: "User",
+              image_url: "/public/images/default-profile.png",
+            },
+          });
+        }
       }
+    } catch (error) {
+      // If anything fails, abort the transaction
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
     }
   } catch (error) {
     console.error("Error removing server assignment:", error);

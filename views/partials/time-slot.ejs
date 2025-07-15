@@ -6,10 +6,267 @@
   <title>Schedule Management</title>
 
   <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-/v2TqO1lt0..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="public/css/timeslots/timeslots.css">
+  
+  <style>
+    /* Additional styles for the dining table modal */
+    .page-actions {
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .btn-dining-table {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-dining-table:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Dining Table Modal Styles */
+    .dining-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+    
+    .dining-modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .dining-modal-container {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .dining-modal-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border-radius: 16px 16px 0 0;
+    }
+    
+    .dining-modal-header h2 {
+      margin: 0;
+      color: #1f2937;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .dining-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .dining-modal-close:hover {
+      background: #f3f4f6;
+      color: #ef4444;
+    }
+    
+    .dining-modal-body {
+      padding: 2rem;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    .turn-times-section {
+      margin-bottom: 2rem;
+    }
+    
+    .turn-times-description {
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    
+    .turn-times-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .turn-time-item {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s ease;
+    }
+    
+    .turn-time-item:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    
+    .guest-count {
+      font-weight: 500;
+      color: #374151;
+      font-size: 0.95rem;
+    }
+    
+    .time-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .time-display {
+      background: white;
+      border: 1px solid #d1d5db;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      color: #374151;
+      min-width: 80px;
+      text-align: center;
+    }
+    
+    .time-btn {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      color: #374151;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    
+    .time-btn:hover {
+      background: #e5e7eb;
+      border-color: #9ca3af;
+    }
+    
+    .time-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .actions-column {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .action-btn {
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+    }
+    
+    .action-btn:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .btn-save {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-save:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-cancel {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-cancel:hover {
+      background: #e5e7eb;
+      border-color: #9ca3af;
+    }
+  </style>
 </head>
 <body>
 
@@ -24,9 +281,15 @@
 
   <!-- Schedule Management -->
   <div class="schedule-container">
-    <div class="page-header">
-      <h1><i class="fas fa-calendar-alt"></i> Schedule Management</h1>
-      <p>Create and manage shifts for your restaurant</p>
+    <div class="page-header" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+      <div>
+        <h1><i class="fas fa-calendar-alt"></i> Schedule Management</h1>
+        <p>Create and manage shifts for your restaurant</p>
+      </div>
+      <button class="btn-dining-table" id="diningTableBtn" style="background: #2563eb; color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15); transition: background 0.2s;">
+        <i class="fas fa-utensils"></i>
+        Dining Table
+      </button>
     </div>
 
     <div class="page-content">
@@ -89,7 +352,7 @@
               <label for="endTime"><i class="fas fa-stop"></i> End Time</label>
               <input type="time" id="endTime" name="endTime" class="form-control" required step="900">
             </div>
-
+<!-- 
             <div class="form-group">
               <label for="duration"><i class="fas fa-hourglass-half"></i> Duration (minutes)</label>
               <input type="number" id="duration" name="duration" class="form-control" placeholder="60" required>
@@ -98,7 +361,7 @@
             <div class="form-group">
               <label for="bufferTime"><i class="fas fa-hourglass-half"></i> Buffer Time (minutes)</label>
               <input type="number" id="bufferTime" name="bufferTime" class="form-control" placeholder="15" required>
-            </div>
+            </div> -->
 
             <input type="hidden" id="restaurantId" name="restaurantId" value="<%= restaurantId %>" required>
             <input type="hidden" id="selectedHour" name="selectedHour">
@@ -134,7 +397,237 @@
     </div>
   </div>
 
+  <!-- Dining Table Modal -->
+  <div class="dining-modal" id="diningTableModal">
+    <div class="dining-modal-container">
+      <div class="dining-modal-header">
+        <h2>
+          <i class="fas fa-utensils"></i>
+          Turn Times
+        </h2>
+        <button class="dining-modal-close" id="closeDiningModal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="dining-modal-body">
+        <div class="turn-times-section">
+          <p class="turn-times-description">
+            Specify the average turn time based on party size. View how effective your settings are in the turn times report.
+          </p>
+          
+          <div class="turn-times-list" id="turnTimesList">
+            <!-- Turn time items will be populated here -->
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn-cancel" id="cancelDiningTable">Cancel</button>
+          <button class="btn-save" id="saveDiningTable">
+            <i class="fas fa-save"></i>
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- JavaScript -->
   <script src="public/js/pages/timeslots/timeslots.js"></script>
+  
+  <script>
+    // Dining Table Modal functionality
+    const diningTableBtn = document.getElementById('diningTableBtn');
+    const diningTableModal = document.getElementById('diningTableModal');
+    const closeDiningModal = document.getElementById('closeDiningModal');
+    const cancelDiningTable = document.getElementById('cancelDiningTable');
+    const saveDiningTable = document.getElementById('saveDiningTable');
+    const turnTimesList = document.getElementById('turnTimesList');
+
+    // Default turn times data
+    const defaultTurnTimes = [
+      { guests: 1, time: { hours: 1, minutes: 30 } },
+      { guests: 2, time: { hours: 1, minutes: 30 } },
+      { guests: 3, time: { hours: 2, minutes: 0 } },
+      { guests: 4, time: { hours: 2, minutes: 0 } },
+      { guests: 5, time: { hours: 2, minutes: 30 } },
+      { guests: 6, time: { hours: 2, minutes: 30 } },
+      { guests: 7, time: { hours: 3, minutes: 0 } },
+      { guests: 8, time: { hours: 3, minutes: 0 } },
+      { guests: 9, time: { hours: 3, minutes: 0 } },
+      { guests: 10, time: { hours: 3, minutes: 0 } },
+      { guests: 11, time: { hours: 3, minutes: 0 } },
+      { guests: '12+', time: { hours: 3, minutes: 0 }, label: '12+ guests' }
+    ];
+
+    let turnTimesData = [...defaultTurnTimes];
+    let restaurantId = null;
+    let settingsId = null;
+
+    // Helper to parse time string ("01:30") to {hours, minutes}
+    function parseTimeString(str) {
+      const [h, m] = str.split(":").map(Number);
+      return { hours: h, minutes: m };
+    }
+    // Helper to format {hours, minutes} to "01:30"
+    function toTimeString(obj) {
+      return `${obj.hours.toString().padStart(2, '0')}:${obj.minutes.toString().padStart(2, '0')}`;
+    }
+
+    // Helper to get restaurantId from URL
+    function extractRestaurantId() {
+      const match = window.location.pathname.match(/restaurant\/(\w{24})/);
+      return match ? match[1] : null;
+    }
+
+    // Fetch current timings from backend
+    async function fetchDiningTimes() {
+      restaurantId = extractRestaurantId();
+      if (!restaurantId) return;
+      try {
+        const res = await fetch(`/settings/restaurant/${restaurantId}?isJSON=true`);
+        if (!res.ok) throw new Error('Failed to fetch timings');
+        const data = await res.json();
+        if (data && Array.isArray(data.data) && data.data.length > 0) {
+          // Use the first settings object (or add logic to select the correct one)
+          const settings = data.data[0];
+          settingsId = settings._id;
+          if (Array.isArray(settings.diningTimes)) {
+            turnTimesData = settings.diningTimes.map((item, idx) => ({
+              guests: item.guest === '12+' ? '12+' : Number(item.guest),
+              time: parseTimeString(item.time),
+              label: item.label || (item.guest === '12+' ? '12+ guests' : undefined)
+            }));
+          } else {
+            turnTimesData = [...defaultTurnTimes];
+          }
+        } else {
+          turnTimesData = [...defaultTurnTimes];
+          settingsId = null;
+        }
+      } catch (e) {
+        turnTimesData = [...defaultTurnTimes];
+        settingsId = null;
+      }
+    }
+
+    // Format time display
+    function formatTime(hours, minutes) {
+      return `${hours}h ${minutes}m`;
+    }
+
+    // Create turn time item HTML (no buffer time input)
+    function createTurnTimeItem(item, index) {
+      return `
+        <div class="turn-time-item" data-index="${index}">
+          <div class="guest-count">${item.guests} guest${item.guests !== 1 ? 's' : ''}</div>
+          <div class="time-controls">
+            <button class="time-btn" onclick="decreaseTime(${index})">
+              <i class="fas fa-minus"></i>
+            </button>
+            <div class="time-display">${formatTime(item.time.hours, item.time.minutes)}</div>
+            <button class="time-btn" onclick="increaseTime(${index})">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <div class="actions-column">
+            <button class="action-btn" onclick="resetTime(${index})" title="Reset to default">
+              <i class="fas fa-undo"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render turn times list
+    function renderTurnTimes() {
+      turnTimesList.innerHTML = turnTimesData.map(createTurnTimeItem).join('');
+    }
+
+    // Time adjustment functions
+    function increaseTime(index) {
+      const item = turnTimesData[index];
+      item.time.minutes += 15;
+      if (item.time.minutes >= 60) {
+        item.time.hours += 1;
+        item.time.minutes = 0;
+      }
+      renderTurnTimes();
+    }
+
+    function decreaseTime(index) {
+      const item = turnTimesData[index];
+      if (item.time.minutes > 0) {
+        item.time.minutes -= 15;
+      } else if (item.time.hours > 0) {
+        item.time.hours -= 1;
+        item.time.minutes = 45;
+      }
+      renderTurnTimes();
+    }
+
+    function resetTime(index) {
+      turnTimesData[index].time = { ...defaultTurnTimes[index].time };
+      renderTurnTimes();
+    }
+
+    // Modal controls
+    diningTableBtn.addEventListener('click', async function() {
+      await fetchDiningTimes();
+      diningTableModal.classList.add('active');
+      renderTurnTimes();
+    });
+
+    function closeDiningTableModal() {
+      diningTableModal.classList.remove('active');
+    }
+
+    closeDiningModal.addEventListener('click', closeDiningTableModal);
+    cancelDiningTable.addEventListener('click', closeDiningTableModal);
+
+    // Close modal when clicking outside
+    diningTableModal.addEventListener('click', function(e) {
+      if (e.target === diningTableModal) {
+        closeDiningTableModal();
+      }
+    });
+
+    // Save functionality
+    saveDiningTable.addEventListener('click', async function() {
+      if (!settingsId) {
+        alert('Settings ID not found. Please reload the page.');
+        return;
+      }
+      const body = {
+        diningTimes: turnTimesData.map((item, idx) => ({
+          guest: item.guests.toString(),
+          time: toTimeString(item.time),
+          bufferTime: '15:00',
+          ...(item.label ? { label: item.label } : {})
+        }))
+      };
+      try {
+        const res = await fetch(`/settings/${settingsId}?isJSON=true`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error('Failed to save');
+        // Show success message
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        toastMessage.textContent = 'Turn times saved successfully!';
+        toast.style.display = 'flex';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        closeDiningTableModal();
+      } catch (e) {
+        alert('Failed to save turn times.');
+      }
+    });
+
+    // Make functions global for onclick handlers
+    window.increaseTime = increaseTime;
+    window.decreaseTime = decreaseTime;
+    window.resetTime = resetTime;
+  </script>
 </body>
 </html>
