@@ -236,7 +236,7 @@ export const getReservation = async (req: Request, res: Response) => {
 
 export const getAllReservations = async (req, res) => {
   try {
-    const { restaurantId, status, date, customerId, userId, filter } =
+    const { restaurantId, status, date, customerId, userId, filter, shift } =
       req.query;
 
     console.log("reservation controller", res.locals.currentUser);
@@ -338,7 +338,7 @@ export const getAllReservations = async (req, res) => {
     }
 
     // Get reservations with populated data
-    const reservations = await Reservation.find(finalFilter)
+    let reservations = await Reservation.find(finalFilter)
       .sort({ startTime: -1 })
       .populate(
         "tableId",
@@ -346,6 +346,39 @@ export const getAllReservations = async (req, res) => {
       )
       .populate("restaurantId", "name location")
       .populate("slotId", "value duration label");
+
+    // Apply shift filtering if provided
+    if (shift) {
+      const Shift = require("../models/shift");
+      
+      // Get shift data based on shift parameter
+      const shiftData = await Shift.findOne({
+        restaurantId,
+        $or: [
+          { name: { $regex: new RegExp(shift, "i") } },
+          { day: { $regex: new RegExp(shift, "i") } }
+        ]
+      });
+
+      if (shiftData) {
+        // Filter reservations based on shift time range
+        reservations = reservations.filter(reservation => {
+          if (!reservation.startTime) return false;
+          
+          const reservationTime = new Date(reservation.startTime);
+          const [shiftStartHour, shiftStartMinute] = shiftData.startTime.split(':').map(Number);
+          const [shiftEndHour, shiftEndMinute] = shiftData.endTime.split(':').map(Number);
+          
+          const shiftStart = new Date(reservationTime);
+          shiftStart.setHours(shiftStartHour, shiftStartMinute, 0, 0);
+          
+          const shiftEnd = new Date(reservationTime);
+          shiftEnd.setHours(shiftEndHour, shiftEndMinute, 0, 0);
+          
+          return reservationTime >= shiftStart && reservationTime <= shiftEnd;
+        });
+      }
+    }
 
     // Add a computed status for UI display
     const reservationsWithStatus = reservations.map((reservation) => {
